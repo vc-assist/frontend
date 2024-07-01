@@ -1,0 +1,40 @@
+/* disable mobile jank */
+
+input,
+textarea,
+button,
+select,
+a {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+img {
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+button * {
+  user-select: none;
+}
+
+a {
+  @apply text-accent;
+}
+
+input {
+  font-family: inherit;
+  background: transparent;
+}
+

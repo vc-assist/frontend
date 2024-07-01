@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/fonts/GeneralSans-Variable.ttf");
+  font-weight: 100 900;
+}
+
+.light {
+  --primary: theme(colors.gray.800);
+  --dimmed: theme(colors.gray.400);
+  --dimmed-subtle: theme(colors.gray.300);
+  --bg: white;
+  --bg-dimmed: theme(colors.gray.200);
+  --accent: theme(colors.blue.600);
+}
+
+.dark {
+  --primary: theme(colors.zinc.200);
+  --dimmed: theme(colors.zinc.500);
+  --dimmed-subtle: theme(colors.zinc.700);
+  --bg: theme(colors.zinc.800);
+  --bg-dimmed: theme(colors.zinc.900);
+  --accent: theme(colors.blue.400);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+
+  font-family: "General Sans", system-ui, sans-serif;
+  font-weight: 500;
+
+  @apply text-primary fill-dimmed bg-bg-dimmed text-[0.925rem];
+}
+
+.mantine-Text-root {
+  font-weight: 500;
+  font-size: unset;
+}
+
+.mantine-Timeline-itemBullet {
+  background: var(--bg);
+}
+
+/* disable mobile jank */
+input,
+textarea,
+button,
+select,
+a {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+img {
+  user-drag: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+button * {
+  user-select: none;
+}
+
+a {
+  @apply text-accent;
+}
+
+input {
+  font-family: inherit;
+  background: transparent;
+}
+
+@layer components {
+  .animated-underline {
+    @apply relative;
+  }
+
+  .animated-underline::after {
+    content: "";
+    transform: scaleX(0%);
+    transform-origin: left center;
+    @apply block w-full absolute h-[2px] bg-primary transition-all duration-300;
+  }
+
+  .animated-underline-active::after {
+    transform: scaleX(100%);
+  }
+}
+
+@layer utilities {
+  .no-link {
+    @apply no-underline text-current;
+  }
+
+  .clamp-text {
+    @apply overflow-hidden text-ellipsis whitespace-nowrap;
+  }
+
+  .position-center {
+    @apply left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
+  }
+}
+
