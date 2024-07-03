@@ -1,8 +1,17 @@
-import { ErrorBoundary, UIProvider, initTelemetry } from "./foundation"
+import "@vcassist/ui/global.css"
+
 import ReactDOM from "react-dom/client"
 import { StrictMode } from "react";
+import { Foundation } from "@vcassist/ui/foundation"
 
-initTelemetry()
+const AppFoundation = Foundation({
+  safeArea: {
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  }
+})
 
 const root = document.getElementById("root");
 if (!root) {
@@ -11,11 +20,9 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <StrictMode>
-    <UIProvider>
-      <ErrorBoundary>
-        aajajaj
-      </ErrorBoundary>
-    </UIProvider>
+    <AppFoundation>
+      aajajaj
+    </AppFoundation>
   </StrictMode>
 )
 
