@@ -20,6 +20,7 @@
     "strict": true,
     "paths": {
       "@/*": ["./*"],
+      "@backend.studentdata/*": ["./backend/services/studentdata/api/*"],
     },
     "lib": [
       "ES2022",

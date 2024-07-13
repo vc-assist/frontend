@@ -21,10 +21,11 @@ import {
 } from "react-icons/md";
 import { useCurrentTime, WidgetPanel } from "@vcassist/ui"
 import CourseChip from "../components/CourseChip"
+import { Course } from "@backend.studentdata/student_data_pb"
 
 export default function Schedule(props: {
-  courses: UserData["courses"];
-  dayNames: UserData["dayNames"];
+  courses: Course[];
+  dayNames: string[];
   className?: string;
 }) {
   const currentTime = useCurrentTime();
@@ -98,18 +99,18 @@ export default function Schedule(props: {
         })} left`;
       }
 
-      const zoom = course.zoom;
+      const remoteMeetingLink = course.remoteMeetingLink;
 
       items.push(
         <Timeline.Item key={course.name}>
           <div className="flex gap-3 items-center">
             <CourseChip dayNames={props.dayNames} course={course} />
-            {zoom ? (
+            {remoteMeetingLink ? (
               <ActionIcon
                 size="sm"
                 variant="gradient"
                 onClick={() => {
-                  window.open(zoom);
+                  window.open(remoteMeetingLink);
                 }}
               >
                 <MdVideocam />

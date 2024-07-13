@@ -4,18 +4,7 @@ import { MdClass, MdInfo, MdInfoOutline, MdVideocam } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 import { LinkButton, PopoutChip } from "@vcassist/ui"
 import { Color } from "@vcassist/ui/lib/color";
-
-export type CourseData = {
-  name: string
-  overallGrade: number
-
-  teacher?: string
-  teacherEmail?: string
-  remoteMeetingLink?: string
-  room?: string
-  dayName?: string
-  homeworkPasses?: number
-}
+import { Course } from "@backend.studentdata/student_data_pb"
 
 const iconStyle: Partial<CSSProperties> = {
   minWidth: "18px",
@@ -25,7 +14,7 @@ const iconStyle: Partial<CSSProperties> = {
 };
 
 export default function CourseChip(props: {
-  course: CourseData;
+  course: Course;
   classNames?: Partial<{
     root: string;
     text: string;

@@ -1,4 +1,8 @@
 ## frontend
 
-> The frontend for VC Assist.
+> the frontend for VC Assist
+
+### commands
+
+- `git submodule foreach "git pull"` - updates all submodules
 
