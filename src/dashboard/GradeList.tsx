@@ -1,13 +1,11 @@
 import { Fragment } from "react";
 import { RingProgress, Color, WidgetPanel, InfoTooltip } from "@vcassist/ui"
-import CourseChip from "../components/CourseChip";
+import CourseChip from "../CourseChip";
+import { Course } from "@backend.studentdata/student_data_pb";
 
 export default function GradeList(props: {
   className?: string;
-  courses: {
-    name: string
-    overallGrade: number
-  }[];
+  courses: Course[];
   dayNames: string[];
   plain?: boolean;
 }) {

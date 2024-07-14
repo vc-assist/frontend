@@ -38,20 +38,18 @@ export default function CourseChip(props: {
         <div className="flex flex-col gap-3">
           <div className="flex gap-3 flex-wrap max-w-[250px]">
             <div className="flex flex-col gap-1">
-              <>
-                <Text>Grade</Text>
-                <Text
-                  style={
-                    !props.disableGradeColoring
-                      ? {
-                        color: Color.fromGrade(overallGrade),
-                      }
-                      : undefined
-                  }
-                >
-                  {overallGrade}%
-                </Text>
-              </>
+              <Text>Grade</Text>
+              <Text
+                style={
+                  !props.disableGradeColoring
+                    ? {
+                      color: Color.fromGrade(overallGrade),
+                    }
+                    : undefined
+                }
+              >
+                {overallGrade}%
+              </Text>
             </div>
             <div className="flex flex-col gap-1">
               <Text>Instructor</Text>
