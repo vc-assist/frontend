@@ -1,0 +1,31 @@
+{
+  "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "ignoreUnknown": true,
+    "ignore": ["**/*.css"]
+  },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "javascript": {
+    "formatter": {
+      "semicolons": "asNeeded"
+    }
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "linter": {
+    "rules": {
+      "correctness": {
+        "noUnusedImports": "error"
+      },
+      "style": {
+        "noNonNullAssertion": "off"
+      }
+    }
+  }
+}
