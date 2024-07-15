@@ -1,24 +1,26 @@
-import { useEffect } from "react";
-import { useSignals } from "@preact/signals-react/runtime";
-import Gpa from "../dashboard/Gpa"
-import Schedule from "../dashboard/Schedule"
+import type { StudentData } from "@backend.studentdata/student_data_pb"
+import { useSignals } from "@preact/signals-react/runtime"
+import { WidgetHiddenPanel, createDefaultMeter } from "@vcassist/ui"
+import { useEffect } from "react"
 import DayBlock from "../dashboard/DayBlock"
+import Gpa from "../dashboard/Gpa"
 import GradeList from "../dashboard/GradeList"
-import { WidgetHiddenPanel, createDefaultMeter } from "@vcassist/ui";
-import { StudentData } from "@backend.studentdata/student_data_pb";
+import Schedule from "../dashboard/Schedule"
 import { settings } from "../profile/Settings"
 
-const meter = createDefaultMeter("routes.dashboard");
-const viewPage = meter.createCounter("view");
+const meter = createDefaultMeter("routes.dashboard")
+const viewPage = meter.createCounter("view")
 
-export default function Dashboard({ data }: {
+export default function Dashboard({
+  data,
+}: {
   data: StudentData
 }) {
-  useSignals();
+  useSignals()
 
   useEffect(() => {
-    viewPage.add(1);
-  }, []);
+    viewPage.add(1)
+  }, [])
 
   return (
     <>
@@ -26,7 +28,7 @@ export default function Dashboard({ data }: {
         {/* grid is used here so I don't have to deal with
         flexbox flex shenanigans */}
         <div className="grid grid-cols-2 gap-6">
-          <DayBlock dayNames={data.dayNames} currentDay=""  />
+          <DayBlock dayNames={data.dayNames} currentDay="" />
           {!settings.dashboard.hideGPA.value ? (
             <Gpa gpa={data.gpa} />
           ) : (
@@ -53,5 +55,5 @@ export default function Dashboard({ data }: {
         />
       )}
     </>
-  );
+  )
 }

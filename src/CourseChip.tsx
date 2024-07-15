@@ -1,32 +1,32 @@
-import { Button, Text } from "@mantine/core";
-import { CSSProperties, useState } from "react";
-import { MdClass, MdInfo, MdInfoOutline, MdVideocam } from "react-icons/md";
-import { twMerge } from "tailwind-merge";
+import type { Course } from "@backend.studentdata/student_data_pb"
+import { Button, Text } from "@mantine/core"
 import { LinkButton, PopoutChip } from "@vcassist/ui"
-import { Color } from "@vcassist/ui/lib/color";
-import { Course } from "@backend.studentdata/student_data_pb"
+import { Color } from "@vcassist/ui/lib/color"
+import { type CSSProperties, useState } from "react"
+import { MdClass, MdInfo, MdInfoOutline, MdVideocam } from "react-icons/md"
+import { twMerge } from "tailwind-merge"
 
 const iconStyle: Partial<CSSProperties> = {
   minWidth: "18px",
   maxWidth: "18px",
   minHeight: "18px",
   maxHeight: "18px",
-};
+}
 
 export default function CourseChip(props: {
-  course: Course;
+  course: Course
   classNames?: Partial<{
-    root: string;
-    text: string;
-    icon: string;
-  }>;
-  dayNames: string[];
-  disableGradeColoring?: boolean;
+    root: string
+    text: string
+    icon: string
+  }>
+  dayNames: string[]
+  disableGradeColoring?: boolean
 }) {
-  const [opened, setOpened] = useState(false);
-  const dayName = props.course.dayName;
-  const meetingLink = props.course.remoteMeetingLink;
-  const overallGrade = Math.round(props.course.overallGrade * 100);
+  const [opened, setOpened] = useState(false)
+  const dayName = props.course.dayName
+  const meetingLink = props.course.remoteMeetingLink
+  const overallGrade = Math.round(props.course.overallGrade * 100)
 
   return (
     <PopoutChip
@@ -43,8 +43,8 @@ export default function CourseChip(props: {
                 style={
                   !props.disableGradeColoring
                     ? {
-                      color: Color.fromGrade(overallGrade),
-                    }
+                        color: Color.fromGrade(overallGrade),
+                      }
                     : undefined
                 }
               >
@@ -54,9 +54,11 @@ export default function CourseChip(props: {
             <div className="flex flex-col gap-1">
               <Text>Instructor</Text>
               {props.course.teacherEmail ? (
-                <LinkButton onClick={() => window.open(
-                  `mailto:${props.course.teacherEmail}`
-                )}>
+                <LinkButton
+                  onClick={() =>
+                    window.open(`mailto:${props.course.teacherEmail}`)
+                  }
+                >
                   {props.course.teacher}
                 </LinkButton>
               ) : (
@@ -82,7 +84,7 @@ export default function CourseChip(props: {
               className="w-fit"
               variant="gradient"
               onClick={() => {
-                window.open(meetingLink);
+                window.open(meetingLink)
               }}
               leftSection={<MdVideocam size={18} />}
             >
@@ -96,8 +98,8 @@ export default function CourseChip(props: {
                 style={{
                   background: dayName
                     ? Color.DAY_COLORS_LIST[
-                    props.dayNames.findIndex((value) => value === dayName)
-                    ]
+                        props.dayNames.findIndex((value) => value === dayName)
+                      ]
                     : undefined,
                 }}
                 key={dayName}
@@ -121,5 +123,5 @@ export default function CourseChip(props: {
         <MdInfo className={props.classNames?.icon} style={iconStyle} />
       )}
     </PopoutChip>
-  );
+  )
 }

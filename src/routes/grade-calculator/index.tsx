@@ -2,19 +2,19 @@ export * from "./logic"
 export * from "./WhatIf"
 export * from "./NecessaryScore"
 
-import { Code, Select, Text, Title } from "@mantine/core";
-import { Tabs } from "@mantine/core";
-import { useState } from "react";
-import { MdInfo, MdSportsScore, MdTimeline } from "react-icons/md";
-import { twMerge } from "tailwind-merge";
-import { useForm } from "@mantine/form";
-import { WhatIfInterface } from "./WhatIf";
-import NecessaryScore from "./NecessaryScore";
-import { fnSpan } from "./internal";
+import type { Course } from "@backend.studentdata/student_data_pb"
+import { Code, Select, Text, Title } from "@mantine/core"
+import { Tabs } from "@mantine/core"
+import { useForm } from "@mantine/form"
 import { LinkButton, Panel, useLayout, useSpan } from "@vcassist/ui"
-import { Course } from "@backend.studentdata/student_data_pb"
+import { useState } from "react"
+import { MdInfo, MdSportsScore, MdTimeline } from "react-icons/md"
+import { twMerge } from "tailwind-merge"
+import NecessaryScore from "./NecessaryScore"
+import { WhatIfInterface } from "./WhatIf"
+import { fnSpan } from "./internal"
 
-const enum CalcTab {
+enum CalcTab {
   WHAT_IF = "what-if",
   CALC_SCORE = "calc-score",
   INFO = "info",
@@ -24,24 +24,24 @@ export default function GradeCalculator({
   courses,
   className,
 }: { className?: string; courses: Course[] }) {
-  const span = useSpan(fnSpan, undefined, "calculator");
+  const span = useSpan(fnSpan, undefined, "calculator")
 
-  const layout = useLayout();
-  const [activeTab, setActiveTab] = useState<CalcTab | null>(CalcTab.WHAT_IF);
+  const layout = useLayout()
+  const [activeTab, setActiveTab] = useState<CalcTab | null>(CalcTab.WHAT_IF)
 
   const courseForm = useForm<
     Partial<{
-      course: string;
+      course: string
     }>
   >({
     validate: {
       course: (c) => (c !== undefined ? null : "You must select a course."),
     },
-  });
+  })
 
   const course = courseForm.values.course
-    ? courses.find(v => v.name === courseForm.values.course)
-    : undefined;
+    ? courses.find((v) => v.name === courseForm.values.course)
+    : undefined
 
   return (
     <div
@@ -56,13 +56,12 @@ export default function GradeCalculator({
           <Title order={4}>Course</Title>
           <Select
             placeholder="Select a course"
-            data={courses
-              .map((c) => {
-                return {
-                  value: c.name,
-                  label: c.name,
-                };
-              })}
+            data={courses.map((c) => {
+              return {
+                value: c.name,
+                label: c.name,
+              }
+            })}
             searchable
             {...courseForm.getInputProps("course")}
           />
@@ -74,7 +73,7 @@ export default function GradeCalculator({
             keepMounted={false}
             value={activeTab}
             onChange={(tab) => {
-              setActiveTab(tab as CalcTab | null);
+              setActiveTab(tab as CalcTab | null)
             }}
           >
             <Tabs.List>
@@ -193,5 +192,5 @@ export default function GradeCalculator({
         <NecessaryScore course={course} parentSpan={span} />
       ) : undefined}
     </div>
-  );
+  )
 }

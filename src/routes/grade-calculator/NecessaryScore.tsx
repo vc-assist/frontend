@@ -1,54 +1,57 @@
+import type { Course } from "@backend.studentdata/student_data_pb"
+import { Button, NumberInput, Slider, Text, Title } from "@mantine/core"
+import { useForm } from "@mantine/form"
+import type { Span } from "@opentelemetry/api"
 import {
-  calculateGradeCategories,
-  calculatePointsForGrade,
-} from "./logic";
+  Panel,
+  RingProgressPicker,
+  type RingSection,
+  createDefaultMeter,
+  useSpan,
+} from "@vcassist/ui"
+import { useState } from "react"
+import { MdCalculate } from "react-icons/md"
+import { twMerge } from "tailwind-merge"
 import {
   fnSpan,
   getSectionsFromCategories,
   useCalculatorLayout,
-} from "./internal";
-import { twMerge } from "tailwind-merge";
-import { Title, Text, Slider, NumberInput, Button } from "@mantine/core";
-import { MdCalculate } from "react-icons/md";
-import { useForm } from "@mantine/form";
-import { useState } from "react";
-import type { Span } from "@opentelemetry/api";
-import type { Course } from "@backend.studentdata/student_data_pb";
-import { Panel, useSpan, RingProgressPicker, RingSection, createDefaultMeter } from "@vcassist/ui";
+} from "./internal"
+import { calculateGradeCategories, calculatePointsForGrade } from "./logic"
 
-const meter = createDefaultMeter("NecessaryScore");
-const calcCounter = meter.createCounter("calculate");
+const meter = createDefaultMeter("NecessaryScore")
+const calcCounter = meter.createCounter("calculate")
 
 function generateMarks(count: number): {
-  value: number;
-  label: React.ReactNode;
+  value: number
+  label: React.ReactNode
 }[] {
   const marks: {
-    value: number;
-    label: React.ReactNode;
-  }[] = [];
+    value: number
+    label: React.ReactNode
+  }[] = []
   for (let i = 0; i <= count; i++) {
-    const percentage = 100 * (i / count);
+    const percentage = 100 * (i / count)
     marks.push({
       value: percentage,
       label: `${percentage}%`,
-    });
+    })
   }
-  return marks;
+  return marks
 }
 
 function CourseDependentForm(props: {
-  className?: string;
-  course: Course;
-  selectedCategory?: RingSection;
-  onChooseCategory: (category: RingSection) => void;
-  children?: React.ReactNode;
+  className?: string
+  course: Course
+  selectedCategory?: RingSection
+  onChooseCategory: (category: RingSection) => void
+  children?: React.ReactNode
 }) {
   const categoryRecord = calculateGradeCategories(
     props.course.assignments,
     props.course.assignmentTypes,
-  );
-  const sections = getSectionsFromCategories(categoryRecord);
+  )
+  const sections = getSectionsFromCategories(categoryRecord)
 
   return (
     <div className={twMerge("flex flex-col gap-6", props.className)}>
@@ -58,7 +61,7 @@ function CourseDependentForm(props: {
         sections={sections}
         value={props.selectedCategory}
         onChoose={(s) => {
-          props.onChooseCategory(s);
+          props.onChooseCategory(s)
         }}
       />
       {props.selectedCategory && categoryRecord[props.selectedCategory.id] ? (
@@ -85,23 +88,23 @@ function CourseDependentForm(props: {
       ) : undefined}
       {props.children}
     </div>
-  );
+  )
 }
 
 export default function NecessaryScore(props: {
-  course?: Course;
-  parentSpan: Span;
+  course?: Course
+  parentSpan: Span
 }) {
-  const span = useSpan(fnSpan, props.parentSpan, "necessary-score");
+  const span = useSpan(fnSpan, props.parentSpan, "necessary-score")
 
-  const layout = useCalculatorLayout();
-  const [result, setResult] = useState<number | undefined>();
+  const layout = useCalculatorLayout()
+  const [result, setResult] = useState<number | undefined>()
 
   type NecessaryScoreFormType = Partial<{
-    pointWorth: number;
-    grade: number;
-    category: RingSection;
-  }>;
+    pointWorth: number
+    grade: number
+    category: RingSection
+  }>
   const form = useForm<NecessaryScoreFormType>({
     initialValues: {
       grade: 100,
@@ -113,7 +116,7 @@ export default function NecessaryScore(props: {
         c !== undefined ? null : "You must specify a desired grade.",
       category: (c) => (c !== undefined ? null : "You must select a category."),
     },
-  });
+  })
 
   return (
     <Panel className="flex flex-col gap-3 justify-between flex-1">
@@ -123,7 +126,7 @@ export default function NecessaryScore(props: {
             course={props.course}
             selectedCategory={form.values.category}
             onChooseCategory={(category) => {
-              form.setFieldValue("category", category);
+              form.setFieldValue("category", category)
             }}
           >
             {form.errors.category ? (
@@ -148,7 +151,7 @@ export default function NecessaryScore(props: {
             value={form.values.grade ?? 100}
             step={5}
             onChange={(value) => {
-              form.setFieldValue("grade", value);
+              form.setFieldValue("grade", value)
             }}
           />
           <NumberInput
@@ -163,47 +166,47 @@ export default function NecessaryScore(props: {
         bg="blue"
         disabled={!props.course}
         onClick={() => {
-          const { hasErrors } = form.validate();
+          const { hasErrors } = form.validate()
           if (hasErrors) {
-            return;
+            return
           }
           if (!props.course) {
-            return;
+            return
           }
 
           const information = calculateGradeCategories(
             props.course.assignments,
             props.course.assignmentTypes,
-          );
+          )
 
-          const grade = form.values.grade;
-          const pointWorth = form.values.pointWorth;
-          const category = form.values.category;
+          const grade = form.values.grade
+          const pointWorth = form.values.pointWorth
+          const category = form.values.category
           if (grade === undefined || pointWorth === undefined || !category) {
             span.addEvent("Grade calculator values unset.", {
               "log.severity": "error",
               grade: grade?.toString(),
               pointWorth: pointWorth?.toString(),
               category: category?.id,
-            });
-            return;
+            })
+            return
           }
 
           const points = calculatePointsForGrade(information, {
             category: category.id,
             pointValue: pointWorth,
             targetGrade: grade / 100,
-          });
-          setResult(points);
+          })
+          setResult(points)
 
           const eventData = {
             category: category.id,
             pointValue: pointWorth,
             targetGrade: grade / 100,
             courseName: props.course.name,
-          };
-          span.addEvent("Calculate.", eventData);
-          calcCounter.add(1, eventData);
+          }
+          span.addEvent("Calculate.", eventData)
+          calcCounter.add(1, eventData)
         }}
         leftSection={<MdCalculate size={24} />}
         size="md"
@@ -231,5 +234,5 @@ export default function NecessaryScore(props: {
         </div>
       </div>
     </Panel>
-  );
+  )
 }

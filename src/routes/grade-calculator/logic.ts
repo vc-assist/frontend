@@ -2,9 +2,9 @@ export type GradeCategoryMetadata = {
   earnedPoints: number
   totalPoints: number
   weight: number
-};
+}
 
-export type GradeCategories = Record<string, GradeCategoryMetadata>;
+export type GradeCategories = Record<string, GradeCategoryMetadata>
 
 // Grade from score calculation:
 // cat_grade = (s1 + s2 + s3 + ...) / (t1 + t2 + t3 + ...)
@@ -20,7 +20,7 @@ export type BaseAssignment = {
 export type BaseAssignmentType = {
   name: string
   weight: number
-};
+}
 
 export function calculateGradeCategories(
   assignments: BaseAssignment[],
@@ -29,12 +29,12 @@ export function calculateGradeCategories(
   const categoryAggregation = new Map<
     string,
     {
-      sum: number;
-      total: number;
+      sum: number
+      total: number
     }
-  >();
+  >()
 
-  const courseAssignmentTypeRecord = new Map<string, number>();
+  const courseAssignmentTypeRecord = new Map<string, number>()
   for (const assignType of assignmentTypes) {
     courseAssignmentTypeRecord.set(assignType.name, assignType.weight)
   }
@@ -42,7 +42,7 @@ export function calculateGradeCategories(
     categoryAggregation.set(category, {
       sum: 0,
       total: 0,
-    });
+    })
   }
 
   for (const a of assignments) {
@@ -51,55 +51,55 @@ export function calculateGradeCategories(
       a.total === undefined ||
       a.assignmentTypeName === undefined
     ) {
-      continue;
+      continue
     }
 
-    const assignmentType = categoryAggregation.get(a.assignmentTypeName);
+    const assignmentType = categoryAggregation.get(a.assignmentTypeName)
     if (!assignmentType) {
-      continue;
+      continue
     }
-    assignmentType.sum += a.scored;
-    assignmentType.total += a.total;
+    assignmentType.sum += a.scored
+    assignmentType.total += a.total
   }
 
-  const result: GradeCategories = {};
+  const result: GradeCategories = {}
   for (const [category, aggregation] of categoryAggregation.entries()) {
-    const assignmentTypeWeight = courseAssignmentTypeRecord.get(category);
+    const assignmentTypeWeight = courseAssignmentTypeRecord.get(category)
     if (!assignmentTypeWeight) {
-      continue;
+      continue
     }
     result[category] = {
       earnedPoints: aggregation.sum,
       totalPoints: aggregation.total,
       weight: assignmentTypeWeight,
-    };
+    }
   }
 
-  return result;
+  return result
 }
 
 export function calculateOverallGrade(information: GradeCategories): number {
-  let overallGrade = 0;
-  let weightSum = 0;
+  let overallGrade = 0
+  let weightSum = 0
 
   for (const category in information) {
-    const info = information[category];
+    const info = information[category]
     if (info.totalPoints === 0) {
-      continue;
+      continue
     }
-    weightSum += info.weight;
-    overallGrade += (info.earnedPoints / info.totalPoints) * info.weight;
+    weightSum += info.weight
+    overallGrade += (info.earnedPoints / info.totalPoints) * info.weight
   }
 
   // simplification of: overallGrade * 1 / weightSum
-  return overallGrade / weightSum;
+  return overallGrade / weightSum
 }
 
 export type PointsForGradeInput = {
   category: string
   pointValue: number
   targetGrade: number
-};
+}
 
 // Score for grade formula derivation:
 // target_grade = w1 * (s1 + s2 + s3 + ... + {S}) / (t1 + t2 + t3 + ... + p_value) + w2 * cat_grade_2 + ...
@@ -112,29 +112,29 @@ export function calculatePointsForGrade(
   information: GradeCategories,
   input: PointsForGradeInput,
 ): number {
-  const totalOtherWeight = 1 - information[input.category].weight;
+  const totalOtherWeight = 1 - information[input.category].weight
 
-  let otherWeightedSum = 0;
-  let weightSum = 0;
+  let otherWeightedSum = 0
+  let weightSum = 0
   for (const category in information) {
     if (category === input.category) {
-      continue;
+      continue
     }
-    const info = information[category];
+    const info = information[category]
     if (info.totalPoints === 0) {
-      continue;
+      continue
     }
-    otherWeightedSum += (info.earnedPoints / info.totalPoints) * info.weight;
-    weightSum += info.weight;
+    otherWeightedSum += (info.earnedPoints / info.totalPoints) * info.weight
+    weightSum += info.weight
   }
-  otherWeightedSum *= totalOtherWeight / weightSum;
+  otherWeightedSum *= totalOtherWeight / weightSum
 
   const final =
     ((information[input.category].totalPoints + input.pointValue) *
       (input.targetGrade - otherWeightedSum)) /
-    information[input.category].weight -
-    information[input.category].earnedPoints;
+      information[input.category].weight -
+    information[input.category].earnedPoints
 
   // return final > 0 && final < input.pointValue ? final : -1;
-  return final;
+  return final
 }

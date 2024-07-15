@@ -1,16 +1,16 @@
-import { useElementSize } from "@mantine/hooks";
-import { twMerge } from "tailwind-merge";
+import { useElementSize } from "@mantine/hooks"
 import { Color, Panel, RingProgress } from "@vcassist/ui"
+import { twMerge } from "tailwind-merge"
 
 export default function Gpa(props: {
-  className?: string;
-  gpa: number;
+  className?: string
+  gpa: number
 }) {
-  const gpa = props.gpa;
-  const progress = gpa >= 4.0 ? 100 : (gpa / 4.0) * 100;
-  const { ref, width } = useElementSize();
+  const gpa = props.gpa
+  const progress = gpa >= 4.0 ? 100 : (gpa / 4.0) * 100
+  const { ref, width } = useElementSize()
 
-  const expanded = width > 175;
+  const expanded = width > 175
 
   const label = (
     <>
@@ -33,7 +33,7 @@ export default function Gpa(props: {
         {gpa.toFixed(2)}
       </p>
     </>
-  );
+  )
 
   return (
     <Panel
@@ -54,5 +54,5 @@ export default function Gpa(props: {
         label={label}
       />
     </Panel>
-  );
+  )
 }

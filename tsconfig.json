@@ -20,18 +20,10 @@
     "strict": true,
     "paths": {
       "@/*": ["./*"],
-      "@backend.studentdata/*": ["./backend/services/studentdata/api/*"],
+      "@backend.studentdata/*": ["./backend/services/studentdata/api/*"]
     },
-    "lib": [
-      "ES2022",
-      "DOM"
-    ],
+    "lib": ["ES2022", "DOM"],
     "module": "ES2022"
   },
-  "exclude": [
-    "node_modules",
-    "vite.config.ts",
-    "dist",
-    "build"
-  ]
+  "exclude": ["node_modules", "vite.config.ts", "dist", "build"]
 }

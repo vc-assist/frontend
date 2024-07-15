@@ -1,12 +1,12 @@
-import { z } from "zod"
 import { readFileSync } from "node:fs"
 import JSON5 from "json5"
 import merge from "lodash.merge"
+import { z } from "zod"
 
 export const configSchema = z.object({
   traces_otlp_http_endpoint: z.string(),
   metrics_otlp_http_endpoint: z.string(),
-  environment: z.enum(["dev", "prod"] as const)
+  environment: z.enum(["dev", "prod"] as const),
 })
 
 export type Config = z.TypeOf<typeof configSchema>
@@ -16,8 +16,9 @@ export function loadConfig(): z.TypeOf<typeof configSchema> {
   const defaultConfig = configSchema.parse(JSON5.parse(defaultConfigJson))
 
   const localConfigJson = readFileSync("config.local.json5", "utf8")
-  const localConfig = configSchema.deepPartial().parse(JSON5.parse(localConfigJson))
+  const localConfig = configSchema
+    .deepPartial()
+    .parse(JSON5.parse(localConfigJson))
 
   return merge(defaultConfig, localConfig)
 }
-

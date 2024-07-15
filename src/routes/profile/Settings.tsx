@@ -1,6 +1,11 @@
-import { twMerge } from "tailwind-merge";
-import { z } from "zod";
-import { persistentSignal, StaggeredList, Panel, BooleanOption } from '@vcassist/ui'
+import {
+  BooleanOption,
+  Panel,
+  StaggeredList,
+  persistentSignal,
+} from "@vcassist/ui"
+import { twMerge } from "tailwind-merge"
+import { z } from "zod"
 
 export const settings = {
   dashboard: {
@@ -20,10 +25,10 @@ export const settings = {
       schema: z.boolean(),
     }),
   },
-};
+}
 
 export function SettingsPanel(props: {
-  className?: string;
+  className?: string
 }) {
   return (
     <Panel
@@ -53,5 +58,5 @@ export function SettingsPanel(props: {
         />
       </StaggeredList>
     </Panel>
-  );
+  )
 }

@@ -1,12 +1,12 @@
-import { UserProfile } from "@vcassist/ui";
-import { Router } from "./Router";
-import { MdCalculate, MdDashboard, MdTimeline } from "react-icons/md";
-import { StudentData } from "@backend.studentdata/student_data_pb";
-import { twMerge } from "tailwind-merge";
-import GradeCalculator from "./grade-calculator";
+import type { StudentData } from "@backend.studentdata/student_data_pb"
+import type { UserProfile } from "@vcassist/ui"
+import { MdCalculate, MdDashboard, MdTimeline } from "react-icons/md"
+import { twMerge } from "tailwind-merge"
+import { Router } from "./Router"
+import Dashboard from "./dashboard"
+import GradeCalculator from "./grade-calculator"
 import GradeTrends from "./grade-trends"
-import Dashboard from "./dashboard";
-import Profile from "./profile";
+import Profile from "./profile"
 
 export function Routes(props: {
   data: StudentData
@@ -29,15 +29,15 @@ export function Routes(props: {
           icon: MdCalculate,
           render() {
             return <GradeCalculator courses={props.data.courses} />
-          }
+          },
         },
         "/grade-trends": {
           title: "Grade Trends",
           icon: MdTimeline,
           render() {
             return <GradeTrends courses={props.data.courses} />
-          }
-        }
+          },
+        },
       }}
       defaultRoute="/dashboard"
       profileRoute={{
@@ -47,7 +47,7 @@ export function Routes(props: {
         ),
         render() {
           return <Profile profile={props.profile} />
-        }
+        },
       }}
     />
   )

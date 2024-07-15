@@ -1,21 +1,21 @@
-import { SegmentedControl, Title, UnstyledButton } from "@mantine/core";
-import type { ApexOptions } from "apexcharts";
-import { AnimatePresence, motion } from "framer-motion";
-import { forwardRef, useMemo, useState } from "react";
-import Chart from "react-apexcharts";
-import type { IconType } from "react-icons";
-import { MdExpandLess, MdTrendingFlat, MdTrendingUp } from "react-icons/md";
-import { twMerge } from "tailwind-merge";
-import { Panel } from "@vcassist/ui";
-import { analyzeGrades, generateSeries } from "./utils";
-import { Course } from "@backend.studentdata/student_data_pb";
+import type { Course } from "@backend.studentdata/student_data_pb"
+import { SegmentedControl, Title, UnstyledButton } from "@mantine/core"
+import { Panel } from "@vcassist/ui"
+import type { ApexOptions } from "apexcharts"
+import { AnimatePresence, motion } from "framer-motion"
+import { forwardRef, useMemo, useState } from "react"
+import Chart from "react-apexcharts"
+import type { IconType } from "react-icons"
+import { MdExpandLess, MdTrendingFlat, MdTrendingUp } from "react-icons/md"
+import { twMerge } from "tailwind-merge"
+import { analyzeGrades, generateSeries } from "./utils"
 
 const SmallButton = forwardRef(
   (
     props: {
-      icon: IconType;
-      className?: string;
-      onClick?: () => void;
+      icon: IconType
+      className?: string
+      onClick?: () => void
     },
     ref: React.ForwardedRef<HTMLButtonElement>,
   ) => {
@@ -31,30 +31,27 @@ const SmallButton = forwardRef(
       >
         <props.icon className="w-7 h-7" />
       </UnstyledButton>
-    );
+    )
   },
-);
+)
 
-SmallButton.displayName = "SmallButton";
+SmallButton.displayName = "SmallButton"
 
-const enum GradeInterval {
+enum GradeInterval {
   ALL = "all",
   MONTH = "month",
   WEEK = "week",
 }
 
 export default function Grades(props: {
-  className?: string;
-  courses: Course[];
+  className?: string
+  courses: Course[]
 }) {
-  const [showOptions, setShowOptions] = useState(false);
-  const [flatTrends, setFlatTrends] = useState(true);
-  const [interval, setInterval] = useState<GradeInterval>(GradeInterval.MONTH);
+  const [showOptions, setShowOptions] = useState(false)
+  const [flatTrends, setFlatTrends] = useState(true)
+  const [interval, setInterval] = useState<GradeInterval>(GradeInterval.MONTH)
 
-  const analysis = useMemo(
-    () => analyzeGrades(props.courses),
-    [props.courses],
-  );
+  const analysis = useMemo(() => analyzeGrades(props.courses), [props.courses])
 
   const series = useMemo(
     () =>
@@ -64,28 +61,28 @@ export default function Grades(props: {
           interval === GradeInterval.ALL
             ? undefined
             : {
-              months: interval === GradeInterval.MONTH ? 1 : undefined,
-              weeks: interval === GradeInterval.WEEK ? 1 : undefined,
-            },
+                months: interval === GradeInterval.MONTH ? 1 : undefined,
+                weeks: interval === GradeInterval.WEEK ? 1 : undefined,
+              },
       }),
     [analysis, flatTrends, interval],
-  );
+  )
 
   const empty = useMemo(() => {
     for (const s of series.series) {
       if (s.data.length > 0) {
-        return false;
+        return false
       }
     }
-    return true;
-  }, [series]);
+    return true
+  }, [series])
 
   const colorStops: {
-    offset: number;
-    color: string;
-    opacity: number;
+    offset: number
+    color: string
+    opacity: number
   }[][] = useMemo(() => {
-    const stops = [];
+    const stops = []
     for (const s of series.series) {
       stops.push([
         {
@@ -103,10 +100,10 @@ export default function Grades(props: {
           color: s.color,
           opacity: 0,
         },
-      ]);
+      ])
     }
-    return stops;
-  }, [series.series]);
+    return stops
+  }, [series.series])
 
   const options = useMemo<ApexOptions>(
     () => ({
@@ -140,7 +137,7 @@ export default function Grades(props: {
       legend: { labels: { colors: "var(--primary)" } },
     }),
     [series.range, series.xaxis, colorStops],
-  );
+  )
 
   return (
     <Panel className={twMerge(props.className, "relative")}>
@@ -188,7 +185,7 @@ export default function Grades(props: {
                 ]}
                 defaultValue={interval}
                 onChange={(value) => {
-                  setInterval(value as GradeInterval);
+                  setInterval(value as GradeInterval)
                 }}
               />
             </motion.div>
@@ -201,5 +198,5 @@ export default function Grades(props: {
         </Title>
       ) : undefined}
     </Panel>
-  );
+  )
 }

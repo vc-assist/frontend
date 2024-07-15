@@ -1,4 +1,4 @@
-const colors = require("tailwindcss/colors");
+const colors = require("tailwindcss/colors")
 
 module.exports = {
   corePlugins: {
@@ -29,4 +29,4 @@ module.exports = {
       "light-green": "#53b486",
     },
   },
-};
+}

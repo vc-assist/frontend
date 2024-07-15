@@ -1,9 +1,9 @@
-import type { GradeCategories } from "./logic";
-import { useMediaQuery } from "@mantine/hooks";
-import type { DefaultMantineColor } from "@mantine/core";
-import { createFnSpanner, FnSpan, RingSection } from "@vcassist/ui";
+import type { DefaultMantineColor } from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
+import { type FnSpan, type RingSection, createFnSpanner } from "@vcassist/ui"
+import type { GradeCategories } from "./logic"
 
-export const fnSpan: FnSpan = createFnSpanner("GradeCalculator");
+export const fnSpan: FnSpan = createFnSpanner("GradeCalculator")
 
 export const sectionColorOrdering: DefaultMantineColor[] = [
   "red",
@@ -12,7 +12,7 @@ export const sectionColorOrdering: DefaultMantineColor[] = [
   "orange",
   "violet",
   "dark",
-];
+]
 
 export function useCalculatorLayout() {
   const layout = useMediaQuery(
@@ -20,37 +20,37 @@ export function useCalculatorLayout() {
     window.innerWidth < 1000,
   )
     ? "mobile"
-    : "desktop";
-  return layout;
+    : "desktop"
+  return layout
 }
 
 function getCategoryList(categories: GradeCategories) {
   const categoryList = Object.entries(categories).sort((a, b) =>
     a[0] > b[0] ? 1 : a[0] < b[0] ? -1 : 0,
-  );
-  return categoryList;
+  )
+  return categoryList
 }
 
 export function getSectionsFromCategories(
   categories: GradeCategories,
   withHighlight = false,
 ): RingSection[] {
-  const sections: RingSection[] = [];
+  const sections: RingSection[] = []
 
-  const categoryList = getCategoryList(categories);
+  const categoryList = getCategoryList(categories)
 
-  let weightSum = 0;
+  let weightSum = 0
   for (const [, metadata] of categoryList) {
     if (metadata.totalPoints === 0) {
-      continue;
+      continue
     }
-    weightSum += metadata.weight;
+    weightSum += metadata.weight
   }
-  const scaleFactor = 1 / weightSum;
+  const scaleFactor = 1 / weightSum
 
-  let i = 0;
+  let i = 0
   for (const [category, metadata] of categoryList) {
-    const grade = (metadata.earnedPoints / metadata.totalPoints) * 100;
+    const grade = (metadata.earnedPoints / metadata.totalPoints) * 100
     sections.push({
       id: category,
       color: sectionColorOrdering[i],
@@ -77,9 +77,9 @@ export function getSectionsFromCategories(
       ),
       value:
         metadata.totalPoints === 0 ? 0 : grade * metadata.weight * scaleFactor,
-    });
-    i++;
+    })
+    i++
   }
 
-  return sections;
+  return sections
 }

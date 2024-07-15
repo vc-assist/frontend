@@ -1,25 +1,34 @@
-import { Title } from "@mantine/core";
-import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import type { IconType } from "react-icons";
-import { twMerge } from "tailwind-merge";
-import { LinkButton, NavbarList, Panel, UserAvatar, useSafeArea, useLayout, context, UserProfile } from "@vcassist/ui"
-import { SafeArea } from "@vcassist/ui/foundation/safe-area";
-import { MdPerson, MdSettings } from "react-icons/md";
+import { Title } from "@mantine/core"
+import {
+  LinkButton,
+  NavbarList,
+  Panel,
+  UserAvatar,
+  type UserProfile,
+  context,
+  useLayout,
+  useSafeArea,
+} from "@vcassist/ui"
+import type { SafeArea } from "@vcassist/ui/foundation/safe-area"
+import { AnimatePresence, motion } from "framer-motion"
+import { useState } from "react"
+import type { IconType } from "react-icons"
+import { MdPerson, MdSettings } from "react-icons/md"
+import { twMerge } from "tailwind-merge"
 
 export type Route =
   | {
-    title: string;
-    icon: IconType;
-    rootClassName?: string
-    render(): JSX.Element;
-  }
+      title: string
+      icon: IconType
+      rootClassName?: string
+      render(): JSX.Element
+    }
   | {
-    title: string
-    noNavbar: true
-    rootClassName?: string
-    render(): JSX.Element
-  };
+      title: string
+      noNavbar: true
+      rootClassName?: string
+      render(): JSX.Element
+    }
 
 export type RouteContext = {
   currentRoute: string
@@ -34,16 +43,16 @@ export { useRouteContext }
 const PROFILE_ROUTE_PATH = "/__profile__"
 
 export function Router(props: {
-  routes: Record<string, Route>;
+  routes: Record<string, Route>
   profileRoute: {
     rootClassName?: string
     render(): JSX.Element
   }
-  defaultRoute: string;
-  profile: UserProfile;
+  defaultRoute: string
+  profile: UserProfile
 }) {
-  const safeArea = useSafeArea();
-  const mobile = useLayout() === "mobile";
+  const safeArea = useSafeArea()
+  const mobile = useLayout() === "mobile"
 
   const [routePath, setRoutePath] = useState(props.defaultRoute)
 
@@ -62,14 +71,14 @@ export function Router(props: {
           </LinkButton>
         </div>
       </div>
-    );
+    )
   }
 
   const navbarItems: {
-    title: string;
-    icon: IconType;
-    route: string;
-  }[] = [];
+    title: string
+    icon: IconType
+    route: string
+  }[] = []
   for (const [path, route] of Object.entries(props.routes)) {
     if ("noNavbar" in route) {
       continue
@@ -78,12 +87,13 @@ export function Router(props: {
       title: route.title,
       icon: route.icon,
       route: path,
-    });
+    })
   }
 
-  const route = routePath === PROFILE_ROUTE_PATH ?
-    props.profileRoute :
-    props.routes[routePath]
+  const route =
+    routePath === PROFILE_ROUTE_PATH
+      ? props.profileRoute
+      : props.routes[routePath]
 
   const component = (
     <ComponentWrapper className={route.rootClassName}>
@@ -93,7 +103,9 @@ export function Router(props: {
 
   if (mobile) {
     return (
-      <RouteProvider value={{ currentRoute: routePath, profile: props.profile }}>
+      <RouteProvider
+        value={{ currentRoute: routePath, profile: props.profile }}
+      >
         <MobileLayout
           safeArea={safeArea}
           component={component}
@@ -105,8 +117,8 @@ export function Router(props: {
                 {
                   title: "Profile",
                   icon: MdPerson,
-                  route: PROFILE_ROUTE_PATH
-                }
+                  route: PROFILE_ROUTE_PATH,
+                },
               ]}
               layout="mobile"
               onNavigate={setRoutePath}
@@ -134,9 +146,12 @@ export function Router(props: {
         }
         belowProfile={
           <button
+            type="button"
             className={twMerge(
               "p-1 fill-dimmed hover:fill-primary",
-              routePath === PROFILE_ROUTE_PATH ? "hover:fill-dimmed hover:cursor-default" : ""
+              routePath === PROFILE_ROUTE_PATH
+                ? "hover:fill-dimmed hover:cursor-default"
+                : "",
             )}
             disabled={routePath === PROFILE_ROUTE_PATH}
             color="gray"
@@ -147,10 +162,13 @@ export function Router(props: {
         }
       />
     </RouteProvider>
-  );
+  )
 }
 
-function ComponentWrapper(props: { className?: string; children: React.ReactNode }) {
+function ComponentWrapper(props: {
+  className?: string
+  children: React.ReactNode
+}) {
   return (
     <AnimatePresence>
       <motion.div
@@ -162,7 +180,7 @@ function ComponentWrapper(props: { className?: string; children: React.ReactNode
         {props.children}
       </motion.div>
     </AnimatePresence>
-  );
+  )
 }
 
 function MobileLayout(props: {
@@ -185,9 +203,7 @@ function MobileLayout(props: {
         {component}
         {/* Routes */}
         <div className="flex flex-col gap-4 sticky bottom-0 z-50">
-          <div className="flex gap-4">
-            {navbar}
-          </div>
+          <div className="flex gap-4">{navbar}</div>
         </div>
       </div>
       <div
@@ -202,7 +218,7 @@ function MobileLayout(props: {
 }
 
 function DesktopLayout(props: {
-  profile: UserProfile,
+  profile: UserProfile
   safeArea: SafeArea
   component: React.ReactNode
   navbar: React.ReactNode
@@ -250,15 +266,12 @@ function DesktopLayout(props: {
               >
                 {profile.name ?? profile.email}
               </Title>
-              <div className="flex items-center gap-3">
-                {belowProfile}
-              </div>
+              <div className="flex items-center gap-3">{belowProfile}</div>
             </Panel>
           </div>
         </div>
         {component}
       </div>
     </div>
-  );
+  )
 }
-

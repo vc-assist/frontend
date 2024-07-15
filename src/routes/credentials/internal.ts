@@ -1,3 +1,3 @@
-import { createFnSpanner, FnSpan } from "@vcassist/ui";
+import { type FnSpan, createFnSpanner } from "@vcassist/ui"
 
-export const fnSpan: FnSpan = createFnSpanner("pages.credentials");
+export const fnSpan: FnSpan = createFnSpanner("pages.credentials")

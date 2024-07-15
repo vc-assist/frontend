@@ -1,4 +1,6 @@
-import { ActionIcon, Badge, Text, Timeline } from "@mantine/core";
+import type { Course } from "@backend.studentdata/student_data_pb"
+import { ActionIcon, Badge, Text, Timeline } from "@mantine/core"
+import { WidgetPanel, useCurrentTime } from "@vcassist/ui"
 import {
   add,
   compareAsc,
@@ -10,51 +12,49 @@ import {
   isBefore,
   isSameDay,
   isToday,
-} from "date-fns";
-import { useMemo, useState } from "react";
+} from "date-fns"
+import { useMemo, useState } from "react"
 import {
   MdCalendarToday,
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
   MdRestore,
   MdVideocam,
-} from "react-icons/md";
-import { useCurrentTime, WidgetPanel } from "@vcassist/ui"
+} from "react-icons/md"
 import CourseChip from "../../CourseChip"
-import { Course } from "@backend.studentdata/student_data_pb"
 
 export default function Schedule(props: {
-  courses: Course[];
-  dayNames: string[];
-  className?: string;
+  courses: Course[]
+  dayNames: string[]
+  className?: string
 }) {
-  const currentTime = useCurrentTime();
-  const [dayOffset, setDayOffset] = useState(0);
+  const currentTime = useCurrentTime()
+  const [dayOffset, setDayOffset] = useState(0)
 
-  const now = add(currentTime, { days: dayOffset });
+  const now = add(currentTime, { days: dayOffset })
 
   const { minDate, maxDate } = useMemo(() => {
-    let minDate = new Date();
-    let maxDate = new Date();
+    let minDate = new Date()
+    let maxDate = new Date()
     for (const c of props.courses) {
       for (const meeting of c.meetings) {
         if (isBefore(meeting.startTime, minDate)) {
-          minDate = meeting.startTime;
+          minDate = meeting.startTime
         }
         if (isAfter(meeting.startTime, maxDate)) {
-          maxDate = meeting.startTime;
+          maxDate = meeting.startTime
         }
       }
     }
-    return { minDate, maxDate };
-  }, [props.courses]);
+    return { minDate, maxDate }
+  }, [props.courses])
 
   const sections = useMemo(() => {
     const result: {
-      course: Course;
-      startTime: Date;
-      endTime: Date;
-    }[] = [];
+      course: Course
+      startTime: Date
+      endTime: Date
+    }[] = []
     for (const c of props.courses) {
       for (const meeting of c.meetings) {
         if (isSameDay(now, meeting.startTime)) {
@@ -62,44 +62,44 @@ export default function Schedule(props: {
             course: c,
             startTime: meeting.startTime,
             endTime: meeting.endTime,
-          });
+          })
         }
       }
     }
-    result.sort((a, b) => compareAsc(a.startTime, b.startTime));
-    return result;
-  }, [props.courses, now]);
+    result.sort((a, b) => compareAsc(a.startTime, b.startTime))
+    return result
+  }, [props.courses, now])
 
   const [items, active] = useMemo(() => {
-    let active = -1;
-    const items: React.ReactNode[] = [];
+    let active = -1
+    const items: React.ReactNode[] = []
 
     for (const section of sections) {
-      const course = section.course;
+      const course = section.course
 
-      const inFuture = compareAsc(section.startTime, now) > 0;
+      const inFuture = compareAsc(section.startTime, now) > 0
       if (!inFuture) {
-        active++;
+        active++
       }
-      const inProgress = compareAsc(section.endTime, now) > 0 && !inFuture;
+      const inProgress = compareAsc(section.endTime, now) > 0 && !inFuture
       const toStart = formatDistance(section.startTime, now, {
         addSuffix: true,
-      });
+      })
 
-      let timeLabel = toStart;
+      let timeLabel = toStart
       if (inProgress) {
         const duration = intervalToDuration({
           start: now,
           end: section.endTime,
-        });
+        })
         timeLabel = `${formatDuration({
           hours: duration.hours,
           minutes: duration.minutes,
           seconds: duration.seconds,
-        })} left`;
+        })} left`
       }
 
-      const remoteMeetingLink = course.remoteMeetingLink;
+      const remoteMeetingLink = course.remoteMeetingLink
 
       items.push(
         <Timeline.Item key={course.name}>
@@ -110,7 +110,7 @@ export default function Schedule(props: {
                 size="sm"
                 variant="gradient"
                 onClick={() => {
-                  window.open(remoteMeetingLink);
+                  window.open(remoteMeetingLink)
                 }}
               >
                 <MdVideocam />
@@ -134,11 +134,11 @@ export default function Schedule(props: {
             {timeLabel}
           </Text>
         </Timeline.Item>,
-      );
+      )
     }
 
-    return [items, active];
-  }, [sections, now, props.dayNames]);
+    return [items, active]
+  }, [sections, now, props.dayNames])
 
   const titleBarRight = (
     <div className="flex gap-2 items-center">
@@ -167,8 +167,8 @@ export default function Schedule(props: {
         </ActionIcon>
       </div>
     </div>
-  );
-  const summaryTitle = `Daily Schedule (${format(now, "MMM dd, yyyy")})`;
+  )
+  const summaryTitle = `Daily Schedule (${format(now, "MMM dd, yyyy")})`
 
   if (items.length === 0) {
     return (
@@ -184,7 +184,7 @@ export default function Schedule(props: {
           </div>
         </div>
       </WidgetPanel>
-    );
+    )
   }
 
   return (
@@ -205,5 +205,5 @@ export default function Schedule(props: {
         {items}
       </Timeline>
     </WidgetPanel>
-  );
+  )
 }

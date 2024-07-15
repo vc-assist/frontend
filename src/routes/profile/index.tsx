@@ -1,41 +1,50 @@
-import { Title } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { notifications } from "@mantine/notifications";
-import { useEffect } from "react";
-import { MdCreditCard, MdDelete, MdGetApp, MdRefresh } from "react-icons/md";
-import { signal } from "@preact/signals-react";
-import { useSignals } from "@preact/signals-react/runtime";
-import { IconButton, Modal, Panel, ThemeToggle, notifyError, LogoutModal, createDefaultMeter, UserProfile } from "@vcassist/ui"
-import ProfileHeader from "./ProfileHeader";
+import { Title } from "@mantine/core"
+import { useDisclosure } from "@mantine/hooks"
+import { notifications } from "@mantine/notifications"
+import { signal } from "@preact/signals-react"
+import { useSignals } from "@preact/signals-react/runtime"
+import {
+  IconButton,
+  LogoutModal,
+  Modal,
+  Panel,
+  ThemeToggle,
+  type UserProfile,
+  createDefaultMeter,
+  notifyError,
+} from "@vcassist/ui"
+import { useEffect } from "react"
+import { MdCreditCard, MdDelete, MdGetApp, MdRefresh } from "react-icons/md"
+import ProfileHeader from "./ProfileHeader"
 import { SettingsPanel } from "./Settings"
 
-const meter = createDefaultMeter("routes.profile");
-const requestData = meter.createCounter("request-data");
-const deleteData = meter.createCounter("delete-data");
-const viewPage = meter.createCounter("view");
+const meter = createDefaultMeter("routes.profile")
+const requestData = meter.createCounter("request-data")
+const deleteData = meter.createCounter("delete-data")
+const viewPage = meter.createCounter("view")
 
-const isRefreshing = signal(false);
+const isRefreshing = signal(false)
 
 export default function Profile(props: {
   profile: UserProfile
 }) {
-  useSignals();
+  useSignals()
 
   const [
     credentialsOpened,
     { open: openCredentials, close: closeCredentials },
-  ] = useDisclosure(false);
+  ] = useDisclosure(false)
 
   useEffect(() => {
-    viewPage.add(1);
-  }, []);
+    viewPage.add(1)
+  }, [])
 
   return (
     <>
       <Modal
         opened={credentialsOpened}
         onClose={() => {
-          closeCredentials();
+          closeCredentials()
         }}
       >
         <CredentialCarousel
@@ -45,7 +54,7 @@ export default function Profile(props: {
             return (
               props.monolithClient.validateAndUpdate.mutate(input) ??
               Promise.resolve(false)
-            );
+            )
           }}
         />
       </Modal>
@@ -69,12 +78,12 @@ export default function Profile(props: {
                 label="Request Data"
                 color="blue"
                 onClick={() => {
-                  requestData.add(1);
+                  requestData.add(1)
 
                   window.open(
                     "https://vi.vcassist.org/data-management/requestData",
                     "_blank",
-                  );
+                  )
                 }}
               />
               <IconButton
@@ -82,12 +91,12 @@ export default function Profile(props: {
                 label="Delete Data"
                 color="red"
                 onClick={() => {
-                  deleteData.add(1);
+                  deleteData.add(1)
 
                   window.open(
                     "https://vi.vcassist.org/data-management/deleteData",
                     "_blank",
-                  );
+                  )
                 }}
               />
             </div>
@@ -99,23 +108,23 @@ export default function Profile(props: {
                 color="orange"
                 disabled={isRefreshing.value}
                 onClick={async () => {
-                  isRefreshing.value = true;
+                  isRefreshing.value = true
                   notifications.show({
                     id: "refresh-user-data",
                     message: "Refreshing user data.",
-                  });
+                  })
                   try {
-                    await props.monolithClient.scrape.mutate();
-                    await props.refetch();
+                    await props.monolithClient.scrape.mutate()
+                    await props.refetch()
                     notifications.show({
                       message: "Refreshed successfully.",
                       autoClose: 3000,
-                    });
+                    })
                   } catch (err) {
-                    notifyError(err);
+                    notifyError(err)
                   }
-                  notifications.hide("refresh-user-data");
-                  isRefreshing.value = false;
+                  notifications.hide("refresh-user-data")
+                  isRefreshing.value = false
                 }}
               />
 
@@ -124,7 +133,7 @@ export default function Profile(props: {
                 label="Edit Credentials"
                 color="gray"
                 onClick={() => {
-                  openCredentials();
+                  openCredentials()
                 }}
               />
             </div>
@@ -132,7 +141,7 @@ export default function Profile(props: {
             <div className="flex gap-3 flex-wrap justify-end">
               <LogoutModal
                 handleLogout={() => {
-                  props.authIntegration.logout().catch(notifyError);
+                  props.authIntegration.logout().catch(notifyError)
                 }}
               />
             </div>
@@ -145,5 +154,5 @@ export default function Profile(props: {
         /> */}
       <SettingsPanel className="min-h-[300px] h-full lg:col-span-3 xl:col-span-2" />
     </>
-  );
+  )
 }

@@ -1,15 +1,15 @@
-import { Fragment } from "react";
-import { RingProgress, Color, WidgetPanel, InfoTooltip } from "@vcassist/ui"
-import CourseChip from "../../CourseChip";
-import { Course } from "@backend.studentdata/student_data_pb";
+import type { Course } from "@backend.studentdata/student_data_pb"
+import { Color, InfoTooltip, RingProgress, WidgetPanel } from "@vcassist/ui"
+import { Fragment } from "react"
+import CourseChip from "../../CourseChip"
 
 export default function GradeList(props: {
-  className?: string;
-  courses: Course[];
-  dayNames: string[];
-  plain?: boolean;
+  className?: string
+  courses: Course[]
+  dayNames: string[]
+  plain?: boolean
 }) {
-  props.courses.sort((a, b) => b.overallGrade - a.overallGrade);
+  props.courses.sort((a, b) => b.overallGrade - a.overallGrade)
 
   return (
     <WidgetPanel
@@ -58,9 +58,9 @@ export default function GradeList(props: {
               ) : undefined}
               <p className="text-[15px]">{grade}%</p>
             </Fragment>
-          );
+          )
         })}
       </div>
     </WidgetPanel>
-  );
+  )
 }

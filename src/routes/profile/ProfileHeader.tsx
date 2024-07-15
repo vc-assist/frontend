@@ -1,12 +1,14 @@
-import { Title } from "@mantine/core";
-import { twMerge } from "tailwind-merge";
-import { Panel, UserAvatar, UserProfile } from "@vcassist/ui"
+import { Title } from "@mantine/core"
+import { Panel, UserAvatar, type UserProfile } from "@vcassist/ui"
+import { twMerge } from "tailwind-merge"
 
-const avatarClass = "w-24 h-24 lg:w-36 lg:h-36 rounded-full text-[4rem]";
+const avatarClass = "w-24 h-24 lg:w-36 lg:h-36 rounded-full text-[4rem]"
 
-export default function ProfileHeader(props: UserProfile & {
-  className?: string;
-}) {
+export default function ProfileHeader(
+  props: UserProfile & {
+    className?: string
+  },
+) {
   return (
     <Panel
       className={twMerge(
@@ -35,5 +37,5 @@ export default function ProfileHeader(props: UserProfile & {
         </Title>
       </div>
     </Panel>
-  );
+  )
 }

@@ -1,10 +1,10 @@
-import "@mantine/core/styles.css";
+import "@mantine/core/styles.css"
 import "@vcassist/ui/styles.css"
 
-import ReactDOM from "react-dom/client"
-import { StrictMode } from "react";
 import { Foundation } from "@vcassist/ui/foundation"
-import { config } from "./config";
+import { StrictMode } from "react"
+import ReactDOM from "react-dom/client"
+import { config } from "./config"
 
 const AppFoundation = Foundation({
   safeArea: {
@@ -17,21 +17,18 @@ const AppFoundation = Foundation({
     serviceName: "frontend",
     otlp: {
       tracesHttpEndpoint: config.traces_otlp_http_endpoint,
-      metricsHttpEndpoint: config.metrics_otlp_http_endpoint
+      metricsHttpEndpoint: config.metrics_otlp_http_endpoint,
     },
-  }
+  },
 })
 
-const root = document.getElementById("root");
+const root = document.getElementById("root")
 if (!root) {
-  throw new Error("could not find root element.");
+  throw new Error("could not find root element.")
 }
 
 ReactDOM.createRoot(root).render(
   <StrictMode>
-    <AppFoundation>
-      <></>
-    </AppFoundation>
-  </StrictMode>
+    <AppFoundation />
+  </StrictMode>,
 )
-
