@@ -8,6 +8,7 @@ import { MdExpandLess, MdTrendingFlat, MdTrendingUp } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
 import { Panel } from "@vcassist/ui";
 import { analyzeGrades, generateSeries } from "./utils";
+import { Course } from "@backend.studentdata/student_data_pb";
 
 const SmallButton = forwardRef(
   (
@@ -45,15 +46,14 @@ const enum GradeInterval {
 export default function Grades(props: {
   className?: string;
   courses: Course[];
-  snapshots: GradeSnapshotData;
 }) {
   const [showOptions, setShowOptions] = useState(false);
   const [flatTrends, setFlatTrends] = useState(true);
   const [interval, setInterval] = useState<GradeInterval>(GradeInterval.MONTH);
 
   const analysis = useMemo(
-    () => analyzeGrades(props.courses, props.snapshots),
-    [props.snapshots, props.courses],
+    () => analyzeGrades(props.courses),
+    [props.courses],
   );
 
   const series = useMemo(
@@ -64,9 +64,9 @@ export default function Grades(props: {
           interval === GradeInterval.ALL
             ? undefined
             : {
-                months: interval === GradeInterval.MONTH ? 1 : undefined,
-                weeks: interval === GradeInterval.WEEK ? 1 : undefined,
-              },
+              months: interval === GradeInterval.MONTH ? 1 : undefined,
+              weeks: interval === GradeInterval.WEEK ? 1 : undefined,
+            },
       }),
     [analysis, flatTrends, interval],
   );
