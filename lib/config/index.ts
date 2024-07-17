@@ -4,9 +4,13 @@ import merge from "lodash.merge"
 import { z } from "zod"
 
 export const configSchema = z.object({
-  traces_otlp_http_endpoint: z.string(),
-  metrics_otlp_http_endpoint: z.string(),
   environment: z.enum(["dev", "prod"] as const),
+  endpoints: z.object({
+    traces_otlp_http: z.string(),
+    metrics_otlp_http: z.string(),
+    student_data_service: z.string(),
+    auth_service: z.string(),
+  }),
 })
 
 export type Config = z.TypeOf<typeof configSchema>

@@ -1,4 +1,8 @@
 {
-  traces_otlp_http_endpoint: "http://127.0.0.1:4318",
-  metrics_otlp_http_endpoint: "http://127.0.0.1:4318",
+  endpoints: {
+    traces_otlp_http: "http://127.0.0.1:4318",
+    metrics_otlp_http: "http://127.0.0.1:4318",
+    student_data_service: "http://127.0.0.1:9111",
+    auth_service: "http://127.0.0.1:8111",
+  },
 }
