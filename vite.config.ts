@@ -9,12 +9,13 @@ export default vite.defineConfig({
   resolve: {
     alias: {
       "@": __dirname,
+      "@backend.auth": join(
+        __dirname,
+        "backend", "proto", "vcassist", "services", "auth", "v1",
+      ),
       "@backend.studentdata": join(
         __dirname,
-        "backend",
-        "services",
-        "studentdata",
-        "api",
+        "backend", "proto", "vcassist", "services", "studentdata", "v1",
       ),
     },
   },
