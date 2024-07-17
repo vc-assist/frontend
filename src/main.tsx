@@ -4,9 +4,16 @@ import "@vcassist/ui/styles.css"
 import { Foundation } from "@vcassist/ui/foundation"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
-import { config } from "./config"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { config } from "./singletons"
+import { App } from "./App"
 
-const AppFoundation = Foundation({
+const root = document.getElementById("root")
+if (!root) {
+  throw new Error("could not find root element.")
+}
+
+const FoundationProvider = Foundation({
   safeArea: {
     top: 0,
     left: 0,
@@ -16,19 +23,20 @@ const AppFoundation = Foundation({
   telemetry: {
     serviceName: "frontend",
     otlp: {
-      tracesHttpEndpoint: config.traces_otlp_http_endpoint,
-      metricsHttpEndpoint: config.metrics_otlp_http_endpoint,
+      tracesHttpEndpoint: config.endpoints.traces_otlp_http,
+      metricsHttpEndpoint: config.endpoints.metrics_otlp_http,
     },
   },
 })
 
-const root = document.getElementById("root")
-if (!root) {
-  throw new Error("could not find root element.")
-}
+const queryClient = new QueryClient()
 
 ReactDOM.createRoot(root).render(
   <StrictMode>
-    <AppFoundation />
+    <QueryClientProvider client={queryClient}>
+      <FoundationProvider>
+        <App />
+      </FoundationProvider>
+    </QueryClientProvider>
   </StrictMode>,
 )
