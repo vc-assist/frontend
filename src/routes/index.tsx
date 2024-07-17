@@ -1,5 +1,3 @@
-import type { StudentData } from "@backend.studentdata/student_data_pb"
-import type { UserProfile } from "@vcassist/ui"
 import { MdCalculate, MdDashboard, MdTimeline } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
 import { Router } from "./Router"
@@ -7,35 +5,37 @@ import Dashboard from "./dashboard"
 import GradeCalculator from "./grade-calculator"
 import GradeTrends from "./grade-trends"
 import Profile from "./profile"
+import { useUser } from "../auth"
+import { useStudentData } from "../studentdata"
 
-export function Routes(props: {
-  data: StudentData
-  profile: UserProfile
-}) {
+export function Routes() {
+  const { profile } = useUser()
+  const data = useStudentData()
+
   return (
     <Router
-      profile={props.profile}
+      profile={profile}
       routes={{
         "/dashboard": {
           title: "Dashboard",
           icon: MdDashboard,
           rootClassName: "grid gap-6 lg:grid-cols-2",
           render() {
-            return <Dashboard data={props.data} />
+            return <Dashboard data={data} />
           },
         },
         "/grade-calculator": {
           title: "Grade Calculator",
           icon: MdCalculate,
           render() {
-            return <GradeCalculator courses={props.data.courses} />
+            return <GradeCalculator courses={data.courses} />
           },
         },
         "/grade-trends": {
           title: "Grade Trends",
           icon: MdTimeline,
           render() {
-            return <GradeTrends courses={props.data.courses} />
+            return <GradeTrends courses={data.courses} />
           },
         },
       }}
@@ -46,7 +46,7 @@ export function Routes(props: {
           "lg:grid-cols-5 xl:grid-cols-3 lg:grid-rows-[1fr_2fr] gap-6",
         ),
         render() {
-          return <Profile profile={props.profile} />
+          return <Profile profile={profile} />
         },
       }}
     />

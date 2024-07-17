@@ -21,7 +21,7 @@ import {
   MdRestore,
   MdVideocam,
 } from "react-icons/md"
-import CourseChip from "../../CourseChip"
+import CourseChip from "../CourseChip"
 
 export default function Schedule(props: {
   courses: Course[]
