@@ -21,7 +21,9 @@
     "paths": {
       "@/*": ["./*"],
       "@backend.auth/*": ["./backend/proto/vcassist/services/auth/v1/*"],
-      "@backend.studentdata/*": ["./backend/proto/vcassist/services/studentdata/v1/*"]
+      "@backend.studentdata/*": [
+        "./backend/proto/vcassist/services/studentdata/v1/*"
+      ]
     },
     "lib": ["ES2022", "DOM"],
     "module": "ES2022"

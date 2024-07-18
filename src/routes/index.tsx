@@ -1,12 +1,11 @@
 import { MdCalculate, MdDashboard, MdTimeline } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
+import { useStudentData, useUser } from "../providers"
 import { Router } from "./Router"
 import Dashboard from "./dashboard"
 import GradeCalculator from "./grade-calculator"
 import GradeTrends from "./grade-trends"
 import Profile from "./profile"
-import { useUser } from "../auth"
-import { useStudentData } from "../studentdata"
 
 export function Routes() {
   const { profile } = useUser()

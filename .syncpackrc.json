@@ -1,0 +1,27 @@
+{
+  "$schema": "https://unpkg.com/syncpack@11.2.1/dist/schema.json",
+  "semverGroups": [
+    {
+      "label": "Ignore local",
+      "packages": ["**"],
+      "dependencies": ["**"],
+      "dependencyTypes": ["local"],
+      "isIgnored": true
+    },
+    {
+      "label": "Default",
+      "packages": ["**"],
+      "dependencies": ["**"],
+      "dependencyTypes": ["dev", "prod"],
+      "range": ""
+    }
+  ],
+  "versionGroups": [
+    {
+      "label": "Ignore @vcassist-capacitor-plugin",
+      "packages": ["**"],
+      "dependencies": ["@vcassist-capacitor-plugin/*"],
+      "isIgnored": true
+    }
+  ]
+}

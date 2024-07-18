@@ -63,4 +63,3 @@ export const openIdTokenResponse = z.object({
   scope: z.string(),
   token_type: z.string(),
 })
-

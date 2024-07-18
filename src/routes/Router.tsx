@@ -18,17 +18,17 @@ import { twMerge } from "tailwind-merge"
 
 export type Route =
   | {
-    title: string
-    icon: IconType
-    rootClassName?: string
-    render(): JSX.Element
-  }
+      title: string
+      icon: IconType
+      rootClassName?: string
+      render(): JSX.Element
+    }
   | {
-    title: string
-    noNavbar: true
-    rootClassName?: string
-    render(): JSX.Element
-  }
+      title: string
+      noNavbar: true
+      rootClassName?: string
+      render(): JSX.Element
+    }
 
 export type RouteContext = {
   currentRoute: string

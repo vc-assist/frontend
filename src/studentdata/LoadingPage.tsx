@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
 import { LoadingAnimation } from "@vcassist/ui"
+import { useEffect, useState } from "react"
 
 export function LoadingPage() {
   const [showAnimation, setShowAnimation] = useState(false)
@@ -16,4 +16,3 @@ export function LoadingPage() {
   }
   return <></>
 }
-

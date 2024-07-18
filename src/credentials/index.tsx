@@ -1,30 +1,40 @@
-import "@mantine/carousel/styles.css";
+import "@mantine/carousel/styles.css"
 
-import { Carousel, type Embla } from "@mantine/carousel";
-import { Avatar, Button, Title, rem } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { MdArrowBack, MdArrowForward, MdEdit } from "react-icons/md";
-import { twMerge } from "tailwind-merge";
-import { OAuthForm, UsernamePasswordForm } from "./forms";
-import { useStringToMantineColor, UserAvatar, Panel, BrandTag, useImageToColor, ErrorPage } from "@vcassist/ui"
-import { GetCredentialStatusRequest, type CredentialStatus } from "@backend.studentdata/api_pb"
-import { useQuery } from "@tanstack/react-query";
+import {
+  type CredentialStatus,
+  GetCredentialStatusRequest,
+} from "@backend.studentdata/api_pb"
+import { Carousel, type Embla } from "@mantine/carousel"
+import { Avatar, Button, Title, rem } from "@mantine/core"
+import { useQuery } from "@tanstack/react-query"
+import {
+  BrandTag,
+  ErrorPage,
+  Panel,
+  UserAvatar,
+  useImageToColor,
+  useStringToMantineColor,
+} from "@vcassist/ui"
+import { useEffect, useState } from "react"
+import { MdArrowBack, MdArrowForward, MdEdit } from "react-icons/md"
+import { twMerge } from "tailwind-merge"
 import { useUser } from "../providers"
+import { OAuthForm, UsernamePasswordForm } from "./forms"
 
 function CredentialForm(props: {
-  className?: string;
+  className?: string
   status: CredentialStatus
   onSubmit(): void
 }) {
   const { profile } = useUser()
 
-  const pictureColor = useImageToColor(props.status.picture ?? "");
-  const fallbackColor = useStringToMantineColor(props.status.name);
-  const [editing, setEditing] = useState(!props.status.provided);
+  const pictureColor = useImageToColor(props.status.picture ?? "")
+  const fallbackColor = useStringToMantineColor(props.status.name)
+  const [editing, setEditing] = useState(!props.status.provided)
 
-  const color = pictureColor ?? fallbackColor;
+  const color = pictureColor ?? fallbackColor
 
-  let form = <></>;
+  let form = <></>
   switch (props.status.loginFlow.case) {
     case "usernamePassword":
       form = (
@@ -34,8 +44,8 @@ function CredentialForm(props: {
           loginFlow={props.status.loginFlow}
           onSubmit={props.onSubmit}
         />
-      );
-      break;
+      )
+      break
     case "oauth":
       form = (
         <OAuthForm
@@ -44,8 +54,8 @@ function CredentialForm(props: {
           loginFlow={props.status.loginFlow}
           onSubmit={props.onSubmit}
         />
-      );
-      break;
+      )
+      break
   }
 
   return (
@@ -118,7 +128,7 @@ function CredentialForm(props: {
         </Button>
       ) : undefined}
     </Panel>
-  );
+  )
 }
 
 export function CredentialCarousel(props: {
@@ -126,7 +136,7 @@ export function CredentialCarousel(props: {
   credentials: CredentialStatus[]
 }) {
   const [credentials, setCredentials] = useState(props.credentials)
-  const [embla, setEmbla] = useState<Embla | null>(null);
+  const [embla, setEmbla] = useState<Embla | null>(null)
 
   return (
     <>
@@ -165,7 +175,7 @@ export function CredentialCarousel(props: {
                 if (!embla) {
                   return
                 }
-                const idx = credentials.findIndex(c => !c.provided)
+                const idx = credentials.findIndex((c) => !c.provided)
                 if (idx >= 0) {
                   embla.scrollTo(idx)
                 }
@@ -180,30 +190,31 @@ export function CredentialCarousel(props: {
 }
 
 export function ProvideCredentialsPage(props: {
-  onComplete: () => void;
+  onComplete: (credentials: CredentialStatus[]) => void
 }) {
   const { studentDataClient } = useUser()
 
   const { isPending, error, data } = useQuery({
     queryKey: ["studentDataClient", "getCredentialStatus"],
-    queryFn: () => studentDataClient.getCredentialStatus(new GetCredentialStatusRequest())
-      .then((res) => {
-        const statuses = res.statuses
-        if (!statuses) {
-          throw new Error("Credential statuses are undefined.")
-        }
-        return statuses
-      })
+    queryFn: () =>
+      studentDataClient
+        .getCredentialStatus(new GetCredentialStatusRequest())
+        .then((res) => {
+          const statuses = res.statuses
+          if (!statuses) {
+            throw new Error("Credential statuses are undefined.")
+          }
+          return statuses
+        }),
   })
 
-  const completed = data?.every(c => c.provided)
+  const completed = data?.every((c) => c.provided)
   useEffect(() => {
-    if (!completed) {
+    if (!data || !completed) {
       return
     }
-    props.onComplete()
-  }, [completed, props.onComplete])
-
+    props.onComplete(data)
+  }, [completed, data, props.onComplete])
 
   if (isPending) {
     return
@@ -223,20 +234,6 @@ export function ProvideCredentialsPage(props: {
         className={twMerge("transition-all", completed ? "blur-sm" : "")}
         credentials={data}
       />
-      {/* {completed ? ( */}
-      {/*   <Positioned x="center" y="middle"> */}
-      {/*     <Button */}
-      {/*       className="shadow-lg bg-primary text-bg hover:text-bg hover:bg-primary" */}
-      {/*       onClick={props.onComplete} */}
-      {/*       variant="filled" */}
-      {/*       c="dark" */}
-      {/*       leftSection={<MdArrowBack size={16} />} */}
-      {/*     > */}
-      {/*       Dashboard */}
-      {/*     </Button> */}
-      {/*   </Positioned> */}
-      {/* ) : undefined} */}
     </div>
-  );
+  )
 }
-

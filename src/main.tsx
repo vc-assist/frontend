@@ -1,12 +1,20 @@
 import "@mantine/core/styles.css"
 import "@vcassist/ui/styles.css"
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Foundation } from "@vcassist/ui/foundation"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { config } from "./singletons"
 import { App } from "./App"
+import { config, native } from "./singletons"
+
+window.open = (url) => {
+  if (!url) {
+    return window
+  }
+  native.launchUrl(url?.toString())
+  return window
+}
 
 const root = document.getElementById("root")
 if (!root) {

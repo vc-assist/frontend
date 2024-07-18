@@ -1,16 +1,20 @@
 import { AuthService } from "@backend.auth/api_connect"
-import { ConsumeVerificationCodeRequest, StartLoginRequest, VerifyTokenRequest } from "@backend.auth/api_pb"
+import {
+  ConsumeVerificationCodeRequest,
+  StartLoginRequest,
+  VerifyTokenRequest,
+} from "@backend.auth/api_pb"
 import { createPromiseClient } from "@connectrpc/connect"
 import { createConnectTransport } from "@connectrpc/connect-web"
 import { Button, PinInput, TextInput, Title } from "@mantine/core"
 import { useForm } from "@mantine/form"
+import { type UserProfile, narrowError } from "@vcassist/ui"
 import { useEffect, useRef, useState } from "react"
 import { config } from "../singletons"
-import { narrowError, type UserProfile } from "@vcassist/ui"
 import { fnSpan } from "./internal"
 
 const transport = createConnectTransport({
-  baseUrl: config.endpoints.auth_service
+  baseUrl: config.endpoints.auth_service,
 })
 const client = createPromiseClient(AuthService, transport)
 
@@ -32,10 +36,13 @@ export function LoginPage(props: {
     if (!tokenRef.current) {
       return
     }
-    client.verifyToken(new VerifyTokenRequest({
-      token: tokenRef.current,
-    }))
-      .then(res => props.onLogin(tokenRef.current!, res))
+    client
+      .verifyToken(
+        new VerifyTokenRequest({
+          token: tokenRef.current,
+        }),
+      )
+      .then((res) => props.onLogin(tokenRef.current!, res))
       .catch(() => {
         tokenRef.current = undefined
       })
@@ -48,7 +55,7 @@ export function LoginPage(props: {
   return (
     <div className="flex h-full">
       <div className="flex flex-col gap-3 m-auto">
-        {state === State.WAITING_FOR_EMAIL ?
+        {state === State.WAITING_FOR_EMAIL ? (
           <EmailPrompt
             onSubmit={async (email: string) => {
               try {
@@ -60,9 +67,9 @@ export function LoginPage(props: {
               }
             }}
           />
-          : undefined}
+        ) : undefined}
 
-        {state === State.WAITING_FOR_CODE ?
+        {state === State.WAITING_FOR_CODE ? (
           <CodePrompt
             onSubmit={(code: string) => {
               return fnSpan(undefined, "consumeVerificationCode", async () => {
@@ -73,9 +80,11 @@ export function LoginPage(props: {
                       email: emailRef.current,
                     }),
                   )
-                  const res = await client.verifyToken(new VerifyTokenRequest({
-                    token: tokenRes.token,
-                  }))
+                  const res = await client.verifyToken(
+                    new VerifyTokenRequest({
+                      token: tokenRes.token,
+                    }),
+                  )
                   props.onLogin(tokenRes.token, { email: res.email })
                 } catch (err) {
                   setError(narrowError(err).toString())
@@ -83,7 +92,7 @@ export function LoginPage(props: {
               })
             }}
           />
-          : undefined}
+        ) : undefined}
 
         {error ? <p className="text-red">{error}</p> : undefined}
       </div>
@@ -96,19 +105,16 @@ function EmailPrompt(props: { onSubmit: (email: string) => void }) {
     initialValues: {
       email: "",
     },
-  });
+  })
 
   return (
     <>
       <Title order={4}>Log in...</Title>
-      <TextInput
-        placeholder="Email address"
-        {...form.getInputProps("email")}
-      />
+      <TextInput placeholder="Email address" {...form.getInputProps("email")} />
       <Button
         onClick={() => {
           if (form.validate().hasErrors) {
-            return;
+            return
           }
           props.onSubmit(form.values.email)
         }}
@@ -122,9 +128,9 @@ function EmailPrompt(props: { onSubmit: (email: string) => void }) {
 function CodePrompt(props: { onSubmit: (code: string) => void }) {
   const form = useForm({
     initialValues: {
-      code: ""
+      code: "",
     },
-  });
+  })
 
   return (
     <>
@@ -137,7 +143,7 @@ function CodePrompt(props: { onSubmit: (code: string) => void }) {
       <Button
         onClick={() => {
           if (form.validate().hasErrors) {
-            return;
+            return
           }
           props.onSubmit(form.values.code)
         }}
@@ -147,4 +153,3 @@ function CodePrompt(props: { onSubmit: (code: string) => void }) {
     </>
   )
 }
-

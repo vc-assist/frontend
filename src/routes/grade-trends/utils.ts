@@ -52,10 +52,19 @@ export function analyzeGrades(
 
   for (const course of courses) {
     const grades = course.snapshots
-    const dataPoints = grades.sort((a, b) => compareDesc(a.time)(b.time))
+    const dataPoints = grades.sort((a, b) => {
+      if (a.time > b.time) {
+        return -1
+      }
+      if (a.time < b.time) {
+        return 1
+      }
+      return 0
+    })
     let changed: number | undefined
     for (let i = dataPoints.length - 2; i >= 0; i--) {
-      if (withinInterval(dataPoints[i].time) >= 0) {
+      const time = new Date(Number(dataPoints[i].time))
+      if (withinInterval(time) >= 0) {
         break
       }
       const change =
@@ -118,7 +127,8 @@ export function generateSeries(
     callback: (snapshot: GradeSnapshot) => void,
   ) => {
     for (let i = snapshots.length - 1; i >= 0; i--) {
-      if (withinInterval && withinInterval(snapshots[i].time) >= 0) {
+      const time = new Date(Number(snapshots[i].time))
+      if (withinInterval && withinInterval(time) >= 0) {
         break
       }
       callback(snapshots[i])
@@ -128,7 +138,8 @@ export function generateSeries(
   const dates = new Set<string>()
   iterateAnalysis((name) => {
     iterateSnapshots(analysis[name].snapshots, (snapshot) => {
-      dates.add(formatTime(snapshot.time))
+      const time = new Date(Number(snapshot.time))
+      dates.add(formatTime(time))
     })
   })
   const dateIndex: { [key: string]: number } = {}
@@ -161,7 +172,8 @@ export function generateSeries(
       if (snapshot.value * 100 > range.max) {
         range.max = snapshot.value * 100
       }
-      data[dateIndex[formatTime(snapshot.time)]] = snapshot.value * 100
+      const time = new Date(Number(snapshot.time))
+      data[dateIndex[formatTime(time)]] = snapshot.value * 100
     })
     series.push({
       name,

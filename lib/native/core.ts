@@ -7,4 +7,3 @@ export interface NativeAPI {
   onWebviewNavigate(fn: (url: string) => void): Promise<() => Promise<void>>
   onWebviewClosed(fn: () => void): Promise<() => Promise<void>>
 }
-

@@ -4,6 +4,7 @@ import merge from "lodash.merge"
 import { z } from "zod"
 
 export const configSchema = z.object({
+  target: z.enum(["capacitor"] as const),
   environment: z.enum(["dev", "prod"] as const),
   endpoints: z.object({
     traces_otlp_http: z.string(),

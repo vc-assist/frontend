@@ -38,11 +38,12 @@ export default function Schedule(props: {
     let maxDate = new Date()
     for (const c of props.courses) {
       for (const meeting of c.meetings) {
-        if (isBefore(meeting.startTime, minDate)) {
-          minDate = meeting.startTime
+        const startDate = new Date(Number(meeting.startTime))
+        if (isBefore(startDate, minDate)) {
+          minDate = startDate
         }
-        if (isAfter(meeting.startTime, maxDate)) {
-          maxDate = meeting.startTime
+        if (isAfter(startDate, maxDate)) {
+          maxDate = startDate
         }
       }
     }
@@ -57,11 +58,13 @@ export default function Schedule(props: {
     }[] = []
     for (const c of props.courses) {
       for (const meeting of c.meetings) {
-        if (isSameDay(now, meeting.startTime)) {
+        const startDate = new Date(Number(meeting.startTime))
+        const endDate = new Date(Number(meeting.endTime))
+        if (isSameDay(now, startDate)) {
           result.push({
             course: c,
-            startTime: meeting.startTime,
-            endTime: meeting.endTime,
+            startTime: startDate,
+            endTime: endDate,
           })
         }
       }

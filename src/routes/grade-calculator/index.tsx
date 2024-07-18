@@ -165,7 +165,11 @@ export default function GradeCalculator({
                   calulations depend on how accurate these weights are. If you
                   have any questions, or would like to report an incorrect
                   result or weight, please contact us at{" "}
-                  <LinkButton href="mailto:hello@vcassist.org">
+                  <LinkButton
+                    onClick={() => {
+                      window.open("mailto:hello@vcassist.org")
+                    }}
+                  >
                     hello@vcassist.org
                   </LinkButton>
                   .

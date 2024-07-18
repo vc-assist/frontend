@@ -1,13 +1,20 @@
+import { native } from "@/src/singletons"
+import {
+  type CredentialStatus,
+  ProvideCredentialRequest,
+} from "@backend.studentdata/api_pb"
 import { Button, PasswordInput, Text, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form"
+import { SpanStatusCode } from "@opentelemetry/api"
 import { narrowError } from "@vcassist/ui"
 import { useState } from "react"
+import { useUser } from "../providers"
 import { fnSpan } from "./internal"
-import { native } from "@/src/singletons"
-import { SpanStatusCode } from "@opentelemetry/api"
-import { ProvideCredentialRequest, type CredentialStatus } from "@backend.studentdata/api_pb"
-import { getOAuthLoginUrl, getTokenFormData, openIdTokenResponse } from "./oauth"
-import { useUser } from "../auth"
+import {
+  getOAuthLoginUrl,
+  getTokenFormData,
+  openIdTokenResponse,
+} from "./oauth"
 
 export function OAuthForm(props: {
   credentialId: string
@@ -39,7 +46,9 @@ export function OAuthForm(props: {
                     "Cannot use OAuthFlow with non oauth authFlow.",
                   )
                 }
-                span.addEvent("Opening webview - iOS wants a listener BEFORE loading URLs.")
+                span.addEvent(
+                  "Opening webview - iOS wants a listener BEFORE loading URLs.",
+                )
 
                 const loginUrl = getOAuthLoginUrl(authFlow.value)
                 span.setAttribute("loginUrl", loginUrl)
@@ -71,19 +80,23 @@ export function OAuthForm(props: {
                       })
 
                       const resText = await res.text()
-                      const token = openIdTokenResponse.parse(JSON.parse(resText))
+                      const token = openIdTokenResponse.parse(
+                        JSON.parse(resText),
+                      )
                       console.log(token)
 
                       span.addEvent("submitting tokens to server!")
 
-                      await studentDataClient.provideCredential(new ProvideCredentialRequest({
-                        provided: {
-                          case: "oauthToken",
-                          value: {
-                            token: resText,
-                          }
-                        }
-                      }))
+                      await studentDataClient.provideCredential(
+                        new ProvideCredentialRequest({
+                          provided: {
+                            case: "oauthToken",
+                            value: {
+                              token: resText,
+                            },
+                          },
+                        }),
+                      )
 
                       console.log("done.")
                       await native.closeWebview() // This is similar to the handler, in that it will not run if the webview is removed prematurely. No clue why.
@@ -174,16 +187,18 @@ export function UsernamePasswordForm(props: {
       setInvalid(false)
 
       try {
-        await studentDataClient.provideCredential(new ProvideCredentialRequest({
-          id: props.credentialId,
-          provided: {
-            case: "usernamePassword",
-            value: {
-              username: form.values.username,
-              password: form.values.password
-            }
-          }
-        }))
+        await studentDataClient.provideCredential(
+          new ProvideCredentialRequest({
+            id: props.credentialId,
+            provided: {
+              case: "usernamePassword",
+              value: {
+                username: form.values.username,
+                password: form.values.password,
+              },
+            },
+          }),
+        )
         props.onSubmit()
       } catch (err) {
         span.recordException(narrowError(err))

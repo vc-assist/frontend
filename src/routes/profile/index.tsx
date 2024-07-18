@@ -1,4 +1,6 @@
-import { Title } from "@mantine/core"
+import { CredentialCarousel } from "@/src/credentials"
+import { useCredentials, useStudentDataRefetch, useUser } from "@/src/providers"
+import { Button, Title } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { signal } from "@preact/signals-react"
@@ -8,13 +10,20 @@ import {
   LogoutModal,
   Modal,
   Panel,
+  Positioned,
   ThemeToggle,
   type UserProfile,
   createDefaultMeter,
   notifyError,
 } from "@vcassist/ui"
 import { useEffect } from "react"
-import { MdCreditCard, MdDelete, MdGetApp, MdRefresh } from "react-icons/md"
+import {
+  MdArrowBack,
+  MdCreditCard,
+  MdDelete,
+  MdGetApp,
+  MdRefresh,
+} from "react-icons/md"
 import ProfileHeader from "./ProfileHeader"
 import { SettingsPanel } from "./Settings"
 
@@ -29,6 +38,10 @@ export default function Profile(props: {
   profile: UserProfile
 }) {
   useSignals()
+
+  const { logout } = useUser()
+  const refreshStudentData = useStudentDataRefetch()
+  const creds = useCredentials()
 
   const [
     credentialsOpened,
@@ -47,16 +60,22 @@ export default function Profile(props: {
           closeCredentials()
         }}
       >
-        <CredentialCarousel
-          user={props.profile}
-          drivers={props.drivers}
-          validate={(input) => {
-            return (
-              props.monolithClient.validateAndUpdate.mutate(input) ??
-              Promise.resolve(false)
-            )
-          }}
-        />
+        <div className="flex h-full w-full">
+          <CredentialCarousel credentials={creds} />
+          <Positioned x="center" y="middle">
+            <Button
+              className="shadow-lg bg-primary text-bg hover:text-bg hover:bg-primary"
+              onClick={() => {
+                closeCredentials()
+              }}
+              variant="filled"
+              c="dark"
+              leftSection={<MdArrowBack size={16} />}
+            >
+              Dashboard
+            </Button>
+          </Positioned>
+        </div>
       </Modal>
 
       <ProfileHeader
@@ -114,8 +133,7 @@ export default function Profile(props: {
                     message: "Refreshing user data.",
                   })
                   try {
-                    await props.monolithClient.scrape.mutate()
-                    await props.refetch()
+                    await refreshStudentData()
                     notifications.show({
                       message: "Refreshed successfully.",
                       autoClose: 3000,
@@ -139,19 +157,11 @@ export default function Profile(props: {
             </div>
 
             <div className="flex gap-3 flex-wrap justify-end">
-              <LogoutModal
-                handleLogout={() => {
-                  props.authIntegration.logout().catch(notifyError)
-                }}
-              />
+              <LogoutModal handleLogout={logout} />
             </div>
           </div>
         </Panel>
       </div>
-      {/* <Connections
-          className="min-h-[300px] h-full lg:col-span-3 xl:col-span-2"
-          connections={[]}
-        /> */}
       <SettingsPanel className="min-h-[300px] h-full lg:col-span-3 xl:col-span-2" />
     </>
   )
