@@ -6,6 +6,19 @@ import { loadConfig } from "./lib/config"
 const config = loadConfig()
 
 export default vite.defineConfig({
+  build: {
+    target: [
+      "chrome89",
+      "edge89",
+      "safari15",
+      "firefox89",
+    ],
+    rollupOptions: {
+      external: [
+        "/native_api.js"
+      ]
+    }
+  },
   resolve: {
     alias: {
       "@": __dirname,

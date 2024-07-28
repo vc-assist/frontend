@@ -20,3 +20,11 @@
 
 - `git submodule foreach "git pull"` - updates all submodules
 
+## Implementing the Native API
+
+The frontend relies on some native APIs to work. This repository does not contain any native wrappers itself, those are found in other repositories like the following:
+
+- [vc-assist/capacitor](https://github.com/vc-assist/capacitor)
+
+The native API should be exposed by an ES module called `/native_api.js` on the local origin, the default export of this module should fulfill the interface specified in [lib/native/index.ts](./lib/native/index.ts).
+
