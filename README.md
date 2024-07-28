@@ -18,7 +18,7 @@
 
 ## Commands
 
-- `git submodule foreach "git pull"` - updates all submodules
+- `git submodule foreach --recursive "git pull origin main"` - updates all submodules
 
 ## Implementing the Native API
 
