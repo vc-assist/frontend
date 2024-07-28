@@ -17,7 +17,9 @@ export default vite.defineConfig({
       external: [
         "/native_api.js"
       ]
-    }
+    },
+    // 5 MB chunk warning
+    chunkSizeWarningLimit: 5000,
   },
   resolve: {
     alias: {
