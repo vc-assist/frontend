@@ -4,7 +4,12 @@ module.exports = {
   corePlugins: {
     preflight: false,
   },
-  content: contentPaths,
+  content: [
+    "src/**/*.tsx",
+    "ui/components/**/*.tsx",
+    "ui/foundation/**/*.tsx",
+    "ui/styles/**/*.css",
+  ],
   theme: {
     colors: {
       transparent: "transparent",
