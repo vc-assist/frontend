@@ -4,7 +4,6 @@ import merge from "lodash.merge"
 import { z } from "zod"
 
 export const configSchema = z.object({
-  target: z.enum(["capacitor"] as const),
   environment: z.enum(["dev", "prod"] as const),
   endpoints: z.object({
     traces_otlp_http: z.string(),
@@ -20,10 +19,17 @@ export function loadConfig(): z.TypeOf<typeof configSchema> {
   const defaultConfigJson = readFileSync("config.json5", "utf8")
   const defaultConfig = configSchema.parse(JSON5.parse(defaultConfigJson))
 
-  const localConfigJson = readFileSync("config.local.json5", "utf8")
-  const localConfig = configSchema
-    .deepPartial()
-    .parse(JSON5.parse(localConfigJson))
+  try {
+    const localConfigJson = readFileSync("config.local.json5", "utf8")
+    const localConfig = configSchema
+      .deepPartial()
+      .parse(JSON5.parse(localConfigJson))
+    return merge(defaultConfig, localConfig)
+  } catch (e) {
+    if (!(e instanceof Error)) {
+      throw new Error(String(e))
+    }
+  }
 
-  return merge(defaultConfig, localConfig)
+  return defaultConfig
 }
