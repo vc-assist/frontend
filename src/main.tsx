@@ -1,4 +1,5 @@
 import "@mantine/core/styles.css"
+import "@mantine/notifications/styles.css"
 import "@vcassist/ui/styles.css"
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
