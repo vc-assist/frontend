@@ -30,8 +30,8 @@ importers:
         specifier: 7.11.2
         version: 7.11.2(react@18.3.1)
       '@mantine/notifications':
-        specifier: 7.11.0
-        version: 7.11.0(@mantine/core@7.11.2(@mantine/hooks@7.11.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.11.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 7.11.2
+        version: 7.11.2(@mantine/core@7.11.2(@mantine/hooks@7.11.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.11.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@opentelemetry/api':
         specifier: 1.9.0
         version: 1.9.0
@@ -99,7 +99,7 @@ importers:
         specifier: 5.2.1
         version: 5.2.1(react@18.3.1)
       sanitize-html:
-        specifier: ^2.13.0
+        specifier: 2.13.0
         version: 2.13.0
       tailwind-merge:
         specifier: 2.3.0
@@ -118,10 +118,10 @@ importers:
         specifier: 18.3.0
         version: 18.3.0
       '@types/sanitize-html':
-        specifier: ^2.11.0
+        specifier: 2.11.0
         version: 2.11.0
       autoprefixer:
-        specifier: ^10.4.19
+        specifier: 10.4.19
         version: 10.4.19(postcss@8.4.39)
       json5:
         specifier: 2.2.3
@@ -130,16 +130,16 @@ importers:
         specifier: 4.6.2
         version: 4.6.2
       postcss-preset-mantine:
-        specifier: ^1.17.0
+        specifier: 1.17.0
         version: 1.17.0(postcss@8.4.39)
       postcss-simple-vars:
-        specifier: ^7.0.1
+        specifier: 7.0.1
         version: 7.0.1(postcss@8.4.39)
       syncpack:
         specifier: 12.3.3
         version: 12.3.3(typescript@5.5.2)
       tailwindcss:
-        specifier: ^3.4.7
+        specifier: 3.4.7
         version: 3.4.7
       tsx:
         specifier: 4.16.0
@@ -456,16 +456,16 @@ packages:
     peerDependencies:
       react: ^18.2.0
 
-  '@mantine/notifications@7.11.0':
-    resolution: {integrity: sha512-UtAHJoSi4s+lfVZrkUDWMlg6j0w1LZaiMEOBMG9p5MV5dP38W75LeCy2cio2Znji2S5YzXaZolOkHBT5ZONKAw==}
+  '@mantine/notifications@7.11.2':
+    resolution: {integrity: sha512-KB/6mp3mU3LvcFlfMc5zK5mWcrAO+zAGeiBb1oUjNFXBECCn9xizqqUeT0YbWBHL7wysq9IThDJxLwUBnQt+8Q==}
     peerDependencies:
-      '@mantine/core': 7.11.0
-      '@mantine/hooks': 7.11.0
+      '@mantine/core': 7.11.2
+      '@mantine/hooks': 7.11.2
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  '@mantine/store@7.11.0':
-    resolution: {integrity: sha512-zPmOpdFgvkUqYKSK7NNKbhgXsh2QPw51m3iypTaj0mw+rZbk3WSH9vZvaEx59X0QG+ahwUg2/HezbjfXFUbvrA==}
+  '@mantine/store@7.11.2':
+    resolution: {integrity: sha512-FfkmnOnCivOjqwNaTZeV4TgDANUs7fP+0uSgzp0GuvwTuDfQNVafPBRzPkjKuz5ug+Nn9l6WwjfJ6LBDv9U0LQ==}
     peerDependencies:
       react: ^18.2.0
 
@@ -2081,16 +2081,16 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  '@mantine/notifications@7.11.0(@mantine/core@7.11.2(@mantine/hooks@7.11.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.11.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@mantine/notifications@7.11.2(@mantine/core@7.11.2(@mantine/hooks@7.11.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.11.2(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@mantine/core': 7.11.2(@mantine/hooks@7.11.2(react@18.3.1))(@types/react@18.3.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@mantine/hooks': 7.11.2(react@18.3.1)
-      '@mantine/store': 7.11.0(react@18.3.1)
+      '@mantine/store': 7.11.2(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
       react-transition-group: 4.4.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
 
-  '@mantine/store@7.11.0(react@18.3.1)':
+  '@mantine/store@7.11.2(react@18.3.1)':
     dependencies:
       react: 18.3.1
 
