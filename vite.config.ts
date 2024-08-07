@@ -7,6 +7,7 @@ const config = loadConfig()
 
 export default vite.defineConfig((env) => ({
   build: {
+    sourcemap: true,
     target: ["chrome89", "edge89", "safari15", "firefox89"],
     rollupOptions: {
       external: ["/native_api.js"],
