@@ -1,5 +1,8 @@
-import type { Preview } from "@storybook/react"
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
 import "@vcassist/ui/styles.css"
+
+import type { Preview } from "@storybook/react"
 import { Foundation } from "@vcassist/ui"
 
 const FoundationProvider = Foundation({
