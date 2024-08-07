@@ -1,24 +1,24 @@
 import type { NativeAPI } from "."
 
 export default class NoopAPI implements NativeAPI {
-  launchUrl(url: string): Promise<void> {
-    throw new Error("Cannot call method on no-op api.")
+  launchUrl(): Promise<void> {
+    return Promise.resolve()
   }
   userAgent(): Promise<string> {
-    throw new Error("Cannot call method on no-op api.")
+    return Promise.resolve("")
   }
 
-  openWebview(url: string, userAgent?: string): Promise<void> {
-    throw new Error("Cannot call method on no-op api.")
+  openWebview(): Promise<void> {
+    return Promise.resolve()
   }
   closeWebview(): Promise<void> {
-    throw new Error("Cannot call method on no-op api.")
+    return Promise.resolve()
   }
-  onWebviewNavigate(fn: (url: string) => void): Promise<() => Promise<void>> {
-    throw new Error("Cannot call method on no-op api.")
+  onWebviewNavigate(): Promise<() => Promise<void>> {
+    return Promise.resolve(() => Promise.resolve())
   }
-  onWebviewClosed(fn: () => void): Promise<() => Promise<void>> {
-    throw new Error("Cannot call method on no-op api.")
+  onWebviewClosed(): Promise<() => Promise<void>> {
+    return Promise.resolve(() => Promise.resolve())
   }
 }
 
