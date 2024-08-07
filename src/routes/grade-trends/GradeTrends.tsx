@@ -8,7 +8,7 @@ import Chart from "react-apexcharts"
 import type { IconType } from "react-icons"
 import { MdExpandLess, MdTrendingFlat, MdTrendingUp } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
-import { analyzeGrades, generateSeries } from "./utils"
+import { analyzeGradeChange, generateSeries } from "./utils"
 
 const SmallButton = forwardRef(
   (
@@ -37,7 +37,7 @@ const SmallButton = forwardRef(
 
 SmallButton.displayName = "SmallButton"
 
-enum GradeInterval {
+export enum GradeInterval {
   ALL = "all",
   MONTH = "month",
   WEEK = "week",
@@ -46,18 +46,24 @@ enum GradeInterval {
 export default function Grades(props: {
   className?: string
   courses: Course[]
+  interval?: GradeInterval
 }) {
   const [showOptions, setShowOptions] = useState(false)
   const [flatTrends, setFlatTrends] = useState(true)
-  const [interval, setInterval] = useState<GradeInterval>(GradeInterval.MONTH)
+  const [interval, setInterval] = useState<GradeInterval>(
+    props.interval ?? GradeInterval.MONTH,
+  )
 
-  const analysis = useMemo(() => analyzeGrades(props.courses), [props.courses])
+  const analysis = useMemo(
+    () => analyzeGradeChange(props.courses),
+    [props.courses],
+  )
 
   const series = useMemo(
     () =>
       generateSeries(analysis, {
         onlyChanged: !flatTrends,
-        from:
+        fromLast:
           interval === GradeInterval.ALL
             ? undefined
             : {

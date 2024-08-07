@@ -1,3 +1,4 @@
+import { dateFromUnix } from "@/lib/date"
 import type {
   Course,
   GradeSnapshot,
@@ -24,46 +25,46 @@ export function fillArray<T>(arr: (T | undefined)[], value: T): T[] {
   return arr as T[]
 }
 
-export type AnalysisOptions = {
+export type GradeChangeAnalysisOptions = {
   change: {
     from: Duration
     threshold: number
   }
 }
 
-export type GradeAnalysis = {
+export type GradeChangeAnalysis = {
   [key: string]: {
     snapshots: GradeSnapshot[]
     changed?: number
   }
 }
 
-export function analyzeGrades(
+export function analyzeGradeChange(
   courses: Course[],
-  options: AnalysisOptions = {
+  options: GradeChangeAnalysisOptions = {
     change: {
       from: { weeks: 1 },
       threshold: 0.5,
     },
   },
-): GradeAnalysis {
-  const analysis: GradeAnalysis = {}
+): GradeChangeAnalysis {
+  const analysis: GradeChangeAnalysis = {}
   const withinInterval = compareDesc(sub(options.change.from)(new Date()))
 
   for (const course of courses) {
     const grades = course.snapshots
     const dataPoints = grades.sort((a, b) => {
       if (a.time > b.time) {
-        return -1
+        return 1
       }
       if (a.time < b.time) {
-        return 1
+        return -1
       }
       return 0
     })
     let changed: number | undefined
     for (let i = dataPoints.length - 2; i >= 0; i--) {
-      const time = new Date(Number(dataPoints[i].time))
+      const time = dateFromUnix(dataPoints[i].time)
       if (withinInterval(time) >= 0) {
         break
       }
@@ -83,7 +84,7 @@ export function analyzeGrades(
 
 export type SeriesOptions = {
   onlyChanged: boolean
-  from?: Duration
+  fromLast?: Duration
 }
 
 export type GradeSeries = {
@@ -100,20 +101,21 @@ export type GradeSeries = {
 }
 
 export function generateSeries(
-  analysis: GradeAnalysis,
+  analysis: GradeChangeAnalysis,
   options: SeriesOptions = {
     onlyChanged: false,
-    from: { weeks: 1 },
+    fromLast: { weeks: 1 },
   },
 ): GradeSeries {
-  const withinInterval = options.from
-    ? compareDesc(sub(options.from)(new Date()))
+  // returns >= 0 if given time is after (now - options.fromLast)
+  const afterIntervalCutoff = options.fromLast
+    ? compareDesc(sub(options.fromLast)(new Date()))
     : undefined
 
   const formatTime = (time: Date) => format(time, "LLL d")
   const parseTime = (time: string) => parse(time, "LLL d", new Date())
 
-  const iterateAnalysis = (callback: (name: string) => void) => {
+  const forEachActiveSeries = (callback: (name: string) => void) => {
     for (const name in analysis) {
       if (options.onlyChanged && analysis[name].changed === undefined) {
         continue
@@ -122,13 +124,13 @@ export function generateSeries(
     }
   }
 
-  const iterateSnapshots = (
-    snapshots: GradeAnalysis[string]["snapshots"],
+  const forEachSnapshotInCurrentInterval = (
+    snapshots: GradeChangeAnalysis[string]["snapshots"],
     callback: (snapshot: GradeSnapshot) => void,
   ) => {
     for (let i = snapshots.length - 1; i >= 0; i--) {
-      const time = new Date(Number(snapshots[i].time))
-      if (withinInterval && withinInterval(time) >= 0) {
+      const time = dateFromUnix(snapshots[i].time)
+      if (afterIntervalCutoff && afterIntervalCutoff(time) >= 0) {
         break
       }
       callback(snapshots[i])
@@ -136,9 +138,9 @@ export function generateSeries(
   }
 
   const dates = new Set<string>()
-  iterateAnalysis((name) => {
-    iterateSnapshots(analysis[name].snapshots, (snapshot) => {
-      const time = new Date(Number(snapshot.time))
+  forEachActiveSeries((name) => {
+    forEachSnapshotInCurrentInterval(analysis[name].snapshots, (snapshot) => {
+      const time = dateFromUnix(snapshot.time)
       dates.add(formatTime(time))
     })
   })
@@ -155,39 +157,41 @@ export function generateSeries(
     xaxis[dateIndex[date]] = date
   }
 
-  let range: GradeSeries["range"] = {
+  let gradeRange: GradeSeries["range"] = {
     min: Number.POSITIVE_INFINITY,
     max: Number.NEGATIVE_INFINITY,
   }
-  const series: GradeSeries["series"] = []
+  const output: GradeSeries["series"] = []
 
   i = 0
-  const length = Object.keys(analysis).length
-  iterateAnalysis((name) => {
-    const data: GradeSeries["series"][number]["data"] = []
-    iterateSnapshots(analysis[name].snapshots, (snapshot) => {
-      if (snapshot.value * 100 < range.min) {
-        range.min = snapshot.value * 100
+  const seriesCount = Object.keys(analysis).length
+  forEachActiveSeries((name) => {
+    const outputSeriesData: GradeSeries["series"][number]["data"] = []
+
+    forEachSnapshotInCurrentInterval(analysis[name].snapshots, (snapshot) => {
+      if (snapshot.value * 100 < gradeRange.min) {
+        gradeRange.min = snapshot.value * 100
       }
-      if (snapshot.value * 100 > range.max) {
-        range.max = snapshot.value * 100
+      if (snapshot.value * 100 > gradeRange.max) {
+        gradeRange.max = snapshot.value * 100
       }
-      const time = new Date(Number(snapshot.time))
-      data[dateIndex[formatTime(time)]] = snapshot.value * 100
+      const time = dateFromUnix(snapshot.time)
+      outputSeriesData[dateIndex[formatTime(time)]] = snapshot.value * 100
     })
-    series.push({
+
+    output.push({
       name,
-      data: fillArray(data, null),
-      color: rainbow(i / length),
+      data: fillArray(outputSeriesData, null),
+      color: rainbow(i / seriesCount),
     })
     i++
   })
 
   // ApexCharts freezes the page if it's given a bad range
   // so here I am.
-  if (range.min >= range.max) {
-    range = { min: 0, max: 100 }
+  if (gradeRange.min >= gradeRange.max) {
+    gradeRange = { min: 0, max: 100 }
   }
 
-  return { series, range, xaxis }
+  return { series: output, range: gradeRange, xaxis }
 }

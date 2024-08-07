@@ -68,6 +68,7 @@ import {
   type BaseAssignmentType,
   calculateGradeCategories,
 } from "./logic"
+import { dateFromUnix } from "@/lib/date"
 
 export enum WhatIfAssignmentState {
   NORMAL = 0,
@@ -545,7 +546,7 @@ export function WhatIfInterface(props: {
 
   const baseAssignments = useComputed(() => {
     return course.value.assignments.map((a, i): WhatIfAssignment => {
-      const date = new Date(Number(a.time))
+      const date = dateFromUnix(a.time)
       const value: WhatIfAssignment = {
         index: i,
         name: a.name,

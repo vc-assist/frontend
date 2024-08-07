@@ -8,6 +8,7 @@ import { twMerge } from "tailwind-merge";
 import type { Span } from "@opentelemetry/api";
 import type { Course } from "@backend.studentdata/student_data_pb";
 import sanitize from "sanitize-html"
+import { dateFromUnix } from "@/lib/date";
 
 const fnSpan = createFnSpanner("routes.courses");
 
@@ -96,7 +97,7 @@ export default function Courses(props: { courses: Course[] }) {
         continue;
       }
       for (const meeting of course.meetings) {
-        if (isToday(new Date(Number(meeting.startTime)))) {
+        if (isToday(dateFromUnix(meeting.startTime))) {
           return -1;
         }
       }
@@ -107,7 +108,7 @@ export default function Courses(props: { courses: Course[] }) {
         continue;
       }
       for (const meeting of course.meetings) {
-        if (isToday(new Date(Number(meeting.startTime)))) {
+        if (isToday(dateFromUnix(meeting.startTime))) {
           return 1;
         }
       }

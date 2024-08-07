@@ -22,6 +22,7 @@ import {
   MdVideocam,
 } from "react-icons/md"
 import CourseChip from "../CourseChip"
+import { dateFromUnix } from "@/lib/date"
 
 export default function Schedule(props: {
   courses: Course[]
@@ -38,7 +39,7 @@ export default function Schedule(props: {
     let maxDate = new Date()
     for (const c of props.courses) {
       for (const meeting of c.meetings) {
-        const startDate = new Date(Number(meeting.startTime))
+        const startDate = dateFromUnix(meeting.startTime)
         if (isBefore(startDate, minDate)) {
           minDate = startDate
         }
@@ -58,8 +59,8 @@ export default function Schedule(props: {
     }[] = []
     for (const c of props.courses) {
       for (const meeting of c.meetings) {
-        const startDate = new Date(Number(meeting.startTime))
-        const endDate = new Date(Number(meeting.endTime))
+        const startDate = dateFromUnix(meeting.startTime)
+        const endDate = dateFromUnix(meeting.endTime)
         if (isSameDay(now, startDate)) {
           result.push({
             course: c,
