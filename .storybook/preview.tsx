@@ -1,5 +1,5 @@
-import "@mantine/core/styles.css";
-import "@mantine/notifications/styles.css";
+import "@mantine/core/styles.css"
+import "@mantine/notifications/styles.css"
 import "@vcassist/ui/styles.css"
 
 import type { Preview } from "@storybook/react"
