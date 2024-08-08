@@ -6,6 +6,7 @@ import { loadConfig } from "./lib/config"
 const config = loadConfig()
 
 export default vite.defineConfig((env) => ({
+  base: "./",
   build: {
     target: ["chrome89", "edge89", "safari15", "firefox89"],
     rollupOptions: {

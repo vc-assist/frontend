@@ -4,6 +4,8 @@
   "version": "0.0.1",
   "description": "The web ui frontend for VC Assist.",
   "scripts": {
+    "dev": "vite dev",
+    "preview": "vite preview",
     "build": "vite build",
     "lint:tsc": "tsc --noEmit",
     "lint:biome": "biome check --write --unsafe .",
