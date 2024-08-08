@@ -4,6 +4,7 @@ import "@vcassist/ui/styles.css"
 
 import type { Preview } from "@storybook/react"
 import { Foundation } from "@vcassist/ui"
+import { UserProvider } from "../src/providers"
 
 const FoundationProvider = Foundation({
   safeArea: {
@@ -25,9 +26,21 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <FoundationProvider>
-        <Story />
-      </FoundationProvider>
+      <UserProvider
+        value={{
+          profile: {
+            name: "Test User",
+            email: "test.user@email.com",
+          },
+          // biome-ignore lint/suspicious/noExplicitAny: this is okay
+          studentDataClient: undefined as any,
+          logout() { },
+        }}
+      >
+        <FoundationProvider>
+          <Story />
+        </FoundationProvider>
+      </UserProvider>
     ),
   ],
 }

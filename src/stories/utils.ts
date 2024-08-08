@@ -6,8 +6,8 @@ export function unixDateXDaysBeforeNow(dayOffset: number, hours?: number, minute
       now.getFullYear(),
       now.getMonth(),
       now.getDate() - dayOffset,
-      hours,
-      minutes,
+      hours ?? 0,
+      minutes ?? 0,
     ).getTime() / 1000,
   )
 }
