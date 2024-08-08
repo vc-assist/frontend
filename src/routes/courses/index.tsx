@@ -1,53 +1,60 @@
-import { Radio, Title, UnstyledButton } from "@mantine/core";
-import { StaggeredList, useLayout, DrawerPanel, useSpan, createFnSpanner, Panel } from "@vcassist/ui"
-import { isToday } from "date-fns";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import React, { useMemo, useState } from "react";
-import { MdPages } from "react-icons/md";
-import { twMerge } from "tailwind-merge";
-import type { Span } from "@opentelemetry/api";
-import type { Course } from "@backend.studentdata/student_data_pb";
+import { Radio, Title, UnstyledButton } from "@mantine/core"
+import {
+  StaggeredList,
+  useLayout,
+  DrawerPanel,
+  useSpan,
+  createFnSpanner,
+  Panel,
+} from "@vcassist/ui"
+import { isToday } from "date-fns"
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion"
+import React, { useMemo, useState } from "react"
+import { MdPages } from "react-icons/md"
+import { twMerge } from "tailwind-merge"
+import type { Span } from "@opentelemetry/api"
+import type { Course } from "@backend.studentdata/student_data_pb"
 import sanitize from "sanitize-html"
-import { dateFromUnix } from "@/lib/date";
+import { dateFromUnix } from "@/lib/date"
 
-const fnSpan = createFnSpanner("routes.courses");
+const fnSpan = createFnSpanner("routes.courses")
 
 function CourseDetails(props: {
-  course: Course;
-  className?: string;
-  span: Span;
+  course: Course
+  className?: string
+  span: Span
 }) {
   const clean = useMemo(
     () => sanitize(props.course.lessonPlan),
     [props.course.lessonPlan],
-  );
+  )
 
   return (
-    <LayoutGroup>
-      <motion.div
-        className={twMerge("flex flex-col gap-3", props.className)}
-        initial={{ y: 20, opacity: 0.5 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 20, opacity: 0.5 }}
-      >
+    <div>
+      <Panel className="flex flex-col gap-3">
         <Title className="font-bold" order={3}>
           {props.course.name}
         </Title>
 
-        <div
-          className="content"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: This html has been sanitized
-          dangerouslySetInnerHTML={{ __html: clean }}
-        />
-      </motion.div>
-    </LayoutGroup>
-  );
+        {clean ? (
+          <div
+            className="content"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: This html has been sanitized
+            dangerouslySetInnerHTML={{ __html: clean }}
+          />
+        ) : (
+          <p>No lesson plan was found for this course.</p>
+        )}
+      </Panel>
+    </div>
+  )
 }
 
 function CourseCard(props: {
-  className?: string;
-  course: Course;
-  onClick: () => void;
+  className?: string
+  course: Course
+  selected?: boolean
+  onClick: () => void
 }) {
   return (
     <UnstyledButton
@@ -57,75 +64,89 @@ function CourseCard(props: {
       )}
       onClick={props.onClick}
     >
-      <Panel className="py-3 px-4 flex flex-col gap-3" noPadding>
+      <Panel
+        className="py-3 px-4 flex gap-3 items-center justify-between"
+        noPadding
+      >
         <Title order={5}>{props.course.name}</Title>
+
+        <AnimatePresence>
+          {props.selected ? (
+            <motion.div
+              className="p-2 bg-primary rounded-full"
+              initial={{ x: -10, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -10, opacity: 0 }}
+            />
+          ) : undefined}
+        </AnimatePresence>
       </Panel>
     </UnstyledButton>
-  );
+  )
 }
 
 export default function Courses(props: { courses: Course[] }) {
-  const span = useSpan(fnSpan, undefined, "courses");
+  const span = useSpan(fnSpan, undefined, "courses")
 
-  const layout = useLayout();
+  const layout = useLayout()
 
-  const [expanded, setExpanded] = useState(false);
-  const [selected, setSelected] = useState<string>();
+  const [expanded, setExpanded] = useState(false)
+  const [selected, setSelected] = useState<string>()
   const selectedCourse = selected
     ? props.courses.find((c) => c.name === selected)
-    : undefined;
+    : undefined
 
-  const groups: { courses: Course[]; dayName?: string }[] = [];
+  const groups: { courses: Course[]; dayName?: string }[] = []
   course: for (const course of props.courses) {
     for (const g of groups) {
       if (course.dayName === g.dayName) {
-        g.courses.push(course);
-        continue course;
+        g.courses.push(course)
+        continue course
       }
     }
-    groups.push({ courses: [course], dayName: course.dayName });
+    groups.push({ courses: [course], dayName: course.dayName })
   }
 
   groups.sort((a, b) => {
     if (a.dayName === b.dayName) {
-      return 0;
+      return 0
     }
 
     // if "a" has courses with meetings today, make "a" closer to the start
     for (const course of a.courses) {
       if (!course.dayName) {
-        continue;
+        continue
       }
       for (const meeting of course.meetings) {
         if (isToday(dateFromUnix(meeting.startTime))) {
-          return -1;
+          return -1
         }
       }
     }
     // if "b" has courses with meetings today, make "b" closer to the start
     for (const course of b.courses) {
       if (!course.dayName) {
-        continue;
+        continue
       }
       for (const meeting of course.meetings) {
         if (isToday(dateFromUnix(meeting.startTime))) {
-          return 1;
+          return 1
         }
       }
     }
 
     // if "a" has no dayName, make "a" closer to the end
     if (!a.dayName) {
-      return -1;
+      return -1
     }
     // if "b" has no dayName, make "b" closer to the end
     if (!b.dayName) {
-      return 1;
+      return 1
     }
 
     // sort strings ascending normally
-    return a.dayName > b.dayName ? 1 : -1;
-  });
+    return a.dayName > b.dayName ? 1 : -1
+  })
 
   if (layout === "mobile") {
     return (
@@ -155,7 +176,7 @@ export default function Courses(props: { courses: Course[] }) {
               name="selected-course"
               value={selected}
               onChange={(value) => {
-                setSelected(value);
+                setSelected(value)
               }}
             >
               <div className="flex flex-col gap-3">
@@ -177,11 +198,11 @@ export default function Courses(props: { courses: Course[] }) {
                               value={course.name}
                               label={course.name}
                             />
-                          );
+                          )
                         })}
                       </div>
                     </React.Fragment>
-                  );
+                  )
                 })}
               </div>
             </Radio.Group>
@@ -194,7 +215,7 @@ export default function Courses(props: { courses: Course[] }) {
           </Title>
         </DrawerPanel>
       </div>
-    );
+    )
   }
 
   return (
@@ -214,14 +235,15 @@ export default function Courses(props: { courses: Course[] }) {
                         className="w-full"
                         course={c}
                         onClick={() => {
-                          setSelected(c.name);
+                          setSelected(c.name)
                         }}
                         key={c.name}
+                        selected={selected === c.name}
                       />
-                    );
+                    )
                   })}
                 </StaggeredList>
-              );
+              )
             })}
           </LayoutGroup>
         </div>
@@ -236,5 +258,5 @@ export default function Courses(props: { courses: Course[] }) {
         ) : undefined}
       </AnimatePresence>
     </div>
-  );
+  )
 }
