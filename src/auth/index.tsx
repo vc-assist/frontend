@@ -58,6 +58,7 @@ export function LoginPage(props: {
         {state === State.WAITING_FOR_EMAIL ? (
           <EmailPrompt
             onSubmit={async (email: string) => {
+              setError("")
               try {
                 await client.startLogin(new StartLoginRequest({ email }))
                 emailRef.current = email
@@ -73,6 +74,7 @@ export function LoginPage(props: {
           <CodePrompt
             onSubmit={(code: string) => {
               return fnSpan(undefined, "consumeVerificationCode", async () => {
+                setError("")
                 try {
                   const tokenRes = await client.consumeVerificationCode(
                     new ConsumeVerificationCodeRequest({
@@ -94,7 +96,7 @@ export function LoginPage(props: {
           />
         ) : undefined}
 
-        {error ? <p className="text-red">{error}</p> : undefined}
+        {error ? <p className="text-red max-w-64">{error}</p> : undefined}
       </div>
     </div>
   )
@@ -107,20 +109,26 @@ function EmailPrompt(props: { onSubmit: (email: string) => void }) {
     },
   })
 
+  const submit = () => {
+    if (form.validate().hasErrors) {
+      return
+    }
+    props.onSubmit(form.values.email)
+  }
+
   return (
     <>
       <Title order={4}>Log in...</Title>
-      <TextInput placeholder="Email address" {...form.getInputProps("email")} />
-      <Button
-        onClick={() => {
-          if (form.validate().hasErrors) {
-            return
+      <TextInput
+        placeholder="Email address"
+        {...form.getInputProps("email")}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            submit()
           }
-          props.onSubmit(form.values.email)
         }}
-      >
-        Login
-      </Button>
+      />
+      <Button onClick={submit}>Login</Button>
     </>
   )
 }
@@ -132,24 +140,27 @@ function CodePrompt(props: { onSubmit: (code: string) => void }) {
     },
   })
 
+  const submit = () => {
+    if (form.validate().hasErrors) {
+      return
+    }
+    props.onSubmit(form.values.code)
+  }
+
   return (
     <>
       <Title order={4}>Enter the verification code sent to your email...</Title>
       <PinInput
-        length={6}
+        length={8}
         type="alphanumeric"
         {...form.getInputProps("code")}
-      />
-      <Button
-        onClick={() => {
-          if (form.validate().hasErrors) {
-            return
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            submit()
           }
-          props.onSubmit(form.values.code)
         }}
-      >
-        Verify
-      </Button>
+      />
+      <Button onClick={submit}>Verify</Button>
     </>
   )
 }
