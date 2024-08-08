@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { LoginPage } from "../auth"
+import { LoginPage, State } from "../auth"
 
 const meta = {
   title: "VC Assist/Routes/Auth",
@@ -15,6 +15,12 @@ type Story = StoryObj<typeof meta>
 
 export const NoToken: Story = {
   args: {
+    onLogin() {},
+  },
+}
+export const WaitingForCode: Story = {
+  args: {
+    state: State.WAITING_FOR_CODE,
     onLogin() {},
   },
 }

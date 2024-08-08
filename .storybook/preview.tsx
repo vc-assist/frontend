@@ -9,6 +9,7 @@ import {
   StudentDataRefetchProvider,
   CredentialsProvider,
 } from "../src/providers"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 const FoundationProvider = Foundation({
   safeArea: {
@@ -18,6 +19,8 @@ const FoundationProvider = Foundation({
     bottom: 0,
   },
 })
+
+const queryClient = new QueryClient()
 
 const preview: Preview = {
   parameters: {
@@ -30,25 +33,27 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <FoundationProvider>
-        <UserProvider
-          value={{
-            profile: {
-              name: "Test User",
-              email: "test.user@email.com",
-            },
-            // biome-ignore lint/suspicious/noExplicitAny: this is okay
-            studentDataClient: undefined as any,
-            logout() { },
-          }}
-        >
-          <CredentialsProvider value={[]}>
-            <StudentDataRefetchProvider value={async () => { }}>
-              <Story />
-            </StudentDataRefetchProvider>
-          </CredentialsProvider>
-        </UserProvider>
-      </FoundationProvider>
+      <QueryClientProvider client={queryClient}>
+        <FoundationProvider>
+          <UserProvider
+            value={{
+              profile: {
+                name: "Test User",
+                email: "test.user@email.com",
+              },
+              // biome-ignore lint/suspicious/noExplicitAny: this is okay
+              studentDataClient: undefined as any,
+              logout() { },
+            }}
+          >
+            <CredentialsProvider value={[]}>
+              <StudentDataRefetchProvider value={async () => { }}>
+                <Story />
+              </StudentDataRefetchProvider>
+            </CredentialsProvider>
+          </UserProvider>
+        </FoundationProvider>
+      </QueryClientProvider>
     ),
   ],
 }
