@@ -8,7 +8,7 @@ export const config: Config = __CONFIG__
 async function loadNativeAPI(): Promise<NativeAPI> {
   try {
     // @ts-expect-error
-    return (await import("/native_api.js")).default
+    return (await import("native_api.js")).default
   } catch { }
   return new NoopAPI()
 }

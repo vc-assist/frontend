@@ -26,5 +26,5 @@ The frontend relies on some native APIs to work. This repository does not contai
 
 - [vc-assist/capacitor](https://github.com/vc-assist/capacitor)
 
-The native API should be exposed by an ES module called `/native_api.js` on the local origin, the default export of this module should fulfill the interface specified in [lib/native/index.ts](./lib/native/index.ts).
+The native API should be exposed by an ES module called `native_api.js` in the same directory as the `index<...>.js`, the default export of this module should fulfill the interface specified in [lib/native/index.ts](./lib/native/index.ts).
 
