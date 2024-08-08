@@ -30,7 +30,7 @@ export default function GradeList(props: {
         }}
       >
         {props.courses.map((course) => {
-          const grade = Math.round(course.overallGrade * 100 * 100) / 100
+          const grade = Math.round(course.overallGrade * 100) / 100
           return (
             <Fragment key={course.name}>
               <div className="w-full">

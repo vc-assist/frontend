@@ -169,14 +169,14 @@ export function generateSeries(
     const outputSeriesData: GradeSeries["series"][number]["data"] = []
 
     forEachSnapshotInCurrentInterval(analysis[name].snapshots, (snapshot) => {
-      if (snapshot.value * 100 < gradeRange.min) {
-        gradeRange.min = snapshot.value * 100
+      if (snapshot.value < gradeRange.min) {
+        gradeRange.min = snapshot.value
       }
-      if (snapshot.value * 100 > gradeRange.max) {
-        gradeRange.max = snapshot.value * 100
+      if (snapshot.value > gradeRange.max) {
+        gradeRange.max = snapshot.value
       }
       const time = dateFromUnix(snapshot.time)
-      outputSeriesData[dateIndex[formatTime(time)]] = snapshot.value * 100
+      outputSeriesData[dateIndex[formatTime(time)]] = snapshot.value
     })
 
     output.push({

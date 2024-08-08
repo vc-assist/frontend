@@ -23,7 +23,7 @@ export default function Dashboard({
   }, [])
 
   return (
-    <>
+    <div className="grid gap-6 lg:grid-cols-2">
       <div className="flex flex-col gap-6">
         {/* grid is used here so I don't have to deal with
         flexbox flex shenanigans */}
@@ -54,6 +54,6 @@ export default function Dashboard({
           message="Grade List is hidden"
         />
       )}
-    </>
+    </div>
   )
 }

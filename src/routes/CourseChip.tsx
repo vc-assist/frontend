@@ -26,7 +26,7 @@ export default function CourseChip(props: {
   const [opened, setOpened] = useState(false)
   const dayName = props.course.dayName
   const meetingLink = props.course.remoteMeetingLink
-  const overallGrade = Math.round(props.course.overallGrade * 100)
+  const overallGrade = Math.round(props.course.overallGrade)
 
   return (
     <PopoutChip
