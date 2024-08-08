@@ -148,11 +148,6 @@ export default function GradeCalculator({
                   </b>{" "}
                   into the "Total Points" textbox and hit calculate!.
                 </Text>
-                <Text c="dimmed">
-                  If the calculator returns "NOT POSSIBLE", it means you would
-                  need to get over a 100% on the assignment (or score more
-                  points than it was worth) to get your desired grade.
-                </Text>
               </div>
             </Tabs.Panel>
 

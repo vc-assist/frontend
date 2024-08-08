@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import GradeTrends, { GradeInterval } from "../routes/grade-trends/GradeTrends"
 import { Course, GradeSnapshot } from "@backend.studentdata/student_data_pb"
+import { unixDateXDaysBeforeNow } from "./utils"
 
 const meta = {
-  title: "VC Assist/Routes/GradeTrends",
+  title: "VC Assist/Routes/Grade Trends",
   component: GradeTrends,
   parameters: {
     layout: "default",
@@ -18,18 +19,6 @@ export const NoCourses: Story = {
   args: {
     courses: [],
   },
-}
-
-const now = new Date()
-
-function unixDateXDaysBeforeNow(dayOffset: number) {
-  return BigInt(
-    new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate() - dayOffset,
-    ).getTime() / 1000,
-  )
 }
 
 const fakeCourses = [
