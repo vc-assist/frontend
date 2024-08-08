@@ -4,7 +4,11 @@ import "@vcassist/ui/styles.css"
 
 import type { Preview } from "@storybook/react"
 import { Foundation } from "@vcassist/ui"
-import { UserProvider } from "../src/providers"
+import {
+  UserProvider,
+  StudentDataRefetchProvider,
+  CredentialsProvider,
+} from "../src/providers"
 
 const FoundationProvider = Foundation({
   safeArea: {
@@ -26,21 +30,25 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <UserProvider
-        value={{
-          profile: {
-            name: "Test User",
-            email: "test.user@email.com",
-          },
-          // biome-ignore lint/suspicious/noExplicitAny: this is okay
-          studentDataClient: undefined as any,
-          logout() { },
-        }}
-      >
-        <FoundationProvider>
-          <Story />
-        </FoundationProvider>
-      </UserProvider>
+      <FoundationProvider>
+        <UserProvider
+          value={{
+            profile: {
+              name: "Test User",
+              email: "test.user@email.com",
+            },
+            // biome-ignore lint/suspicious/noExplicitAny: this is okay
+            studentDataClient: undefined as any,
+            logout() { },
+          }}
+        >
+          <CredentialsProvider value={[]}>
+            <StudentDataRefetchProvider value={async () => { }}>
+              <Story />
+            </StudentDataRefetchProvider>
+          </CredentialsProvider>
+        </UserProvider>
+      </FoundationProvider>
     ),
   ],
 }

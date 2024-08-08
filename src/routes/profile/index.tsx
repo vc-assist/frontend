@@ -1,6 +1,6 @@
 import { CredentialCarousel } from "@/src/credentials"
 import { useCredentials, useStudentDataRefetch, useUser } from "@/src/providers"
-import { Button, Title } from "@mantine/core"
+import { Title } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { signal } from "@preact/signals-react"
@@ -10,22 +10,16 @@ import {
   LogoutModal,
   Modal,
   Panel,
-  Positioned,
-  ThemeToggle,
+  ThemeToggleButton,
   type UserProfile,
   createDefaultMeter,
   notifyError,
 } from "@vcassist/ui"
 import { useEffect } from "react"
-import {
-  MdArrowBack,
-  MdCreditCard,
-  MdDelete,
-  MdGetApp,
-  MdRefresh,
-} from "react-icons/md"
+import { MdCreditCard, MdDelete, MdGetApp, MdRefresh } from "react-icons/md"
 import ProfileHeader from "./ProfileHeader"
 import { SettingsPanel } from "./Settings"
+import { twMerge } from "tailwind-merge"
 
 const meter = createDefaultMeter("routes.profile")
 const requestData = meter.createCounter("request-data")
@@ -53,29 +47,19 @@ export default function Profile(props: {
   }, [])
 
   return (
-    <>
+    <div
+      className={twMerge(
+        "h-full grid grid-cols-1 grid-rows-[min-content_min-content_1fr]",
+        "lg:grid-cols-5 xl:grid-cols-3 lg:grid-rows-[1fr_2fr] gap-6",
+      )}
+    >
       <Modal
         opened={credentialsOpened}
         onClose={() => {
           closeCredentials()
         }}
       >
-        <div className="flex h-full w-full">
-          <CredentialCarousel credentials={creds} />
-          <Positioned x="center" y="middle">
-            <Button
-              className="shadow-lg bg-primary text-bg hover:text-bg hover:bg-primary"
-              onClick={() => {
-                closeCredentials()
-              }}
-              variant="filled"
-              c="dark"
-              leftSection={<MdArrowBack size={16} />}
-            >
-              Dashboard
-            </Button>
-          </Positioned>
-        </div>
+        <CredentialCarousel credentials={creds} />
       </Modal>
 
       <ProfileHeader
@@ -88,7 +72,8 @@ export default function Profile(props: {
             <Title className="max-w-[5rem]" order={4}>
               Control Panel
             </Title>
-            <ThemeToggle />
+
+            <ThemeToggleButton />
           </div>
           <div className="flex flex-col gap-3 items-end">
             <div className="flex gap-3">
@@ -163,6 +148,6 @@ export default function Profile(props: {
         </Panel>
       </div>
       <SettingsPanel className="min-h-[300px] h-full lg:col-span-3 xl:col-span-2" />
-    </>
+    </div>
   )
 }

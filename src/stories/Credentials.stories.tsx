@@ -23,7 +23,7 @@ export const Default: Story = {
         provided: false,
         loginFlow: {
           case: "oauth",
-          value: {}
+          value: {},
         },
       }),
       new CredentialStatus({
@@ -32,9 +32,14 @@ export const Default: Story = {
         provided: true,
         loginFlow: {
           case: "usernamePassword",
-          value: {}
+          value: {},
         },
       }),
-    ]
+    ],
+  },
+}
+export const NoCreds: Story = {
+  args: {
+    credentials: [],
   },
 }

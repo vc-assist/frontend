@@ -42,19 +42,28 @@ export function SettingsPanel(props: {
           key="hide-gpa"
           title="Hide GPA"
           description="Hide the GPA widget on the dashboard."
-          signal={settings.dashboard.hideGPA}
+          checked={settings.dashboard.hideGPA.value}
+          onChange={(value) => {
+            settings.dashboard.hideGPA.value = value
+          }}
         />
         <BooleanOption
           key="hide-grades"
           title="Hide Grades"
           description="Hide the grades widget on the dashboard."
-          signal={settings.dashboard.hideGrades}
+          checked={settings.dashboard.hideGrades.value}
+          onChange={(value) => {
+            settings.dashboard.hideGrades.value = value
+          }}
         />
         <BooleanOption
           key="disable-grade-viz"
           title="Disable Grade Visualizers"
           description="Disable the progress circle shown next to the grades on the dashboard."
-          signal={settings.dashboard.disableGradeVisualizers}
+          checked={settings.dashboard.disableGradeVisualizers.value}
+          onChange={(value) => {
+            settings.dashboard.disableGradeVisualizers.value = value
+          }}
         />
       </StaggeredList>
     </Panel>
