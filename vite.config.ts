@@ -14,6 +14,7 @@ export default vite.defineConfig((env) => ({
     },
     // 5 MB chunk warning
     chunkSizeWarningLimit: 5000,
+    sourcemap: env.mode === "development" ? "inline" : undefined,
   },
   resolve: {
     alias: {
@@ -42,19 +43,21 @@ export default vite.defineConfig((env) => ({
     __CONFIG__: JSON.stringify(config),
   },
   plugins: [
-    env.mode === "development" ? {
-      name: "resolve-native-api",
-      resolveId(id) {
-        if (id === "native_api.js") {
-          return "\0" + "virtual:native_api"
-        }
-      },
-      load(id) {
-        if (id === "\0" + "virtual:native_api") {
-          return "undefined"
-        }
-      },
-    } : undefined,
+    env.mode === "development"
+      ? {
+        name: "resolve-native-api",
+        resolveId(id) {
+          if (id === "native_api.js") {
+            return "\0" + "virtual:native_api"
+          }
+        },
+        load(id) {
+          if (id === "\0" + "virtual:native_api") {
+            return "undefined"
+          }
+        },
+      }
+      : undefined,
     react(),
   ],
 }))
