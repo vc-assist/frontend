@@ -10,5 +10,5 @@ export default function GradeTrends({ courses }: { courses: Course[] }) {
   useEffect(() => {
     viewPage.add(1)
   }, [])
-  return <GradeTrendsComponent courses={courses} className="h-full" />
+  return <GradeTrendsComponent courses={courses} />
 }

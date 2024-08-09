@@ -43,14 +43,15 @@ export default function CourseChip(props: {
                 style={
                   !props.disableGradeColoring
                     ? {
-                        color: Color.fromGrade(overallGrade),
-                      }
+                      color: Color.fromGrade(overallGrade),
+                    }
                     : undefined
                 }
               >
                 {overallGrade}%
               </Text>
             </div>
+
             <div className="flex flex-col gap-1">
               <Text>Instructor</Text>
               {props.course.teacherEmail ? (
@@ -65,12 +66,14 @@ export default function CourseChip(props: {
                 <Text c="dimmed">{props.course.teacher}</Text>
               )}
             </div>
+
             {props.course.room ? (
               <div className="flex flex-col gap-1">
                 <Text>Room</Text>
                 <Text c="dimmed">{props.course.room}</Text>
               </div>
             ) : undefined}
+
             {props.course.homeworkPasses !== undefined ? (
               <div className="flex flex-col gap-1">
                 <Text>Homework passes</Text>
@@ -78,6 +81,7 @@ export default function CourseChip(props: {
               </div>
             ) : undefined}
           </div>
+
           {meetingLink ? (
             <Button
               size="xs"
@@ -91,20 +95,20 @@ export default function CourseChip(props: {
               Meeting
             </Button>
           ) : undefined}
+
           {dayName ? (
             <div className="flex gap-1 col-span-2">
               <div
-                className="px-3 py-2 rounded-lg"
+                className="px-3 py-2 rounded-lg bg-bg-dimmed"
                 style={{
-                  background: dayName
-                    ? Color.DAY_COLORS_LIST[
-                        props.dayNames.findIndex((value) => value === dayName)
-                      ]
-                    : undefined,
+                  background:
+                    Color.DAY_COLORS_LIST[
+                    props.dayNames.findIndex((value) => value === dayName)
+                    ] ?? "black",
                 }}
                 key={dayName}
               >
-                <p className="text-gray-50 font-bold text-sm">{dayName}</p>
+                <p className="font-bold text-sm text-gray-50">{dayName}</p>
               </div>
             </div>
           ) : undefined}

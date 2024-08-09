@@ -6,7 +6,7 @@ import Dashboard from "./dashboard"
 import GradeCalculator from "./grade-calculator"
 import GradeTrends from "./grade-trends"
 import Profile from "./profile"
-import Courses from "./courses"
+import LessonPlans from "./lesson-plans"
 
 export function Routes() {
   const { profile } = useUser()
@@ -19,18 +19,16 @@ export function Routes() {
         "/dashboard": {
           title: "Dashboard",
           icon: MdDashboard,
-          rootClassName: "grid gap-6 lg:grid-cols-2",
           render() {
             return <Dashboard data={data} />
           },
         },
-        "/courses": {
-          title: "Courses",
+        "/lesson-plans": {
+          title: "Lesson Plans",
           icon: MdPages,
           render() {
-            return <Courses courses={data.courses} />
-          }
-
+            return <LessonPlans courses={data.courses} />
+          },
         },
         "/grade-calculator": {
           title: "Grade Calculator",
@@ -42,6 +40,7 @@ export function Routes() {
         "/grade-trends": {
           title: "Grade Trends",
           icon: MdTimeline,
+          rootClassName: "h-full",
           render() {
             return <GradeTrends courses={data.courses} />
           },

@@ -131,9 +131,17 @@ function CredentialForm(props: {
 export function CredentialCarousel(props: {
   className?: string
   credentials: CredentialStatus[]
+  onComplete: () => void
 }) {
   const [credentials, setCredentials] = useState(props.credentials)
   const [embla, setEmbla] = useState<Embla | null>(null)
+
+  useEffect(() => {
+    const complete = credentials.every((val) => val.provided)
+    if (complete) {
+      props.onComplete()
+    }
+  }, [credentials, props.onComplete])
 
   return (
     <>
@@ -191,7 +199,7 @@ export function ProvideCredentialsPage(props: {
 }) {
   const { studentDataClient } = useUser()
 
-  const { isPending, error, data } = useQuery({
+  const { isPending, error, data, refetch } = useQuery({
     queryKey: ["studentDataClient", "getCredentialStatus"],
     queryFn: () =>
       studentDataClient
@@ -230,6 +238,9 @@ export function ProvideCredentialsPage(props: {
       <CredentialCarousel
         className={twMerge("transition-all", completed ? "blur-sm" : "")}
         credentials={data}
+        onComplete={() => {
+          refetch()
+        }}
       />
     </div>
   )

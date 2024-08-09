@@ -24,9 +24,7 @@ export default function GradeList(props: {
       <div
         className="grid items-center gap-y-6 gap-x-5 w-full overflow-hidden"
         style={{
-          gridTemplateColumns: props.plain
-            ? "minmax(0px, 1fr) min-content"
-            : "minmax(0px, 1fr) min-content min-content",
+          gridTemplateColumns: "minmax(0px, 1fr) min-content min-content",
         }}
       >
         {props.courses.map((course) => {
@@ -44,7 +42,8 @@ export default function GradeList(props: {
                   disableGradeColoring={props.plain}
                 />
               </div>
-              {!props.plain ? (
+
+              {!props.plain && grade > 0 ? (
                 <RingProgress
                   size={24}
                   thickness={3}
@@ -55,8 +54,15 @@ export default function GradeList(props: {
                     },
                   ]}
                 />
-              ) : undefined}
-              <p className="text-[15px]">{grade}%</p>
+              ) : (
+                <div />
+              )}
+
+              {grade > 0 ? (
+                <p className="text-[15px] whitespace-nowrap">{grade}%</p>
+              ) : (
+                <div />
+              )}
             </Fragment>
           )
         })}

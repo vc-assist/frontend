@@ -44,7 +44,6 @@ export enum GradeInterval {
 }
 
 export default function Grades(props: {
-  className?: string
   courses: Course[]
   interval?: GradeInterval
 }) {
@@ -146,7 +145,7 @@ export default function Grades(props: {
   )
 
   return (
-    <Panel className={twMerge(props.className, "relative")}>
+    <Panel className="relative h-full">
       <Chart
         className={empty ? "blur-sm" : undefined}
         type="area"

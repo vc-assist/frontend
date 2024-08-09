@@ -6,11 +6,21 @@ import NoopAPI from "@/lib/native/noop"
 export const config: Config = __CONFIG__
 
 async function loadNativeAPI(): Promise<NativeAPI> {
-  try {
+  // @ts-expect-error
+  const imported = await import("native_api.js").default
+  if (imported) {
+    return imported
+  }
+
+  // @ts-expect-error
+  if (globalThis.nativeAPI) {
     // @ts-expect-error
-    return (await import("native_api.js")).default
-  } catch { }
+    return nativeAPI
+  }
+
   return new NoopAPI()
 }
 
 export const native = await loadNativeAPI()
+
+console.log("native api", native)

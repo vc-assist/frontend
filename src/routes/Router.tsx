@@ -10,6 +10,7 @@ import {
   useSafeArea,
 } from "@vcassist/ui"
 import type { SafeArea } from "@vcassist/ui/foundation/safe-area"
+import { ErrorPage } from "@vcassist/ui"
 import { AnimatePresence, motion } from "framer-motion"
 import { useState } from "react"
 import type { IconType } from "react-icons"
@@ -61,14 +62,15 @@ export function Router(props: {
     return (
       <div className="flex h-full">
         <div className="m-auto">
-          <p>Oh no! You're lost.</p>
-          <LinkButton
-            onClick={() => {
-              setRoutePath(props.defaultRoute)
-            }}
-          >
-            Return to the dashboard
-          </LinkButton>
+          <ErrorPage message="Oh no! You're lost.'">
+            <LinkButton
+              onClick={() => {
+                setRoutePath(props.defaultRoute)
+              }}
+            >
+              Return to the dashboard
+            </LinkButton>
+          </ErrorPage>
         </div>
       </div>
     )
@@ -170,16 +172,14 @@ function ComponentWrapper(props: {
   children: React.ReactNode
 }) {
   return (
-    <AnimatePresence>
-      <motion.div
-        className={twMerge("w-full h-fit mb-auto", props.className)}
-        initial={{ y: 20, opacity: 0.5 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 20, opacity: 0.5 }}
-      >
-        {props.children}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      className={twMerge("w-full h-fit mb-auto", props.className)}
+      initial={{ y: 20, opacity: 0.5 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 20, opacity: 0.5 }}
+    >
+      {props.children}
+    </motion.div>
   )
 }
 
@@ -200,7 +200,7 @@ function MobileLayout(props: {
           paddingBottom: `calc(1.5rem + ${safeArea.bottom}px)`,
         }}
       >
-        {component}
+        <AnimatePresence>{component}</AnimatePresence>
         {/* Routes */}
         <div className="flex flex-col gap-4 sticky bottom-0 z-50">
           <div className="flex gap-4">{navbar}</div>
@@ -270,7 +270,7 @@ function DesktopLayout(props: {
             </Panel>
           </div>
         </div>
-        {component}
+        <AnimatePresence>{component}</AnimatePresence>
       </div>
     </div>
   )

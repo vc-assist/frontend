@@ -101,10 +101,10 @@ export function OAuthForm(props: {
                       )
 
                       console.log("done.")
+                      props.onSubmit()
+
                       await native.closeWebview() // This is similar to the handler, in that it will not run if the webview is removed prematurely. No clue why.
                       await unsubscribeNav?.()
-
-                      props.onSubmit()
                     } catch (e) {
                       span.recordException(narrowError(e))
                       span.setStatus({
