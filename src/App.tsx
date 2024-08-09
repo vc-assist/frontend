@@ -22,6 +22,7 @@ import {
 import { Routes } from "./routes"
 import { config } from "./singletons"
 import { StudentDataLoadingPage } from "./studentdata"
+import { useSignals } from "@preact/signals-react/runtime"
 
 const token = persistentSignal({
   key: "token",
@@ -44,6 +45,8 @@ export function createClient(token: string) {
 }
 
 export function App() {
+  useSignals()
+
   const [user, setUser] = useState<UserContext>()
   const [completedCreds, setCompletedCreds] = useState<CredentialStatus[]>()
   const [studentData, setStudentData] = useState<StudentData>()
@@ -65,6 +68,9 @@ export function App() {
               token.value = ""
             },
           })
+        }}
+        onInvalidToken={() => {
+          token.value = ""
         }}
       />
     )

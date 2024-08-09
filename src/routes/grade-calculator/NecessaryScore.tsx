@@ -59,7 +59,7 @@ function CourseDependentForm(props: {
       <RingProgressPicker
         className="m-auto"
         sections={sections}
-        value={props.selectedCategory}
+        selectedId={props.selectedCategory?.id}
         onChoose={(s) => {
           props.onChooseCategory(s)
         }}

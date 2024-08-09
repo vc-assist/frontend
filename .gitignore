@@ -4,3 +4,4 @@ dist/
 config.local.json5
 
 *storybook.log
+*.tsbuildinfo

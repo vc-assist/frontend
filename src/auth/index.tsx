@@ -6,7 +6,7 @@ import {
 } from "@backend.auth/api_pb"
 import { createPromiseClient } from "@connectrpc/connect"
 import { createConnectTransport } from "@connectrpc/connect-web"
-import { Button, PinInput, TextInput, Title } from "@mantine/core"
+import { Button, TextInput, Title } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { useMutation } from "@tanstack/react-query"
 import { Panel, type UserProfile } from "@vcassist/ui"
@@ -28,6 +28,7 @@ export function LoginPage(props: {
   token?: string
   state?: State
   onLogin(token: string, profile: UserProfile): void
+  onInvalidToken(): void
 }) {
   const tokenRef = useRef(props.token)
   const emailRef = useRef("")
@@ -68,6 +69,7 @@ export function LoginPage(props: {
       .then((res) => props.onLogin(tokenRef.current!, res))
       .catch(() => {
         tokenRef.current = undefined
+        props.onInvalidToken()
       })
   }, [props.onLogin])
 

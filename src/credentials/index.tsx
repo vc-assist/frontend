@@ -34,6 +34,11 @@ function CredentialForm(props: {
 
   const color = pictureColor ?? fallbackColor
 
+  const submit = () => {
+    setEditing(false)
+    props.onSubmit()
+  }
+
   let form = <></>
   switch (props.status.loginFlow.case) {
     case "usernamePassword":
@@ -42,7 +47,7 @@ function CredentialForm(props: {
           color={color}
           credentialId={props.status.id}
           loginFlow={props.status.loginFlow}
-          onSubmit={props.onSubmit}
+          onSubmit={submit}
         />
       )
       break
@@ -52,7 +57,7 @@ function CredentialForm(props: {
           color={color}
           credentialId={props.status.id}
           loginFlow={props.status.loginFlow}
-          onSubmit={props.onSubmit}
+          onSubmit={submit}
         />
       )
       break
@@ -96,14 +101,6 @@ function CredentialForm(props: {
 
       {!editing ? (
         <div className="flex gap-3">
-          {/* disabled while it doesn't work */}
-          {/* <Button
-            style={{ backgroundColor: driverColor }}
-            c={driverColor}
-            leftSection={<MdEmail size={16} />}
-          >
-            Request
-          </Button> */}
           <Button
             variant="outline"
             c="gray"

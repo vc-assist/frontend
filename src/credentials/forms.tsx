@@ -15,6 +15,7 @@ import {
   getTokenFormData,
   openIdTokenResponse,
 } from "./oauth"
+import { useMutation } from "@tanstack/react-query"
 
 export function OAuthForm(props: {
   credentialId: string
@@ -89,6 +90,7 @@ export function OAuthForm(props: {
 
                       await studentDataClient.provideCredential(
                         new ProvideCredentialRequest({
+                          id: props.credentialId,
                           provided: {
                             case: "oauthToken",
                             value: {
@@ -160,9 +162,6 @@ export function UsernamePasswordForm(props: {
 }) {
   const { studentDataClient } = useUser()
 
-  const [loading, setLoading] = useState(false)
-  const [invalid, setInvalid] = useState(false)
-
   const form = useForm<{
     username: string
     password: string
@@ -177,36 +176,36 @@ export function UsernamePasswordForm(props: {
     },
   })
 
-  const submitForm = () => {
-    return fnSpan(undefined, "provideUsernamePassword", async (span) => {
-      form.validate()
-      if (!form.isValid()) {
-        return
-      }
-      setLoading(true)
-      setInvalid(false)
-
-      try {
+  const submitMutation = useMutation({
+    mutationFn: ({
+      username,
+      password,
+    }: { username: string; password: string }) =>
+      fnSpan(undefined, "provideUsernamePassword", async () => {
         await studentDataClient.provideCredential(
           new ProvideCredentialRequest({
             id: props.credentialId,
             provided: {
               case: "usernamePassword",
               value: {
-                username: form.values.username,
-                password: form.values.password,
+                username: username,
+                password: password,
               },
             },
           }),
         )
         props.onSubmit()
-      } catch (err) {
-        span.recordException(narrowError(err))
-        span.setStatus({ code: SpanStatusCode.ERROR })
-        setInvalid(true)
-      }
+      }),
+  })
 
-      setLoading(false)
+  const submitForm = () => {
+    form.validate()
+    if (!form.isValid()) {
+      return
+    }
+    submitMutation.mutate({
+      username: form.values.username,
+      password: form.values.password,
     })
   }
 
@@ -230,18 +229,20 @@ export function UsernamePasswordForm(props: {
         }}
         {...form.getInputProps("password")}
       />
+
       <Button
         className="font-bold"
         style={{ backgroundColor: props.color }}
         color={props.color}
-        loading={loading}
+        loading={submitMutation.isPending}
         onClick={submitForm}
       >
         Authorize
       </Button>
-      {invalid ? (
+
+      {submitMutation.error ? (
         <Text c="red" size="sm">
-          Invalid username or password.
+          {submitMutation.error.message}
         </Text>
       ) : undefined}
     </div>
