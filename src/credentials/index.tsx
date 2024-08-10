@@ -10,6 +10,7 @@ import { useQuery } from "@tanstack/react-query"
 import {
   BrandTag,
   ErrorPage,
+  LogoutModal,
   Panel,
   UserAvatar,
   useImageToColor,
@@ -197,7 +198,7 @@ export function CredentialCarousel(props: {
 export function ProvideCredentialsPage(props: {
   onComplete: (credentials: CredentialStatus[]) => void
 }) {
-  const { studentDataClient } = useUser()
+  const { studentDataClient, logout } = useUser()
 
   const { isPending, error, data, refetch } = useQuery({
     queryKey: ["studentDataClient", "getCredentialStatus"],
@@ -242,6 +243,9 @@ export function ProvideCredentialsPage(props: {
           refetch()
         }}
       />
+      <div className="fixed top-5 left-5">
+        <LogoutModal handleLogout={logout} />
+      </div>
     </div>
   )
 }
