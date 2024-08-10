@@ -11,8 +11,12 @@ async function loadNativeAPI(): Promise<NativeAPI> {
   const module = "./native_api.js"
 
   try {
-    /* @vite-ignore */
-    const imported = (await import(module)).default
+    const imported = (
+      await import(
+        /* @vite-ignore */
+        module
+      )
+    ).default
     if (imported) {
       console.log("Loaded native API from ES Module.")
       return imported
