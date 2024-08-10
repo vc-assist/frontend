@@ -6,6 +6,7 @@ import {
 import { Button, PasswordInput, Text, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { SpanStatusCode } from "@opentelemetry/api"
+import { useMutation } from "@tanstack/react-query"
 import { narrowError } from "@vcassist/ui"
 import { useState } from "react"
 import { useUser } from "../providers"
@@ -15,7 +16,6 @@ import {
   getTokenFormData,
   openIdTokenResponse,
 } from "./oauth"
-import { useMutation } from "@tanstack/react-query"
 
 export function OAuthForm(props: {
   credentialId: string

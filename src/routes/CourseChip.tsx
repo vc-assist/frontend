@@ -43,8 +43,8 @@ export default function CourseChip(props: {
                 style={
                   !props.disableGradeColoring
                     ? {
-                      color: Color.fromGrade(overallGrade),
-                    }
+                        color: Color.fromGrade(overallGrade),
+                      }
                     : undefined
                 }
               >
@@ -103,7 +103,7 @@ export default function CourseChip(props: {
                 style={{
                   background:
                     Color.DAY_COLORS_LIST[
-                    props.dayNames.findIndex((value) => value === dayName)
+                      props.dayNames.findIndex((value) => value === dayName)
                     ] ?? "black",
                 }}
                 key={dayName}

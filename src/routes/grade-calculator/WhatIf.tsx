@@ -1,3 +1,4 @@
+import { dateFromUnix } from "@/lib/date"
 import type { Course } from "@backend.studentdata/student_data_pb"
 import {
   ActionIcon,
@@ -68,7 +69,6 @@ import {
   type BaseAssignmentType,
   calculateGradeCategories,
 } from "./logic"
-import { dateFromUnix } from "@/lib/date"
 
 export enum WhatIfAssignmentState {
   NORMAL = 0,

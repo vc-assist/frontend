@@ -9,7 +9,7 @@
     "build": "vite build",
     "lint:tsc": "tsc --noEmit",
     "lint:biome": "biome check --write --unsafe .",
-    "lint": "pnpm lint:biome && pnpm lint:tsc && pnpm lint:pkgs",
+    "lint": "pnpm lint:biome && pnpm lint:tsc",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

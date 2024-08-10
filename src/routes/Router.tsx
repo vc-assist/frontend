@@ -9,8 +9,8 @@ import {
   useLayout,
   useSafeArea,
 } from "@vcassist/ui"
-import type { SafeArea } from "@vcassist/ui/foundation/safe-area"
 import { ErrorPage } from "@vcassist/ui"
+import type { SafeArea } from "@vcassist/ui/foundation/safe-area"
 import { AnimatePresence, motion } from "framer-motion"
 import { useState } from "react"
 import type { IconType } from "react-icons"
@@ -19,17 +19,17 @@ import { twMerge } from "tailwind-merge"
 
 export type Route =
   | {
-    title: string
-    icon: IconType
-    rootClassName?: string
-    render(): JSX.Element
-  }
+      title: string
+      icon: IconType
+      rootClassName?: string
+      render(): JSX.Element
+    }
   | {
-    title: string
-    noNavbar: true
-    rootClassName?: string
-    render(): JSX.Element
-  }
+      title: string
+      noNavbar: true
+      rootClassName?: string
+      render(): JSX.Element
+    }
 
 export type RouteContext = {
   currentRoute: string

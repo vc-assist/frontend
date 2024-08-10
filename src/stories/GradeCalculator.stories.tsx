@@ -1,6 +1,10 @@
+import {
+  Assignment,
+  AssignmentType,
+  Course,
+} from "@backend.studentdata/student_data_pb"
 import type { Meta, StoryObj } from "@storybook/react"
 import GradeCalculator from "../routes/grade-calculator"
-import { Assignment, AssignmentType, Course } from "@backend.studentdata/student_data_pb"
 import { unixDateXDaysBeforeNow } from "./utils"
 
 const meta = {
@@ -36,7 +40,7 @@ export const Default: Story = {
           new AssignmentType({
             name: "Final",
             weight: 0.15,
-          })
+          }),
         ],
         assignments: [
           new Assignment({
@@ -67,8 +71,8 @@ export const Default: Story = {
             assignmentTypeName: "Progress",
             time: unixDateXDaysBeforeNow(1),
           }),
-        ]
-      })
-    ]
+        ],
+      }),
+    ],
   },
 }

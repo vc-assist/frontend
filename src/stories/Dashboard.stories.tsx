@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from "@storybook/react"
-import Dashboard from "../routes/dashboard"
 import {
   Course,
   CourseMeeting,
   StudentData,
 } from "@backend.studentdata/student_data_pb"
+import type { Meta, StoryObj } from "@storybook/react"
+import Dashboard from "../routes/dashboard"
 import { unixDateXDaysBeforeNow } from "./utils"
 
 const meta = {

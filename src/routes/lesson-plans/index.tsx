@@ -1,21 +1,21 @@
+import { dateFromUnix } from "@/lib/date"
+import type { Course } from "@backend.studentdata/student_data_pb"
 import { Radio, Title, UnstyledButton } from "@mantine/core"
+import type { Span } from "@opentelemetry/api"
 import {
-  StaggeredList,
-  useLayout,
   DrawerPanel,
-  useSpan,
-  createFnSpanner,
   Panel,
+  StaggeredList,
+  createFnSpanner,
+  useLayout,
+  useSpan,
 } from "@vcassist/ui"
 import { isToday } from "date-fns"
 import { AnimatePresence, LayoutGroup, motion } from "framer-motion"
 import React, { useMemo, useState } from "react"
 import { MdPages } from "react-icons/md"
-import { twMerge } from "tailwind-merge"
-import type { Span } from "@opentelemetry/api"
-import type { Course } from "@backend.studentdata/student_data_pb"
 import sanitize from "sanitize-html"
-import { dateFromUnix } from "@/lib/date"
+import { twMerge } from "tailwind-merge"
 
 const fnSpan = createFnSpanner("routes.courses")
 

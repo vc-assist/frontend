@@ -1,6 +1,6 @@
+import { CredentialStatus } from "@/backend/proto/vcassist/services/studentdata/v1/api_pb"
 import type { Meta, StoryObj } from "@storybook/react"
 import { CredentialCarousel } from "../credentials"
-import { CredentialStatus } from "@/backend/proto/vcassist/services/studentdata/v1/api_pb"
 
 const meta = {
   title: "VC Assist/Routes/Credential Carousel",
@@ -16,6 +16,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
+    onComplete() {},
     credentials: [
       new CredentialStatus({
         id: "powerschool",
@@ -41,5 +42,6 @@ export const Default: Story = {
 export const NoCreds: Story = {
   args: {
     credentials: [],
+    onComplete() {},
   },
 }

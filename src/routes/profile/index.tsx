@@ -17,9 +17,9 @@ import {
 } from "@vcassist/ui"
 import { useEffect } from "react"
 import { MdCreditCard, MdDelete, MdGetApp, MdRefresh } from "react-icons/md"
+import { twMerge } from "tailwind-merge"
 import ProfileHeader from "./ProfileHeader"
 import { SettingsPanel } from "./Settings"
-import { twMerge } from "tailwind-merge"
 
 const meter = createDefaultMeter("routes.profile")
 const requestData = meter.createCounter("request-data")
@@ -59,7 +59,7 @@ export default function Profile(props: {
           closeCredentials()
         }}
       >
-        <CredentialCarousel credentials={creds} onComplete={() => { }} />
+        <CredentialCarousel credentials={creds} onComplete={() => {}} />
       </Modal>
 
       <ProfileHeader

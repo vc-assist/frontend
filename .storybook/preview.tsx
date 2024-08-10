@@ -3,13 +3,13 @@ import "@mantine/notifications/styles.css"
 import "@vcassist/ui/styles.css"
 
 import type { Preview } from "@storybook/react"
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Foundation } from "@vcassist/ui"
 import {
-  UserProvider,
-  StudentDataRefetchProvider,
   CredentialsProvider,
+  StudentDataRefetchProvider,
+  UserProvider,
 } from "../src/providers"
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 const FoundationProvider = Foundation({
   safeArea: {
@@ -43,11 +43,11 @@ const preview: Preview = {
               },
               // biome-ignore lint/suspicious/noExplicitAny: this is okay
               studentDataClient: undefined as any,
-              logout() { },
+              logout() {},
             }}
           >
             <CredentialsProvider value={[]}>
-              <StudentDataRefetchProvider value={async () => { }}>
+              <StudentDataRefetchProvider value={async () => {}}>
                 <Story />
               </StudentDataRefetchProvider>
             </CredentialsProvider>

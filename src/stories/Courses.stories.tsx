@@ -1,6 +1,6 @@
+import { Course } from "@backend.studentdata/student_data_pb"
 import type { Meta, StoryObj } from "@storybook/react"
 import LessonPlans from "../routes/lesson-plans"
-import { Course } from "@backend.studentdata/student_data_pb"
 
 const meta = {
   title: "VC Assist/Routes/Lesson Plans",
@@ -20,12 +20,14 @@ export const Default: Story = {
       new Course({
         name: "AP Physics C: Mechanics",
         dayName: "A",
-        lessonPlan: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+        lessonPlan:
+          "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
       }),
       new Course({
         name: "Philosophy in Literature (H)",
         dayName: "A",
-        lessonPlan: "<h1>Homework</h1>\n<ul>\n<li>Read something</li>\n<li>Do <a href='https://google.com'>this</a> worksheet.</li>\n</ul>"
+        lessonPlan:
+          "<h1>Homework</h1>\n<ul>\n<li>Read something</li>\n<li>Do <a href='https://google.com'>this</a> worksheet.</li>\n</ul>",
       }),
       new Course({
         name: "Data Structures and Algorithms (H)",
@@ -51,6 +53,6 @@ export const Default: Story = {
         name: "Philosophy of Religion",
         dayName: "B",
       }),
-    ]
+    ],
   },
 }

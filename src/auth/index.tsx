@@ -71,7 +71,7 @@ export function LoginPage(props: {
         tokenRef.current = undefined
         props.onInvalidToken()
       })
-  }, [props.onLogin])
+  }, [props.onLogin, props.onInvalidToken])
 
   if (tokenRef.current) {
     return

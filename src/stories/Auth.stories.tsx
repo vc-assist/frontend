@@ -16,17 +16,20 @@ type Story = StoryObj<typeof meta>
 export const NoToken: Story = {
   args: {
     onLogin() {},
+    onInvalidToken() {},
   },
 }
 export const WaitingForCode: Story = {
   args: {
     state: State.WAITING_FOR_CODE,
     onLogin() {},
+    onInvalidToken() {},
   },
 }
 export const TokenProvided: Story = {
   args: {
     token: "token provided",
     onLogin() {},
+    onInvalidToken() {},
   },
 }

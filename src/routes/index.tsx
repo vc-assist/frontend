@@ -4,8 +4,8 @@ import { Router } from "./Router"
 import Dashboard from "./dashboard"
 import GradeCalculator from "./grade-calculator"
 import GradeTrends from "./grade-trends"
-import Profile from "./profile"
 import LessonPlans from "./lesson-plans"
+import Profile from "./profile"
 
 export function Routes() {
   const { profile } = useUser()

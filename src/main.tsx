@@ -2,13 +2,13 @@ import "@mantine/core/styles.css"
 import "@mantine/notifications/styles.css"
 import "@vcassist/ui/styles.css"
 
+import { signal } from "@preact/signals-react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Foundation, type SafeArea } from "@vcassist/ui/foundation"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 import { App } from "./App"
 import { config, native } from "./singletons"
-import { signal } from "@preact/signals-react"
 
 window.open = (url) => {
   if (!url) {

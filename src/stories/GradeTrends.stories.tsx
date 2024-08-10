@@ -1,6 +1,6 @@
+import { Course, GradeSnapshot } from "@backend.studentdata/student_data_pb"
 import type { Meta, StoryObj } from "@storybook/react"
 import GradeTrends, { GradeInterval } from "../routes/grade-trends/GradeTrends"
-import { Course, GradeSnapshot } from "@backend.studentdata/student_data_pb"
 import { unixDateXDaysBeforeNow } from "./utils"
 
 const meta = {
@@ -27,7 +27,7 @@ const fakeCourses = [
     snapshots: [
       new GradeSnapshot({
         time: unixDateXDaysBeforeNow(48),
-        value: 0.70,
+        value: 0.7,
       }),
       new GradeSnapshot({
         time: unixDateXDaysBeforeNow(12),
@@ -80,20 +80,17 @@ const fakeCourses = [
 
 export const Default: Story = {
   args: {
-    className: "h-[400px]",
     courses: fakeCourses,
   },
 }
 export const All: Story = {
   args: {
-    className: "h-[400px]",
     courses: fakeCourses,
     interval: GradeInterval.ALL,
   },
 }
 export const Week: Story = {
   args: {
-    className: "h-[400px]",
     courses: fakeCourses,
     interval: GradeInterval.WEEK,
   },

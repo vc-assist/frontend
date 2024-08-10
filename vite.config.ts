@@ -45,18 +45,18 @@ export default vite.defineConfig((env) => ({
   plugins: [
     env.mode === "development"
       ? {
-        name: "resolve-native-api",
-        resolveId(id) {
-          if (id === "native_api.js") {
-            return "\0" + "virtual:native_api"
-          }
-        },
-        load(id) {
-          if (id === "\0" + "virtual:native_api") {
-            return "undefined"
-          }
-        },
-      }
+          name: "resolve-native-api",
+          resolveId(id) {
+            if (id === "native_api.js") {
+              return "\0" + "virtual:native_api"
+            }
+          },
+          load(id) {
+            if (id === "\0" + "virtual:native_api") {
+              return "undefined"
+            }
+          },
+        }
       : undefined,
     react(),
   ],

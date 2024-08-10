@@ -6,6 +6,7 @@ import {
 import type { StudentData } from "@backend.studentdata/student_data_pb"
 import { createPromiseClient } from "@connectrpc/connect"
 import { createConnectTransport } from "@connectrpc/connect-web"
+import { useSignals } from "@preact/signals-react/runtime"
 import { persistentSignal } from "@vcassist/ui"
 import { useState } from "react"
 import { z } from "zod"
@@ -22,7 +23,6 @@ import {
 import { Routes } from "./routes"
 import { config } from "./singletons"
 import { StudentDataLoadingPage } from "./studentdata"
-import { useSignals } from "@preact/signals-react/runtime"
 
 const token = persistentSignal({
   key: "token",
