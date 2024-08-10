@@ -6,21 +6,25 @@ import NoopAPI from "@/lib/native/noop"
 export const config: Config = __CONFIG__
 
 async function loadNativeAPI(): Promise<NativeAPI> {
-  // @ts-expect-error
-  const imported = await import("native_api.js").default
+  // the module name is put in a variable to prevent vite from doing any smart tricks with path resolution
+  // on the dynamic import and messing with the path
+  const module = "./native_api.js"
+
+  const imported = (await import(module)).default
   if (imported) {
+    console.log("Loaded native API from ES Module.")
     return imported
   }
 
   // @ts-expect-error
   if (globalThis.nativeAPI) {
+    console.log("Loaded native API from global variable.")
     // @ts-expect-error
     return nativeAPI
   }
 
+  console.log("Loaded no-op API.")
   return new NoopAPI()
 }
 
 export const native = await loadNativeAPI()
-
-console.log("native api", native)

@@ -9,9 +9,6 @@ export default vite.defineConfig((env) => ({
   base: "./",
   build: {
     target: ["chrome89", "edge89", "safari15", "firefox89"],
-    rollupOptions: {
-      external: ["native_api.js"],
-    },
     // 5 MB chunk warning
     chunkSizeWarningLimit: 5000,
     sourcemap: env.mode === "development" ? "inline" : undefined,
