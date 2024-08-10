@@ -1,5 +1,4 @@
 import { MdCalculate, MdDashboard, MdPages, MdTimeline } from "react-icons/md"
-import { twMerge } from "tailwind-merge"
 import { useStudentData, useUser } from "../providers"
 import { Router } from "./Router"
 import Dashboard from "./dashboard"
@@ -48,10 +47,7 @@ export function Routes() {
       }}
       defaultRoute="/dashboard"
       profileRoute={{
-        rootClassName: twMerge(
-          "h-full grid grid-cols-1 grid-rows-[min-content_min-content_1fr]",
-          "lg:grid-cols-5 xl:grid-cols-3 lg:grid-rows-[1fr_2fr] gap-6",
-        ),
+        rootClassName: "h-full",
         render() {
           return <Profile profile={profile} />
         },

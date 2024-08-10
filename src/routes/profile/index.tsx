@@ -59,7 +59,7 @@ export default function Profile(props: {
           closeCredentials()
         }}
       >
-        <CredentialCarousel credentials={creds} />
+        <CredentialCarousel credentials={creds} onComplete={() => { }} />
       </Modal>
 
       <ProfileHeader

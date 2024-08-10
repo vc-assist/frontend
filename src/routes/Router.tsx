@@ -19,17 +19,17 @@ import { twMerge } from "tailwind-merge"
 
 export type Route =
   | {
-      title: string
-      icon: IconType
-      rootClassName?: string
-      render(): JSX.Element
-    }
+    title: string
+    icon: IconType
+    rootClassName?: string
+    render(): JSX.Element
+  }
   | {
-      title: string
-      noNavbar: true
-      rootClassName?: string
-      render(): JSX.Element
-    }
+    title: string
+    noNavbar: true
+    rootClassName?: string
+    render(): JSX.Element
+  }
 
 export type RouteContext = {
   currentRoute: string
@@ -57,25 +57,6 @@ export function Router(props: {
 
   const [routePath, setRoutePath] = useState(props.defaultRoute)
 
-  const Component = props.routes[routePath]?.render
-  if (!Component) {
-    return (
-      <div className="flex h-full">
-        <div className="m-auto">
-          <ErrorPage message="Oh no! You're lost.'">
-            <LinkButton
-              onClick={() => {
-                setRoutePath(props.defaultRoute)
-              }}
-            >
-              Return to the dashboard
-            </LinkButton>
-          </ErrorPage>
-        </div>
-      </div>
-    )
-  }
-
   const navbarItems: {
     title: string
     icon: IconType
@@ -96,6 +77,20 @@ export function Router(props: {
     routePath === PROFILE_ROUTE_PATH
       ? props.profileRoute
       : props.routes[routePath]
+
+  if (!route) {
+    return (
+      <ErrorPage message="Oh no! You're lost.'">
+        <LinkButton
+          onClick={() => {
+            setRoutePath(props.defaultRoute)
+          }}
+        >
+          Return to the dashboard
+        </LinkButton>
+      </ErrorPage>
+    )
+  }
 
   const component = (
     <ComponentWrapper className={route.rootClassName}>
@@ -127,7 +122,7 @@ export function Router(props: {
             />
           }
         />
-        <Component />
+        {component}
       </RouteProvider>
     )
   }
@@ -150,16 +145,16 @@ export function Router(props: {
           <button
             type="button"
             className={twMerge(
-              "p-1 fill-dimmed hover:fill-primary",
+              "p-1 text-dimmed hover:text-primary transition-all rounded-lg",
               routePath === PROFILE_ROUTE_PATH
-                ? "hover:fill-dimmed hover:cursor-default"
+                ? "hover:text-dimmed hover:cursor-default bg-bg-dimmed"
                 : "",
             )}
             disabled={routePath === PROFILE_ROUTE_PATH}
             color="gray"
             onClick={() => setRoutePath(PROFILE_ROUTE_PATH)}
           >
-            <MdSettings />
+            <MdSettings className="size-6" />
           </button>
         }
       />
