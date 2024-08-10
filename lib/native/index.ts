@@ -1,3 +1,5 @@
+import type { SafeArea } from "@vcassist/ui"
+
 export interface NativeAPI {
   /**
    * Launches a url in the browser.
@@ -26,5 +28,10 @@ export interface NativeAPI {
    * Should fire an event when the alternate webview closes.
    */
   onWebviewClosed(fn: () => void): Promise<() => Promise<void>>
+
+  /**
+   * Should return the safe area for the underlying device.
+   */
+  safeArea(): Promise<SafeArea>
 }
 
