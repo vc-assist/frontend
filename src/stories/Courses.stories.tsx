@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import Courses from "../routes/courses"
+import LessonPlans from "../routes/lesson-plans"
 import { Course } from "@backend.studentdata/student_data_pb"
 
 const meta = {
-  title: "VC Assist/Routes/Courses",
-  component: Courses,
+  title: "VC Assist/Routes/Lesson Plans",
+  component: LessonPlans,
   parameters: {
     layout: "default",
   },
   tags: ["autodocs"],
-} satisfies Meta<typeof Courses>
+} satisfies Meta<typeof LessonPlans>
 
 export default meta
 type Story = StoryObj<typeof meta>
