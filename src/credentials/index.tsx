@@ -12,6 +12,7 @@ import {
   ErrorPage,
   LogoutModal,
   Panel,
+  Positioned,
   UserAvatar,
   useImageToColor,
   useStringToMantineColor,
@@ -243,9 +244,9 @@ export function ProvideCredentialsPage(props: {
           refetch()
         }}
       />
-      <div className="fixed top-5 left-5">
+      <Positioned x="left" y="top" padding="2rem">
         <LogoutModal handleLogout={logout} />
-      </div>
+      </Positioned>
     </div>
   )
 }
