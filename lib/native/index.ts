@@ -30,8 +30,8 @@ export interface NativeAPI {
   onWebviewClosed(fn: () => void): Promise<() => Promise<void>>
 
   /**
-   * Should return the safe area for the underlying device.
+   * Should listen to safe area changes (and the initial safe area).
    */
-  safeArea(): Promise<SafeArea>
+  onSafeAreaChange(fn: (safeArea: SafeArea) => void): Promise<void>
 }
 
