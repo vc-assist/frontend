@@ -23,12 +23,7 @@ if (!root) {
 }
 
 const FoundationProvider = Foundation({
-  safeArea: {
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
+  safeArea: await native.safeArea(),
   telemetry: {
     serviceName: "frontend",
     otlp: {
