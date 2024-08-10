@@ -10,11 +10,13 @@ async function loadNativeAPI(): Promise<NativeAPI> {
   // on the dynamic import and messing with the path
   const module = "./native_api.js"
 
-  const imported = (await import(module)).default
-  if (imported) {
-    console.log("Loaded native API from ES Module.")
-    return imported
-  }
+  try {
+    const imported = (await import(module)).default
+    if (imported) {
+      console.log("Loaded native API from ES Module.")
+      return imported
+    }
+  } catch {}
 
   // @ts-expect-error
   if (globalThis.nativeAPI) {
