@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs"
+import path from "node:path"
 import JSON5 from "json5"
 import merge from "lodash.merge"
 import { z } from "zod"
@@ -8,11 +9,11 @@ export const configSchema = z.object({
   endpoints: z.object({
     traces: z.object({
       http_endpoint: z.string(),
-      headers: z.map(z.string(), z.string()).optional(),
+      headers: z.record(z.string(), z.string()).optional(),
     }),
     metrics: z.object({
       http_endpoint: z.string(),
-      headers: z.map(z.string(), z.string()).optional(),
+      headers: z.record(z.string(), z.string()).optional(),
     }),
     student_data_service: z.string(),
     auth_service: z.string(),
@@ -22,11 +23,17 @@ export const configSchema = z.object({
 export type Config = z.TypeOf<typeof configSchema>
 
 export function loadConfig(): z.TypeOf<typeof configSchema> {
-  const defaultConfigJson = readFileSync("config.json5", "utf8")
+  const defaultConfigJson = readFileSync(
+    path.join(__dirname, "../../config.json5"),
+    "utf8",
+  )
   const defaultConfig = configSchema.parse(JSON5.parse(defaultConfigJson))
 
   try {
-    const localConfigJson = readFileSync("config.local.json5", "utf8")
+    const localConfigJson = readFileSync(
+      path.join(__dirname, "../../config.local.json5"),
+      "utf8",
+    )
     const localConfig = configSchema
       .deepPartial()
       .parse(JSON5.parse(localConfigJson))

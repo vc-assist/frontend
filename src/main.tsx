@@ -39,8 +39,14 @@ const FoundationProvider = Foundation({
   telemetry: {
     serviceName: "frontend",
     otlp: {
-      tracesHttpEndpoint: config.endpoints.traces_otlp_http,
-      metricsHttpEndpoint: config.endpoints.metrics_otlp_http,
+      traces: {
+        httpEndpoint: config.endpoints.traces.http_endpoint,
+        headers: config.endpoints.traces.headers,
+      },
+      metrics: {
+        httpEndpoint: config.endpoints.metrics.http_endpoint,
+        headers: config.endpoints.metrics.headers,
+      },
     },
   },
 })
