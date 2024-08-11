@@ -1,8 +1,12 @@
 {
   environment: "dev",
   endpoints: {
-    traces_otlp_http: "http://127.0.0.1:4318/v1/traces",
-    metrics_otlp_http: "http://127.0.0.1:4320/v1/metrics",
+    traces: {
+      http_endpoint: "http://127.0.0.1:4318/v1/traces",
+    },
+    metrics: {
+      http_endpoint: "http://127.0.0.1:4320/v1/metrics",
+    },
     student_data_service: "http://127.0.0.1:9111",
     auth_service: "http://127.0.0.1:8111",
   },

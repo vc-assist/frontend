@@ -6,8 +6,14 @@ import { z } from "zod"
 export const configSchema = z.object({
   environment: z.enum(["dev", "prod"] as const),
   endpoints: z.object({
-    traces_otlp_http: z.string(),
-    metrics_otlp_http: z.string(),
+    traces: z.object({
+      http_endpoint: z.string(),
+      headers: z.map(z.string(), z.string()).optional(),
+    }),
+    metrics: z.object({
+      http_endpoint: z.string(),
+      headers: z.map(z.string(), z.string()).optional(),
+    }),
     student_data_service: z.string(),
     auth_service: z.string(),
   }),
