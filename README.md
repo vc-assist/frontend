@@ -4,27 +4,43 @@
 
 ## Project structure
 
+- `ui/` - a submodule containing the ui component library
 - `backend/` - a submodule containing the backend repository (because the services' gRPC types are stored there)
+- `public/` - static files
 - `lib/` - shared packages
 - `src/` - source code
-   - `routes/` - ui code that does student data viewing
+   - `routes/` - the pages you see after logging in, providing credentials & fetching data 
+      - `dashboard/` - dashboard route
+      - `grade-calculator/` - necessary score & what if calculator.
+      - `grade-trends/` - grade trends page
+      - `lesson-plans/` - rudimentary lesson plans (while structured moodle is still development)
+      - `profile/` - profile page
+      - `CourseChip.tsx` - a shared component used in these routes (the thing that pops up when you click on a course name)
+      - `Router.tsx` - the component that handles routing and the app layout
+      - `index.tsx` - the component that specifies which routes exist and uses `Router.tsx`
    - `auth/` - ui code that handles logging in
    - `credentials/` - ui code that handles providing credentials
    - `studentdata/` - ui code that handles fetching student data
-   - `singletons.ts` - singletons: `config`, `native`
-   - `providers.ts` - react context
+   - `singletons.ts` - singletons in general
+   - `providers.ts` - react context singletons
    - `App.tsx` - the component that handles the main setup logic (login, credentials, then data fetch)
-   - `main.tsx` - the ui entrypoint
+   - `main.tsx` - the ui entrypoint, sets up providers, `@vcassist/ui` and other foundational things
 
 ## Commands
 
 - `git submodule update --remote` - updates all submodules
+- `pnpm dev` - starts a hot-reload dev server using vite.
+- `pnpm storybook` - runs storybook.
+- `pnpm lint` - lints the entire frontend using biome and tsc.
+- `pnpm build` - transpiles & bundles the frontend into the `dist/` directory.
+- `pnpm preview` - starts a dev server using the result of a `pnpm run build` (useful if there are differences between build and dev because of vite).
 
 ## Implementing the Native API
 
 The frontend relies on some native APIs to work. This repository does not contain any native wrappers itself, those are found in other repositories like the following:
 
-- [vc-assist/capacitor](https://github.com/vc-assist/capacitor)
+- [vc-assist/mobile](https://github.com/vc-assist/mobile)
+- [vc-assist/desktop](https://github.com/vc-assist/desktop)
 
 There are 2 ways to expose the native API to the frontend at runtime, the different ways will be tried in the order they are defined.
 
