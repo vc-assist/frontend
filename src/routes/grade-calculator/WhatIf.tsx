@@ -208,8 +208,9 @@ const columnDef = [
           className="min-w-[50px]"
           defaultValue={assignment.scored}
           onBlur={(event) => {
-            assignment.scored = Number.parseInt(event.currentTarget.value)
-            if (Number.isNaN(assignment.scored)) {
+            const parsed = Number.parseInt(event.currentTarget.value)
+            assignment.scored = parsed
+            if (Number.isNaN(parsed)) {
               return
             }
             assignment.ctx.onUpdate(assignment)
@@ -233,8 +234,9 @@ const columnDef = [
           className="min-w-[50px] select-all"
           defaultValue={assignment.total}
           onBlur={(event) => {
-            assignment.total = Number.parseInt(event.currentTarget.value)
-            if (Number.isNaN(assignment.total)) {
+            const parsed = Number.parseInt(event.currentTarget.value)
+            assignment.total = parsed
+            if (Number.isNaN(parsed)) {
               return
             }
             assignment.ctx.onUpdate(assignment)
@@ -514,9 +516,16 @@ export function WhatIfInterface(props: {
     },
     onUpdate: (a) => {
       startTransition(() => {
-        replacedAssignments.value = {
-          ...replacedAssignments.value,
-          [a.index]: a,
+        switch (a.state) {
+          case WhatIfAssignmentState.ADDED:
+            addedAssignments.value = [...addedAssignments.value]
+            break
+          case WhatIfAssignmentState.REPLACED:
+            replacedAssignments.value = {
+              ...replacedAssignments.value,
+              [a.index]: a,
+            }
+            break
         }
       })
     },
@@ -574,26 +583,29 @@ export function WhatIfInterface(props: {
   })
 
   const whatIfAssignments = useComputed(() => {
-    const totalCount: {
+    const assignmentTypeGroups: {
       assignmentTypeName?: string
       assignments: WhatIfAssignment[]
     }[] = []
 
     for (const assignment of addedAssignments.value) {
-      const counter = totalCount.find(
+      const group = assignmentTypeGroups.find(
         (v) => v.assignmentTypeName === assignment.assignmentTypeName,
       )
-      if (counter) {
-        counter.assignments.push(assignment)
+
+      assignment.index += baseAssignments.value.length
+
+      if (group) {
+        group.assignments.push(assignment)
         continue
       }
-      totalCount.push({
+      assignmentTypeGroups.push({
         assignmentTypeName: assignment.assignmentTypeName,
         assignments: [assignment],
       })
     }
 
-    for (const group of totalCount) {
+    for (const group of assignmentTypeGroups) {
       let i = 1
       for (const assignment of group.assignments) {
         assignment.name = `+ ${
