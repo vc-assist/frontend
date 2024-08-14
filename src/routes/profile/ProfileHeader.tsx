@@ -17,7 +17,7 @@ export default function ProfileHeader(
         props.className,
       )}
     >
-      <div className="relative">
+      <div className="relative overflow-visible">
         <UserAvatar
           name={props.name}
           email={props.email}
