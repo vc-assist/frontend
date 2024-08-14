@@ -58,8 +58,8 @@ export function SettingsPanel(props: {
         />
         <BooleanOption
           key="disable-grade-viz"
-          title="Disable Grade Visualizers"
-          description="Disable the progress circle shown next to the grades on the dashboard."
+          title="Disable Grade Warnings"
+          description="Disable the coloring of grades as well as the progress circle shown next to the grades on the dashboard."
           checked={settings.dashboard.disableGradeVisualizers.value}
           onChange={(value) => {
             settings.dashboard.disableGradeVisualizers.value = !value

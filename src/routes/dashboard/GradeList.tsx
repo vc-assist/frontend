@@ -14,7 +14,7 @@ export default function GradeList(props: {
   return (
     <WidgetPanel
       className={props.className}
-      title="Courses"
+      title="Grade List"
       titleBarRight={
         <div>
           <InfoTooltip message="Our grade calculations aren't perfect. If the calculated result is more than 1% off the official grade, we will display the official grade instead." />
@@ -43,7 +43,7 @@ export default function GradeList(props: {
                 />
               </div>
 
-              {!props.plain && grade > 0 ? (
+              {!props.plain && grade >= 0 ? (
                 <RingProgress
                   size={24}
                   thickness={3}
@@ -58,7 +58,7 @@ export default function GradeList(props: {
                 <div />
               )}
 
-              {grade > 0 ? (
+              {grade >= 0 ? (
                 <p className="text-[15px] whitespace-nowrap">{grade}%</p>
               ) : (
                 <div />
