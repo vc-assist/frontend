@@ -22,7 +22,7 @@ export default function ProfileHeader(
           name={props.name}
           email={props.email}
           picture={props.picture}
-          className={twMerge(avatarClass, "absolute top-0 left-0 blur-3xl")}
+          className={twMerge(avatarClass, "absolute top-0 left-0 blur-3xl overflow-visible")}
         />
         <UserAvatar
           name={props.name}
