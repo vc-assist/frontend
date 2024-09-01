@@ -13,7 +13,6 @@
       - `dashboard/` - dashboard route
       - `grade-calculator/` - necessary score & what if calculator.
       - `grade-trends/` - grade trends page
-      - `lesson-plans/` - rudimentary lesson plans (while structured moodle is still development)
       - `profile/` - profile page
       - `CourseChip.tsx` - a shared component used in these routes (the thing that pops up when you click on a course name)
       - `Router.tsx` - the component that handles routing and the app layout

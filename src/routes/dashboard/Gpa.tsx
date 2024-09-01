@@ -35,7 +35,10 @@ export default function Gpa(props: {
 
   return (
     <Panel
-      className={twMerge("flex h-full items-center justify-center relative", props.className)}
+      className={twMerge(
+        "flex h-full items-center justify-center relative",
+        props.className,
+      )}
       ref={ref}
       noPadding
     >

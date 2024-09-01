@@ -1,10 +1,9 @@
-import { MdCalculate, MdDashboard, MdPages, MdTimeline } from "react-icons/md"
+import { MdCalculate, MdDashboard, MdTimeline } from "react-icons/md"
 import { useStudentData, useUser } from "../providers"
 import { Router } from "./Router"
 import Dashboard from "./dashboard"
 import GradeCalculator from "./grade-calculator"
 import GradeTrends from "./grade-trends"
-import LessonPlans from "./lesson-plans"
 import Profile from "./profile"
 
 export function Routes() {
@@ -20,13 +19,6 @@ export function Routes() {
           icon: MdDashboard,
           render() {
             return <Dashboard data={data} />
-          },
-        },
-        "/lesson-plans": {
-          title: "Lesson Plans",
-          icon: MdPages,
-          render() {
-            return <LessonPlans courses={data.courses} />
           },
         },
         "/grade-calculator": {
