@@ -1,5 +1,5 @@
 import { dateFromUnix } from "@/lib/date"
-import type { Course } from "@backend.studentdata/student_data_pb"
+import type { CourseData } from "@backend.sis/data_pb"
 import {
   ActionIcon,
   Button,
@@ -148,8 +148,8 @@ function editableCell({
 }
 
 const columnDef = [
-  columnHelper.accessor("name", {
-    id: "name",
+  columnHelper.accessor("title", {
+    id: "title",
     header(ctx) {
       return <TableHeader ctx={ctx} title="Assignment" width="50%" />
     },
@@ -171,45 +171,46 @@ const columnDef = [
         return true
       }
       for (const { item } of info.original.ctx.filterResults) {
-        if (item === info.original.name) {
+        if (item === info.original.title) {
           return true
         }
       }
       return false
     },
   }),
-  columnHelper.accessor("scored", {
-    id: "scored",
+  columnHelper.accessor("pointsEarned", {
+    id: "pointsEarned",
     header(ctx) {
       return <TableHeader ctx={ctx} title="Scored" width="10%" />
     },
     size: 200,
     cell: editableCell({
       fallback: ({ assignment }) =>
-        assignment.scored !== undefined ? (
+        assignment.pointsEarned !== undefined ? (
           <Text
             className="select-all"
             style={{
               color:
-                assignment.scored !== undefined &&
-                assignment.total !== undefined
+                assignment.pointsEarned !== undefined &&
+                assignment.pointsPossible !== undefined
                   ? Color.fromGrade(
-                      (assignment.scored / assignment.total) * 100,
+                      (assignment.pointsEarned / assignment.pointsPossible) *
+                        100,
                     )
                   : undefined,
             }}
           >
-            {assignment.scored}
+            {assignment.pointsEarned}
           </Text>
         ) : undefined,
       edit: ({ assignment }) => (
         <NumberInput
           hideControls={assignment.ctx.layout === "mobile"}
           className="min-w-[50px]"
-          defaultValue={assignment.scored}
+          defaultValue={assignment.pointsEarned}
           onBlur={(event) => {
             const parsed = Number.parseInt(event.currentTarget.value)
-            assignment.scored = parsed
+            assignment.pointsEarned = parsed
             if (Number.isNaN(parsed)) {
               return
             }
@@ -219,23 +220,23 @@ const columnDef = [
       ),
     }),
   }),
-  columnHelper.accessor("total", {
-    id: "total",
+  columnHelper.accessor("pointsPossible", {
+    id: "pointsPossible",
     header: (ctx) => <TableHeader ctx={ctx} title="Total" width="10%" />,
     size: 200,
     cell: editableCell({
       fallback: ({ assignment }) =>
-        assignment.total !== undefined ? (
-          <Text className="select-all">{assignment.total}</Text>
+        assignment.pointsPossible !== undefined ? (
+          <Text className="select-all">{assignment.pointsPossible}</Text>
         ) : undefined,
       edit: ({ assignment }) => (
         <NumberInput
           hideControls={assignment.ctx.layout === "mobile"}
           className="min-w-[50px] select-all"
-          defaultValue={assignment.total}
+          defaultValue={assignment.pointsPossible}
           onBlur={(event) => {
             const parsed = Number.parseInt(event.currentTarget.value)
-            assignment.total = parsed
+            assignment.pointsPossible = parsed
             if (Number.isNaN(parsed)) {
               return
             }
@@ -245,20 +246,20 @@ const columnDef = [
       ),
     }),
   }),
-  columnHelper.accessor("assignmentTypeName", {
-    id: "assignmentTypeName",
+  columnHelper.accessor("category", {
+    id: "category",
     header: (ctx) => <TableHeader ctx={ctx} title="Category" width="20%" />,
     cell: editableCell({
       fallback: ({ assignment }) =>
-        assignment.assignmentTypeName !== undefined ? (
-          <Text className="select-all">{assignment.assignmentTypeName}</Text>
+        assignment.category !== undefined ? (
+          <Text className="select-all">{assignment.category}</Text>
         ) : undefined,
       edit: ({ assignment }) => (
         <Select
           data={assignment.ctx.assignmentTypes}
-          value={assignment.assignmentTypeName}
+          value={assignment.category}
           onChange={(value) => {
-            assignment.assignmentTypeName = value ?? undefined
+            assignment.category = value ?? undefined
             assignment.ctx.onUpdate(assignment)
           }}
         />
@@ -446,7 +447,7 @@ type WhatIfTableContext = {
 
 export function WhatIfInterface(props: {
   parentSpan: Span
-  course: Course
+  course: CourseData
   assignmentTypes: BaseAssignmentType[]
 }) {
   useSignals()
@@ -555,14 +556,14 @@ export function WhatIfInterface(props: {
 
   const baseAssignments = useComputed(() => {
     return course.value.assignments.map((a, i): WhatIfAssignment => {
-      const date = dateFromUnix(a.time)
+      const date = dateFromUnix(a.dueDate)
       const value: WhatIfAssignment = {
         index: i,
-        name: a.name,
-        assignmentTypeName: a.assignmentTypeName,
+        title: a.title,
+        category: a.category,
         time: date,
-        scored: a.scored,
-        total: a.total,
+        pointsEarned: a.pointsEarned,
+        pointsPossible: a.pointsPossible,
         state: WhatIfAssignmentState.NORMAL,
         disabled: false,
         ctx: ctx.value,
@@ -590,7 +591,7 @@ export function WhatIfInterface(props: {
 
     for (const assignment of addedAssignments.value) {
       const group = assignmentTypeGroups.find(
-        (v) => v.assignmentTypeName === assignment.assignmentTypeName,
+        (v) => v.assignmentTypeName === assignment.category,
       )
 
       assignment.index += baseAssignments.value.length
@@ -600,7 +601,7 @@ export function WhatIfInterface(props: {
         continue
       }
       assignmentTypeGroups.push({
-        assignmentTypeName: assignment.assignmentTypeName,
+        assignmentTypeName: assignment.category,
         assignments: [assignment],
       })
     }
@@ -608,10 +609,8 @@ export function WhatIfInterface(props: {
     for (const group of assignmentTypeGroups) {
       let i = 1
       for (const assignment of group.assignments) {
-        assignment.name = `+ ${
-          assignment.assignmentTypeName
-            ? assignment.assignmentTypeName
-            : "Unknown"
+        assignment.title = `+ ${
+          assignment.category ? assignment.category : "Unknown"
         } | ${i}/${group.assignments.length}`
         i++
       }
@@ -664,7 +663,7 @@ export function WhatIfInterface(props: {
         ...addedAssignments.value,
         {
           index: addedAssignmentsIdOffset.current++,
-          name: "",
+          title: "",
           time: new Date(),
           state: WhatIfAssignmentState.ADDED,
           disabled: false,
@@ -678,7 +677,7 @@ export function WhatIfInterface(props: {
     if (!whatIfAssignments.value) {
       return
     }
-    return new Fuse(whatIfAssignments.value.map((a) => a.name))
+    return new Fuse(whatIfAssignments.value.map((a) => a.title))
   })
 
   const filterResults = useComputed(() => {

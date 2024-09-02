@@ -1,9 +1,9 @@
-import type { Course } from "@backend.studentdata/student_data_pb"
-import { Button, Text } from "@mantine/core"
+import type { CourseData } from "@backend.sis/data_pb"
+import { Text } from "@mantine/core"
 import { LinkButton, PopoutChip } from "@vcassist/ui"
 import { Color } from "@vcassist/ui/lib/color"
 import { type CSSProperties, useState } from "react"
-import { MdClass, MdInfo, MdInfoOutline, MdVideocam } from "react-icons/md"
+import { MdClass, MdInfo, MdInfoOutline } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
 
 const iconStyle: Partial<CSSProperties> = {
@@ -14,7 +14,7 @@ const iconStyle: Partial<CSSProperties> = {
 }
 
 export default function CourseChip(props: {
-  course: Course
+  course: CourseData
   classNames?: Partial<{
     root: string
     text: string
@@ -25,7 +25,7 @@ export default function CourseChip(props: {
 }) {
   const [opened, setOpened] = useState(false)
   const dayName = props.course.dayName
-  const meetingLink = props.course.remoteMeetingLink
+  // const meetingLink = props.course.remoteMeetingLink
   const overallGrade = Math.round(props.course.overallGrade)
 
   return (
@@ -82,19 +82,19 @@ export default function CourseChip(props: {
             ) : undefined}
           </div>
 
-          {meetingLink ? (
-            <Button
-              size="xs"
-              className="w-fit"
-              variant="gradient"
-              onClick={() => {
-                window.open(meetingLink)
-              }}
-              leftSection={<MdVideocam size={18} />}
-            >
-              Meeting
-            </Button>
-          ) : undefined}
+          {/* {meetingLink ? ( */}
+          {/*   <Button */}
+          {/*     size="xs" */}
+          {/*     className="w-fit" */}
+          {/*     variant="gradient" */}
+          {/*     onClick={() => { */}
+          {/*       window.open(meetingLink) */}
+          {/*     }} */}
+          {/*     leftSection={<MdVideocam size={18} />} */}
+          {/*   > */}
+          {/*     Meeting */}
+          {/*   </Button> */}
+          {/* ) : undefined} */}
 
           {dayName ? (
             <div className="flex gap-1 col-span-2">

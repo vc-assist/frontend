@@ -1,8 +1,5 @@
 import { dateFromUnix } from "@/lib/date"
-import type {
-  Course,
-  GradeSnapshot,
-} from "@backend.studentdata/student_data_pb"
+import type { CourseData, GradeSnapshot } from "@backend.sis/data_pb"
 import { hsla, toRgba } from "color2k"
 import { type Duration, format, parse } from "date-fns"
 import { compareDesc, sub } from "date-fns/fp"
@@ -40,7 +37,7 @@ export type GradeChangeAnalysis = {
 }
 
 export function analyzeGradeChange(
-  courses: Course[],
+  courses: CourseData[],
   options: GradeChangeAnalysisOptions = {
     change: {
       from: { weeks: 1 },

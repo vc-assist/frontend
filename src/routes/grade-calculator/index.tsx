@@ -2,7 +2,7 @@ export * from "./logic"
 export * from "./WhatIf"
 export * from "./NecessaryScore"
 
-import type { Course } from "@backend.studentdata/student_data_pb"
+import type { CourseData } from "@backend.sis/data_pb"
 import { Code, Select, Text, Title } from "@mantine/core"
 import { Tabs } from "@mantine/core"
 import { useForm } from "@mantine/form"
@@ -23,7 +23,7 @@ enum CalcTab {
 export default function GradeCalculator({
   courses,
   className,
-}: { className?: string; courses: Course[] }) {
+}: { className?: string; courses: CourseData[] }) {
   const span = useSpan(fnSpan, undefined, "calculator")
 
   const layout = useLayout()
@@ -179,7 +179,7 @@ export default function GradeCalculator({
         <WhatIfInterface
           parentSpan={span}
           course={course}
-          assignmentTypes={course.assignmentTypes.map((t) => ({
+          assignmentTypes={course.assignmentCategories.map((t) => ({
             name: t.name,
             courseName: course.name,
             weight: t.weight,

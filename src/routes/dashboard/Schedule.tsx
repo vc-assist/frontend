@@ -1,5 +1,5 @@
 import { dateFromUnix } from "@/lib/date"
-import type { Course } from "@backend.studentdata/student_data_pb"
+import type { CourseData } from "@backend.sis/data_pb"
 import { ActionIcon, Badge, Text, Timeline } from "@mantine/core"
 import { WidgetPanel, useCurrentTime } from "@vcassist/ui"
 import {
@@ -20,12 +20,11 @@ import {
   MdKeyboardArrowLeft,
   MdKeyboardArrowRight,
   MdRestore,
-  MdVideocam,
 } from "react-icons/md"
 import CourseChip from "../CourseChip"
 
 export default function Schedule(props: {
-  courses: Course[]
+  courses: CourseData[]
   dayNames: string[]
   className?: string
 }) {
@@ -39,7 +38,7 @@ export default function Schedule(props: {
     let maxDate = new Date()
     for (const c of props.courses) {
       for (const meeting of c.meetings) {
-        const startDate = dateFromUnix(meeting.startTime)
+        const startDate = dateFromUnix(meeting.start)
         if (isBefore(startDate, minDate)) {
           minDate = startDate
         }
@@ -53,14 +52,14 @@ export default function Schedule(props: {
 
   const sections = useMemo(() => {
     const result: {
-      course: Course
+      course: CourseData
       startTime: Date
       endTime: Date
     }[] = []
     for (const c of props.courses) {
       for (const meeting of c.meetings) {
-        const startDate = dateFromUnix(meeting.startTime)
-        const endDate = dateFromUnix(meeting.endTime)
+        const startDate = dateFromUnix(meeting.start)
+        const endDate = dateFromUnix(meeting.stop)
         if (isSameDay(now, startDate)) {
           result.push({
             course: c,
@@ -103,23 +102,23 @@ export default function Schedule(props: {
         })} left`
       }
 
-      const remoteMeetingLink = course.remoteMeetingLink
+      // const remoteMeetingLink = course.remoteMeetingLink
 
       items.push(
         <Timeline.Item key={course.name}>
           <div className="flex gap-3 items-center">
             <CourseChip dayNames={props.dayNames} course={course} />
-            {remoteMeetingLink ? (
-              <ActionIcon
-                size="sm"
-                variant="gradient"
-                onClick={() => {
-                  window.open(remoteMeetingLink)
-                }}
-              >
-                <MdVideocam />
-              </ActionIcon>
-            ) : undefined}
+            {/* {remoteMeetingLink ? ( */}
+            {/*   <ActionIcon */}
+            {/*     size="sm" */}
+            {/*     variant="gradient" */}
+            {/*     onClick={() => { */}
+            {/*       window.open(remoteMeetingLink) */}
+            {/*     }} */}
+            {/*   > */}
+            {/*     <MdVideocam /> */}
+            {/*   </ActionIcon> */}
+            {/* ) : undefined} */}
           </div>
           <Text className="font-normal" c="dimmed">
             {[

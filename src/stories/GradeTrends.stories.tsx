@@ -1,4 +1,4 @@
-import { Course, GradeSnapshot } from "@backend.studentdata/student_data_pb"
+import { CourseData, GradeSnapshot } from "@backend.sis/data_pb"
 import type { Meta, StoryObj } from "@storybook/react"
 import GradeTrends, { GradeInterval } from "../routes/grade-trends/GradeTrends"
 import { unixDateXDaysBeforeNow } from "./utils"
@@ -22,7 +22,7 @@ export const NoCourses: Story = {
 }
 
 const fakeCourses = [
-  new Course({
+  new CourseData({
     name: "AP US History",
     snapshots: [
       new GradeSnapshot({
@@ -51,7 +51,7 @@ const fakeCourses = [
       }),
     ],
   }),
-  new Course({
+  new CourseData({
     name: "AP Calculus BC",
     snapshots: [
       new GradeSnapshot({

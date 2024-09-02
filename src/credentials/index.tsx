@@ -1,9 +1,7 @@
 import "@mantine/carousel/styles.css"
 
-import {
-  type CredentialStatus,
-  GetCredentialStatusRequest,
-} from "@backend.studentdata/api_pb"
+import type { CredentialStatus } from "@backend.keychain/auth_flow_pb"
+import { GetCredentialStatusRequest } from "@backend.sis/api_pb"
 import { Carousel, type Embla } from "@mantine/carousel"
 import { Avatar, Button, Title, rem } from "@mantine/core"
 import { useQuery } from "@tanstack/react-query"
@@ -47,7 +45,7 @@ function CredentialForm(props: {
       form = (
         <UsernamePasswordForm
           color={color}
-          credentialId={props.status.id}
+          credentialId={props.status.name}
           loginFlow={props.status.loginFlow}
           onSubmit={submit}
         />
@@ -57,7 +55,7 @@ function CredentialForm(props: {
       form = (
         <OAuthForm
           color={color}
-          credentialId={props.status.id}
+          credentialId={props.status.name}
           loginFlow={props.status.loginFlow}
           onSubmit={submit}
         />
@@ -207,11 +205,10 @@ export function ProvideCredentialsPage(props: {
       studentDataClient
         .getCredentialStatus(new GetCredentialStatusRequest())
         .then((res) => {
-          const statuses = res.statuses
-          if (!statuses) {
-            throw new Error("Credential statuses are undefined.")
+          if (!res.status) {
+            throw new Error("Credential status is undefined.")
           }
-          return statuses
+          return [res.status]
         }),
   })
 

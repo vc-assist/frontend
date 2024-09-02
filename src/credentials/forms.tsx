@@ -1,8 +1,6 @@
 import { native } from "@/src/singletons"
-import {
-  type CredentialStatus,
-  ProvideCredentialRequest,
-} from "@backend.studentdata/api_pb"
+import type { CredentialStatus } from "@backend.keychain/auth_flow_pb"
+import { ProvideCredentialRequest } from "@backend.sis/api_pb"
 import { Button, PasswordInput, Text, TextInput } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { SpanStatusCode } from "@opentelemetry/api"
@@ -90,9 +88,8 @@ export function OAuthForm(props: {
 
                       await studentDataClient.provideCredential(
                         new ProvideCredentialRequest({
-                          id: props.credentialId,
-                          provided: {
-                            case: "oauthToken",
+                          credential: {
+                            case: "token",
                             value: {
                               token: resText,
                             },
@@ -184,8 +181,7 @@ export function UsernamePasswordForm(props: {
       fnSpan(undefined, "provideUsernamePassword", async () => {
         await studentDataClient.provideCredential(
           new ProvideCredentialRequest({
-            id: props.credentialId,
-            provided: {
+            credential: {
               case: "usernamePassword",
               value: {
                 username: username,

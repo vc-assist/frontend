@@ -25,13 +25,13 @@ export default vite.defineConfig((env) => ({
         "auth",
         "v1",
       ),
-      "@backend.studentdata": join(
+      "@backend.sis": join(
         __dirname,
         "backend",
         "proto",
         "vcassist",
         "services",
-        "studentdata",
+        "sis",
         "v1",
       ),
     },

@@ -11,10 +11,10 @@ export type GradeCategories = Record<string, GradeCategoryMetadata>
 // overall_grade = w1 * cat_grade_1 + w2 * cat_grade_2  + ...
 
 export type BaseAssignment = {
-  name: string
-  scored?: number
-  total?: number
-  assignmentTypeName?: string
+  title: string
+  pointsEarned?: number
+  pointsPossible?: number
+  category?: string
 }
 
 export type BaseAssignmentType = {
@@ -47,19 +47,19 @@ export function calculateGradeCategories(
 
   for (const a of assignments) {
     if (
-      a.scored === undefined ||
-      a.total === undefined ||
-      a.assignmentTypeName === undefined
+      a.pointsEarned === undefined ||
+      a.pointsPossible === undefined ||
+      a.category === undefined
     ) {
       continue
     }
 
-    const assignmentType = categoryAggregation.get(a.assignmentTypeName)
+    const assignmentType = categoryAggregation.get(a.category)
     if (!assignmentType) {
       continue
     }
-    assignmentType.sum += a.scored
-    assignmentType.total += a.total
+    assignmentType.sum += a.pointsEarned
+    assignmentType.total += a.pointsPossible
   }
 
   const result: GradeCategories = {}

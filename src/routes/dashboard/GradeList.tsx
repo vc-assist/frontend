@@ -1,11 +1,11 @@
-import type { Course } from "@backend.studentdata/student_data_pb"
+import type { CourseData } from "@backend.sis/data_pb"
 import { Color, InfoTooltip, RingProgress, WidgetPanel } from "@vcassist/ui"
 import { Fragment } from "react"
 import CourseChip from "../CourseChip"
 
 export default function GradeList(props: {
   className?: string
-  courses: Course[]
+  courses: CourseData[]
   dayNames: string[]
   plain?: boolean
 }) {

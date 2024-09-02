@@ -1,8 +1,8 @@
 import {
-  Assignment,
-  AssignmentType,
-  Course,
-} from "@backend.studentdata/student_data_pb"
+  AssignmentCategory,
+  AssignmentData,
+  CourseData,
+} from "@backend.sis/data_pb"
 import type { Meta, StoryObj } from "@storybook/react"
 import GradeCalculator from "../routes/grade-calculator"
 import { unixDateXDaysBeforeNow } from "./utils"
@@ -22,54 +22,54 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   args: {
     courses: [
-      new Course({
+      new CourseData({
         name: "AP US History",
-        assignmentTypes: [
-          new AssignmentType({
+        assignmentCategories: [
+          new AssignmentCategory({
             name: "Mastery",
             weight: 0.4,
           }),
-          new AssignmentType({
+          new AssignmentCategory({
             name: "Progress",
             weight: 0.3,
           }),
-          new AssignmentType({
+          new AssignmentCategory({
             name: "Classwork/Homework",
             weight: 0.15,
           }),
-          new AssignmentType({
+          new AssignmentCategory({
             name: "Final",
             weight: 0.15,
           }),
         ],
         assignments: [
-          new Assignment({
-            name: "In-class essay",
-            scored: 5,
-            total: 10,
-            assignmentTypeName: "Mastery",
-            time: unixDateXDaysBeforeNow(5),
+          new AssignmentData({
+            title: "In-class essay",
+            pointsEarned: 5,
+            pointsPossible: 10,
+            category: "Mastery",
+            dueDate: unixDateXDaysBeforeNow(5),
           }),
-          new Assignment({
-            name: "Take notes",
-            scored: 9,
-            total: 10,
-            assignmentTypeName: "Classwork/Homework",
-            time: unixDateXDaysBeforeNow(3),
+          new AssignmentData({
+            title: "Take notes",
+            pointsEarned: 9,
+            pointsPossible: 10,
+            category: "Classwork/Homework",
+            dueDate: unixDateXDaysBeforeNow(3),
           }),
-          new Assignment({
-            name: "Take notes",
-            scored: 10,
-            total: 10,
-            assignmentTypeName: "Classwork/Homework",
-            time: unixDateXDaysBeforeNow(2),
+          new AssignmentData({
+            title: "Take notes",
+            pointsEarned: 10,
+            pointsPossible: 10,
+            category: "Classwork/Homework",
+            dueDate: unixDateXDaysBeforeNow(2),
           }),
-          new Assignment({
-            name: "Quiz",
-            scored: 17,
-            total: 20,
-            assignmentTypeName: "Progress",
-            time: unixDateXDaysBeforeNow(1),
+          new AssignmentData({
+            title: "Quiz",
+            pointsEarned: 17,
+            pointsPossible: 20,
+            category: "Progress",
+            dueDate: unixDateXDaysBeforeNow(1),
           }),
         ],
       }),

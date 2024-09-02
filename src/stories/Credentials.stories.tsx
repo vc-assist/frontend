@@ -1,4 +1,4 @@
-import { CredentialStatus } from "@/backend/proto/vcassist/services/studentdata/v1/api_pb"
+import { CredentialStatus } from "@backend.keychain/auth_flow_pb"
 import type { Meta, StoryObj } from "@storybook/react"
 import { CredentialCarousel } from "../credentials"
 
@@ -19,7 +19,6 @@ export const Default: Story = {
     onComplete() {},
     credentials: [
       new CredentialStatus({
-        id: "powerschool",
         name: "PowerSchool",
         provided: false,
         loginFlow: {
@@ -28,7 +27,6 @@ export const Default: Story = {
         },
       }),
       new CredentialStatus({
-        id: "moodle",
         name: "Moodle",
         provided: true,
         loginFlow: {

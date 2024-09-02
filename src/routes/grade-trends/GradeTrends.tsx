@@ -1,4 +1,4 @@
-import type { Course } from "@backend.studentdata/student_data_pb"
+import type { CourseData } from "@backend.sis/data_pb"
 import { SegmentedControl, Title, UnstyledButton } from "@mantine/core"
 import { Panel } from "@vcassist/ui"
 import type { ApexOptions } from "apexcharts"
@@ -44,7 +44,7 @@ export enum GradeInterval {
 }
 
 export default function Grades(props: {
-  courses: Course[]
+  courses: CourseData[]
   interval?: GradeInterval
 }) {
   const [showOptions, setShowOptions] = useState(false)

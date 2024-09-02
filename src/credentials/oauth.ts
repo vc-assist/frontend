@@ -1,4 +1,4 @@
-import type { OAuthFlow } from "@backend.studentdata/api_pb"
+import type { OAuthFlow } from "@backend.keychain/auth_flow_pb"
 import { z } from "zod"
 
 function encodeHex(buff: Uint8Array): string {

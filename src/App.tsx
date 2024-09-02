@@ -1,9 +1,6 @@
-import { StudentDataService } from "@backend.studentdata/api_connect"
-import {
-  type CredentialStatus,
-  RefreshDataRequest,
-} from "@backend.studentdata/api_pb"
-import type { StudentData } from "@backend.studentdata/student_data_pb"
+import type { CredentialStatus } from "@backend.keychain/auth_flow_pb"
+import { SIService } from "@backend.sis/api_connect"
+import { type Data, RefreshDataRequest } from "@backend.sis/api_pb"
 import { createPromiseClient } from "@connectrpc/connect"
 import { createConnectTransport } from "@connectrpc/connect-web"
 import { useSignals } from "@preact/signals-react/runtime"
@@ -41,7 +38,7 @@ export function createClient(token: string) {
       },
     ],
   })
-  return createPromiseClient(StudentDataService, transport)
+  return createPromiseClient(SIService, transport)
 }
 
 export function App() {
@@ -49,7 +46,7 @@ export function App() {
 
   const [user, setUser] = useState<UserContext>()
   const [completedCreds, setCompletedCreds] = useState<CredentialStatus[]>()
-  const [studentData, setStudentData] = useState<StudentData>()
+  const [studentData, setStudentData] = useState<Data>()
 
   if (!user) {
     return (
@@ -109,10 +106,10 @@ export function App() {
               const res = await user.studentDataClient.refreshData(
                 new RefreshDataRequest(),
               )
-              if (!res.refreshed) {
+              if (!res.data) {
                 throw new Error("Empty refreshed data!")
               }
-              setStudentData(res.refreshed)
+              setStudentData(res.data)
             })
           }}
         >

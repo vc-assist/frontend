@@ -1,4 +1,4 @@
-import type { Course } from "@backend.studentdata/student_data_pb"
+import type { CourseData } from "@backend.sis/data_pb"
 import { Button, NumberInput, Slider, Text, Title } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import type { Span } from "@opentelemetry/api"
@@ -42,14 +42,14 @@ function generateMarks(count: number): {
 
 function CourseDependentForm(props: {
   className?: string
-  course: Course
+  course: CourseData
   selectedCategory?: RingSection
   onChooseCategory: (category: RingSection) => void
   children?: React.ReactNode
 }) {
   const categoryRecord = calculateGradeCategories(
     props.course.assignments,
-    props.course.assignmentTypes,
+    props.course.assignmentCategories,
   )
   const sections = getSectionsFromCategories(categoryRecord)
 
@@ -92,7 +92,7 @@ function CourseDependentForm(props: {
 }
 
 export default function NecessaryScore(props: {
-  course?: Course
+  course?: CourseData
   parentSpan: Span
 }) {
   const span = useSpan(fnSpan, props.parentSpan, "necessary-score")
@@ -176,7 +176,7 @@ export default function NecessaryScore(props: {
 
           const information = calculateGradeCategories(
             props.course.assignments,
-            props.course.assignmentTypes,
+            props.course.assignmentCategories,
           )
 
           const grade = form.values.grade
