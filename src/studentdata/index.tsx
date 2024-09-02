@@ -8,12 +8,12 @@ import { LoadingPage } from "./LoadingPage"
 export function StudentDataLoadingPage(props: {
   onLoad(s: Data): void
 }) {
-  const { profile, studentDataClient } = useUser()
+  const { profile, sisClient } = useUser()
 
   const { isPending, error, data } = useQuery({
-    queryKey: ["studentdata", "getStudentData", profile.email],
+    queryKey: ["sis", "getData", profile.email],
     queryFn: () =>
-      studentDataClient.getData(new GetDataRequest()).then((res) => {
+      sisClient.getData(new GetDataRequest()).then((res) => {
         const data = res.data
         if (!data) {
           throw new Error("Student data is undefined.")

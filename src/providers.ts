@@ -5,7 +5,7 @@ import type { PromiseClient } from "@connectrpc/connect"
 import { type UserProfile, context } from "@vcassist/ui"
 
 export type UserContext = {
-  studentDataClient: PromiseClient<typeof SIService>
+  sisClient: PromiseClient<typeof SIService>
   profile: UserProfile
   logout(): void
 }

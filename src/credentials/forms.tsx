@@ -21,7 +21,7 @@ export function OAuthForm(props: {
   color: string
   onSubmit(): void
 }) {
-  const { studentDataClient } = useUser()
+  const { sisClient } = useUser()
 
   const [loading, setLoading] = useState(false)
   const [invalid, setInvalid] = useState(false)
@@ -86,7 +86,7 @@ export function OAuthForm(props: {
 
                       span.addEvent("submitting tokens to server!")
 
-                      await studentDataClient.provideCredential(
+                      await sisClient.provideCredential(
                         new ProvideCredentialRequest({
                           credential: {
                             case: "token",
@@ -157,7 +157,7 @@ export function UsernamePasswordForm(props: {
   color: string
   onSubmit(): void
 }) {
-  const { studentDataClient } = useUser()
+  const { sisClient } = useUser()
 
   const form = useForm<{
     username: string
@@ -179,7 +179,7 @@ export function UsernamePasswordForm(props: {
       password,
     }: { username: string; password: string }) =>
       fnSpan(undefined, "provideUsernamePassword", async () => {
-        await studentDataClient.provideCredential(
+        await sisClient.provideCredential(
           new ProvideCredentialRequest({
             credential: {
               case: "usernamePassword",

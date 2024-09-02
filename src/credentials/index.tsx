@@ -197,12 +197,12 @@ export function CredentialCarousel(props: {
 export function ProvideCredentialsPage(props: {
   onComplete: (credentials: CredentialStatus[]) => void
 }) {
-  const { studentDataClient, logout } = useUser()
+  const { sisClient, logout } = useUser()
 
   const { isPending, error, data, refetch } = useQuery({
-    queryKey: ["studentDataClient", "getCredentialStatus"],
+    queryKey: ["sisClient", "getCredentialStatus"],
     queryFn: () =>
-      studentDataClient
+      sisClient
         .getCredentialStatus(new GetCredentialStatusRequest())
         .then((res) => {
           if (!res.status) {

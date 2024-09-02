@@ -7,7 +7,7 @@
     metrics: {
       http_endpoint: "http://127.0.0.1:4320/v1/metrics",
     },
-    student_data_service: "http://127.0.0.1:9111",
-    auth_service: "http://127.0.0.1:8111",
+    sis_service: "http://127.0.0.1:8000",
+    auth_service: "http://127.0.0.1:8000",
   },
 }

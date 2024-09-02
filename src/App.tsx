@@ -30,7 +30,7 @@ const token = persistentSignal({
 export function createClient(token: string) {
   const authHeader = `Bearer ${token}`
   const transport = createConnectTransport({
-    baseUrl: config.endpoints.student_data_service,
+    baseUrl: config.endpoints.sis_service,
     interceptors: [
       (next) => (req) => {
         req.header.append("Authorization", authHeader)
@@ -54,10 +54,10 @@ export function App() {
         token={token.value}
         onLogin={(newToken, profile) => {
           token.value = newToken
-          const studentDataClient = createClient(newToken)
+          const sisClient = createClient(newToken)
           setUser({
             profile,
-            studentDataClient,
+            sisClient,
             logout: () => {
               setUser(undefined)
               setCompletedCreds(undefined)
@@ -103,7 +103,7 @@ export function App() {
         <StudentDataRefetchProvider
           value={() => {
             return fnSpan(undefined, "refetchStudentData", async () => {
-              const res = await user.studentDataClient.refreshData(
+              const res = await user.sisClient.refreshData(
                 new RefreshDataRequest(),
               )
               if (!res.data) {

@@ -15,7 +15,7 @@ export const configSchema = z.object({
       http_endpoint: z.string(),
       headers: z.record(z.string(), z.string()).optional(),
     }),
-    student_data_service: z.string(),
+    sis_service: z.string(),
     auth_service: z.string(),
   }),
 })
