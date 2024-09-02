@@ -346,7 +346,7 @@ function WhatIfAssignmentTable(props: {
   const columnFilters = useMemo((): ColumnFilter[] => {
     return [
       {
-        id: "name",
+        id: "title",
         value: props.filterString,
       },
     ]
