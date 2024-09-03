@@ -1,5 +1,4 @@
-import { CredentialCarousel } from "@/src/credentials"
-import { useCredentials, useStudentDataRefetch, useUser } from "@/src/providers"
+import { useDataRefetch, useReturnHome, useUser } from "@/src/providers"
 import { Title } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
@@ -16,7 +15,13 @@ import {
   notifyError,
 } from "@vcassist/ui"
 import { useEffect } from "react"
-import { MdCreditCard, MdDelete, MdGetApp, MdRefresh } from "react-icons/md"
+import {
+  MdCreditCard,
+  MdDelete,
+  MdGetApp,
+  MdHome,
+  MdRefresh,
+} from "react-icons/md"
 import { twMerge } from "tailwind-merge"
 import ProfileHeader from "./ProfileHeader"
 import { SettingsPanel } from "./Settings"
@@ -30,12 +35,13 @@ const isRefreshing = signal(false)
 
 export default function Profile(props: {
   profile: UserProfile
+  credentials: React.FC<{ onComplete(): void }>
 }) {
   useSignals()
 
   const { logout } = useUser()
-  const refreshStudentData = useStudentDataRefetch()
-  const creds = useCredentials()
+  const refreshStudentData = useDataRefetch()
+  const returnHome = useReturnHome()
 
   const [
     credentialsOpened,
@@ -59,7 +65,7 @@ export default function Profile(props: {
           closeCredentials()
         }}
       >
-        <CredentialCarousel credentials={creds} onComplete={() => {}} />
+        <props.credentials onComplete={() => {}} />
       </Modal>
 
       <ProfileHeader
@@ -142,6 +148,13 @@ export default function Profile(props: {
             </div>
 
             <div className="flex gap-3 flex-wrap justify-end">
+              <IconButton
+                icon={MdHome}
+                label="Home"
+                color="green"
+                onClick={returnHome}
+                horizontal
+              />
               <LogoutModal handleLogout={logout} />
             </div>
           </div>

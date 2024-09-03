@@ -1,7 +1,7 @@
 import { Data } from "@backend.sis/api_pb"
 import { CourseData, Meeting } from "@backend.sis/data_pb"
 import type { Meta, StoryObj } from "@storybook/react"
-import Dashboard from "../routes/dashboard"
+import Dashboard from "../routes/sis/dashboard"
 import { unixDateXDaysBeforeNow } from "./utils"
 
 const meta = {

@@ -1,14 +1,16 @@
+import { Router } from "@/src/components/Router"
+import Profile from "@/src/components/profile"
+import { useUser } from "@/src/providers"
 import { MdCalculate, MdDashboard, MdTimeline } from "react-icons/md"
-import { useStudentData, useUser } from "../providers"
-import { Router } from "./Router"
-import Dashboard from "./dashboard"
-import GradeCalculator from "./grade-calculator"
-import GradeTrends from "./grade-trends"
-import Profile from "./profile"
+import { SISCredentialsPage } from "./credentials"
+import { useSISData } from "./providers"
+import Dashboard from "./routes/dashboard"
+import GradeCalculator from "./routes/grade-calculator"
+import GradeTrends from "./routes/grade-trends"
 
 export function Routes() {
   const { profile } = useUser()
-  const data = useStudentData()
+  const data = useSISData()
 
   return (
     <Router
@@ -41,7 +43,7 @@ export function Routes() {
       profileRoute={{
         rootClassName: "h-full",
         render() {
-          return <Profile profile={profile} />
+          return <Profile profile={profile} credentials={SISCredentialsPage} />
         },
       }}
     />

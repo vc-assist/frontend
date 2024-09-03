@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { LoadingPage } from "../studentdata/LoadingPage"
+import { LoadingPage } from "../components/LoadingPage"
 
 const meta = {
   title: "VC Assist/Routes/LoadingPage",

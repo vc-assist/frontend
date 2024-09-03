@@ -34,6 +34,15 @@ export default vite.defineConfig((env) => ({
         "sis",
         "v1",
       ),
+      "@backend.vcmoodle": join(
+        __dirname,
+        "backend",
+        "proto",
+        "vcassist",
+        "services",
+        "vcmoodle",
+        "v1",
+      ),
     },
   },
   define: {

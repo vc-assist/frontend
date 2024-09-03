@@ -17,6 +17,10 @@ export const configSchema = z.object({
     }),
     vcassist_backend: z.string(),
   }),
+  enabled_modules: z.object({
+    sis: z.boolean(),
+    vcmoodle: z.boolean(),
+  }),
 })
 
 export type Config = z.TypeOf<typeof configSchema>

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import Profile from "../routes/profile"
+import { SISCredentialsPage } from "../app/credentials/sis"
+import Profile from "../components/profile{"
 
 const meta = {
   title: "VC Assist/Routes/Profile",
@@ -15,6 +16,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
+    credentials: SISCredentialsPage,
     profile: {
       email: "test.user@email.com",
       name: "Test User",

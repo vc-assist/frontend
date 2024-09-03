@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { LoginPage, State } from "../auth"
+import { AuthState } from "@vcassist/ui"
+import { LoginPage } from "../Auth"
 
 const meta = {
   title: "VC Assist/Routes/Auth",
@@ -21,7 +22,7 @@ export const NoToken: Story = {
 }
 export const WaitingForCode: Story = {
   args: {
-    state: State.WAITING_FOR_CODE,
+    state: AuthState.WAITING_FOR_CODE,
     onLogin() {},
     onInvalidToken() {},
   },

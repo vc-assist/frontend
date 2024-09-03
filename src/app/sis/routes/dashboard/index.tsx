@@ -1,12 +1,12 @@
+import { settings } from "@/src/components/profile/Settings"
 import type { Data } from "@backend.sis/api_pb"
 import { useSignals } from "@preact/signals-react/runtime"
 import { WidgetHiddenPanel, createDefaultMeter } from "@vcassist/ui"
 import { useEffect } from "react"
-import DayBlock from "../dashboard/DayBlock"
-import Gpa from "../dashboard/Gpa"
-import GradeList from "../dashboard/GradeList"
-import Schedule from "../dashboard/Schedule"
-import { settings } from "../profile/Settings"
+import DayBlock from "./DayBlock"
+import Gpa from "./Gpa"
+import GradeList from "./GradeList"
+import Schedule from "./Schedule"
 
 const meter = createDefaultMeter("routes.dashboard")
 const viewPage = meter.createCounter("view")

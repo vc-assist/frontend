@@ -4,7 +4,7 @@ import {
   CourseData,
 } from "@backend.sis/data_pb"
 import type { Meta, StoryObj } from "@storybook/react"
-import GradeCalculator from "../routes/grade-calculator"
+import GradeCalculator from "../routes/sis/grade-calculator"
 import { unixDateXDaysBeforeNow } from "./utils"
 
 const meta = {

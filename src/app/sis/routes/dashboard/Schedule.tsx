@@ -1,4 +1,5 @@
 import { dateFromUnix } from "@/lib/date"
+import CourseChip from "@/src/components/CourseChip"
 import type { CourseData } from "@backend.sis/data_pb"
 import { ActionIcon, Badge, Text, Timeline } from "@mantine/core"
 import { WidgetPanel, useCurrentTime } from "@vcassist/ui"
@@ -21,7 +22,6 @@ import {
   MdKeyboardArrowRight,
   MdRestore,
 } from "react-icons/md"
-import CourseChip from "../CourseChip"
 
 export default function Schedule(props: {
   courses: CourseData[]

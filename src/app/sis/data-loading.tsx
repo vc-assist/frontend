@@ -1,14 +1,16 @@
+import { useUser } from "@/src/providers"
 import { type Data, GetDataRequest } from "@backend.sis/api_pb"
 import { useQuery } from "@tanstack/react-query"
 import { ErrorPage } from "@vcassist/ui"
 import { useEffect } from "react"
-import { useUser } from "../providers"
-import { LoadingPage } from "./LoadingPage"
+import { LoadingPage } from "../../components/LoadingPage"
+import { useSISClient } from "./providers"
 
-export function StudentDataLoadingPage(props: {
+export function SISDataLoadingPage(props: {
   onLoad(s: Data): void
 }) {
-  const { profile, sisClient } = useUser()
+  const { profile } = useUser()
+  const sisClient = useSISClient()
 
   const { isPending, error, data } = useQuery({
     queryKey: ["sis", "getData", profile.email],

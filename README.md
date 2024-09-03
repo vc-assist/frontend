@@ -19,7 +19,7 @@
       - `index.tsx` - the component that specifies which routes exist and uses `Router.tsx`
    - `auth/` - ui code that handles logging in
    - `credentials/` - ui code that handles providing credentials
-   - `studentdata/` - ui code that handles fetching student data
+   - `loading-data/` - ui code that handles loading student data
    - `singletons.ts` - singletons in general
    - `providers.ts` - react context singletons
    - `App.tsx` - the component that handles the main setup logic (login, credentials, then data fetch)

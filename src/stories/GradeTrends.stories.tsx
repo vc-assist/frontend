@@ -1,6 +1,8 @@
 import { CourseData, GradeSnapshot } from "@backend.sis/data_pb"
 import type { Meta, StoryObj } from "@storybook/react"
-import GradeTrends, { GradeInterval } from "../routes/grade-trends/GradeTrends"
+import GradeTrends, {
+  GradeInterval,
+} from "../app/sis/routes/grade-trends/GradeTrends"
 import { unixDateXDaysBeforeNow } from "./utils"
 
 const meta = {

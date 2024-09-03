@@ -1,7 +1,7 @@
+import CourseChip from "@/src/components/CourseChip"
 import type { CourseData } from "@backend.sis/data_pb"
 import { Color, InfoTooltip, RingProgress, WidgetPanel } from "@vcassist/ui"
 import { Fragment } from "react"
-import CourseChip from "../CourseChip"
 
 export default function GradeList(props: {
   className?: string
