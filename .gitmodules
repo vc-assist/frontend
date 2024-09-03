@@ -1,7 +1,6 @@
 [submodule "backend"]
 	path = backend
 	url = https://github.com/vc-assist/backend.git
-	branch = split-studentdata
 [submodule "ui"]
 	path = ui
 	url = https://github.com/vc-assist/ui.git
