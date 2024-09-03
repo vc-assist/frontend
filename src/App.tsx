@@ -30,7 +30,7 @@ const token = persistentSignal({
 export function createClient(token: string) {
   const authHeader = `Bearer ${token}`
   const transport = createConnectTransport({
-    baseUrl: config.endpoints.sis_service,
+    baseUrl: config.endpoints.vcassist_backend,
     interceptors: [
       (next) => (req) => {
         req.header.append("Authorization", authHeader)

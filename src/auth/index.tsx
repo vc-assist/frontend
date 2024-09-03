@@ -15,7 +15,7 @@ import { config } from "../singletons"
 import { fnSpan } from "./internal"
 
 const transport = createConnectTransport({
-  baseUrl: config.endpoints.auth_service,
+  baseUrl: config.endpoints.vcassist_backend,
 })
 const client = createPromiseClient(AuthService, transport)
 
