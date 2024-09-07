@@ -4,7 +4,7 @@ import { useUser } from "@/src/providers"
 import { MdTravelExplore } from "react-icons/md"
 import { VCMoodleCredentialsPage } from "./credentials"
 import { useVCMoodleData } from "./providers"
-import { VCMoodleCourses } from "./routes/courses"
+import { Courses } from "./routes/courses"
 
 export function Routes() {
   const { profile } = useUser()
@@ -18,7 +18,7 @@ export function Routes() {
           title: "Moodle",
           icon: MdTravelExplore,
           render() {
-            return <VCMoodleCourses courses={data} />
+            return <Courses courses={data} />
           },
         },
       }}

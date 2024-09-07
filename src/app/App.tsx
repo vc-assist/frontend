@@ -10,11 +10,18 @@ import {
   type UserContext,
   UserProvider,
 } from "../providers"
+import { motion } from "framer-motion"
 
 const token = persistentSignal({
   key: "token",
   schema: z.string(),
   defaultValue: "",
+})
+
+const activeModule = persistentSignal({
+  key: "active-module",
+  schema: z.string().optional(),
+  defaultValue: undefined,
 })
 
 export interface AppModule {
@@ -30,7 +37,7 @@ export function App(props: {
   useSignals()
 
   const [user, setUser] = useState<UserContext>()
-  const [selectedModule, setSelectedModule] = useState<AppModule>()
+  const active = props.modules.find((m) => m.name === activeModule.value)
 
   const logout = () => {
     setUser(undefined)
@@ -52,16 +59,16 @@ export function App(props: {
     )
   }
 
-  if (props.modules.length === 1 || selectedModule) {
-    const ModuleRender = selectedModule?.render ?? props.modules[0].render
+  if (props.modules.length === 1 || active) {
+    const ModuleRender = active?.render ?? props.modules[0].render
     return (
       <UserProvider value={user}>
         <ReturnHomeProvider
           value={
             props.modules.length > 1
               ? () => {
-                  setSelectedModule(undefined)
-                }
+                activeModule.value = undefined
+              }
               : undefined
           }
         >
@@ -74,7 +81,12 @@ export function App(props: {
   }
 
   return (
-    <div className="flex h-full">
+    <motion.div
+      className="flex h-full"
+      initial={{ y: 10 }}
+      animate={{ y: 0 }}
+      exit={{ y: 10 }}
+    >
       <div className="flex flex-col gap-3 p-6 m-auto">
         {props.modules
           .filter((m) => m.enabled)
@@ -83,7 +95,7 @@ export function App(props: {
               key={m.name}
               type="button"
               onClick={() => {
-                setSelectedModule(m)
+                activeModule.value = m.name
               }}
             >
               <Panel
@@ -100,8 +112,14 @@ export function App(props: {
       </div>
 
       <Positioned x="right" y="top" padding="2rem">
-        <LogoutModal handleLogout={logout} />
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 10 }}
+        >
+          <LogoutModal handleLogout={logout} />
+        </motion.div>
       </Positioned>
-    </div>
+    </motion.div>
   )
 }

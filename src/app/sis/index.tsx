@@ -54,7 +54,7 @@ export default function SISModule(props: { token: string }) {
             <Positioned x="left" y="top" padding="2rem">
               <IconButton
                 icon={MdArrowBack}
-                label="Back"
+                label="Home"
                 color="dark"
                 horizontal
                 onClick={returnHome}
