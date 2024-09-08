@@ -4,7 +4,7 @@ import {
   useReturnHome,
 } from "@/src/providers"
 import { config } from "@/src/singletons"
-import { IconButton, Positioned, createFnSpanner } from "@/ui"
+import { IconButton, Positioned, createFnSpanner } from "@vcassist/ui"
 import type { CredentialStatus } from "@backend.keychain/auth_flow_pb"
 import { SIService } from "@backend.sis/api_connect"
 import { RefreshDataRequest, type Data as SISData } from "@backend.sis/api_pb"

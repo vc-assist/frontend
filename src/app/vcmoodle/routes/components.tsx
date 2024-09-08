@@ -1,13 +1,18 @@
-import { UnstyledButton } from "@mantine/core"
+import { UnstyledButton, useComputedColorScheme } from "@mantine/core"
 import { twMerge } from "tailwind-merge"
 
 export function SectionButton(props: { children: React.ReactNode, selected?: boolean, onClick: () => void }) {
+  const colorScheme = useComputedColorScheme()
+
+  const activeBorder = colorScheme === "light" ? "border-zinc-300" : "border-zinc-700"
+  const hoveredBg = colorScheme === "light" ? "bg-zinc-200 bg-opacity-70" : "bg-zinc-900 bg-opacity-30"
+
   return (
     <UnstyledButton
       className={twMerge(
-        "px-2 py-1 rounded-lg border border-solid border-transparent active:border-gray-300",
-        "hover:bg-gray-900 hover:bg-opacity-5 transition-all",
-        props.selected ? "border-gray-300 bg-gray-900 bg-opacity-5" : "",
+        `px-2 py-1 rounded-lg border border-solid border-transparent active:${activeBorder}`,
+        `hover:${hoveredBg} transition-all`,
+        props.selected ? `${activeBorder} ${hoveredBg}` : "",
       )}
       onClick={props.onClick}
     >
@@ -16,7 +21,14 @@ export function SectionButton(props: { children: React.ReactNode, selected?: boo
   )
 }
 
-export function PanelTitle(props: { label: string }) {
-  return <h4 className="font-semibold text-lg">{props.label}</h4>
+export function PanelTitle(props: { className?: string, label: string }) {
+  return (
+    <h4 className={twMerge(
+      "font-semibold text-lg",
+      props.className
+    )}>
+      {props.label}
+    </h4>
+  )
 }
 

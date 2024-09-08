@@ -1,10 +1,11 @@
 import { Router } from "@/src/components/Router"
 import Profile from "@/src/components/profile"
 import { useUser } from "@/src/providers"
-import { MdTravelExplore } from "react-icons/md"
+import { MdHome, MdTravelExplore } from "react-icons/md"
 import { VCMoodleCredentialsPage } from "./credentials"
 import { useVCMoodleData } from "./providers"
-import { Courses } from "./routes/courses"
+import { Courses as Browse } from "./routes/browse"
+import { Home } from "./routes/home"
 
 export function Routes() {
   const { profile } = useUser()
@@ -14,15 +15,22 @@ export function Routes() {
     <Router
       profile={profile}
       routes={{
-        "/moodle": {
-          title: "Moodle",
+        "/home": {
+          title: "Home",
+          icon: MdHome,
+          render() {
+            return <Home courses={data} />
+          },
+        },
+        "/browse": {
+          title: "Browse",
           icon: MdTravelExplore,
           render() {
-            return <Courses courses={data} />
+            return <Browse courses={data} />
           },
         },
       }}
-      defaultRoute="/moodle"
+      defaultRoute="/home"
       profileRoute={{
         rootClassName: "h-full",
         render() {

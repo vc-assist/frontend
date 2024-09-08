@@ -1,10 +1,9 @@
-import { Panel } from "@/ui"
-import type { Course, GetCoursesResponse } from "@backend.vcmoodle/api_pb"
+import { Panel } from "@vcassist/ui"
+import type { Course } from "@backend.vcmoodle/api_pb"
 import { TextInput } from "@mantine/core"
 import { createRef, useMemo, useState } from "react"
 import { MdSearch } from "react-icons/md"
 import { useHotkeys } from '@mantine/hooks';
-import Fuse, { type FuseResult } from "fuse.js"
 import { PanelTitle, SectionButton } from "./components"
 
 export function Chapters() { }
@@ -78,11 +77,12 @@ class BrowseState {
   constructor() {
     this.selectedSection = new Map()
     this.selectedResource = new Map()
+    this.selectedChapter = new Map()
   }
 }
 
 export function Courses(props: {
-  courses: GetCoursesResponse
+  courses: Course[]
 }) {
   const [focusState, setFocusState] = useState<FocusState>()
 
@@ -93,7 +93,7 @@ export function Courses(props: {
 
   const searchBoxRef = createRef<HTMLInputElement>()
 
-  const courses = useMemo(() => props.courses.courses
+  const courses = useMemo(() => props.courses
     .map((c) => {
       const [name, teacher] = c.name.split(" - ").map(s => s.trim())
       return { underlying: c, name, teacher }
@@ -113,7 +113,7 @@ export function Courses(props: {
         return 1
       }
       return 0
-    }), [props.courses.courses])
+    }), [props.courses])
 
   const next = () => {
     if (selectedCourse === undefined) {

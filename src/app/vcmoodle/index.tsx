@@ -6,7 +6,7 @@ import {
 import { config } from "@/src/singletons"
 import type { CredentialStatus } from "@backend.keychain/auth_flow_pb"
 import { MoodleService } from "@backend.vcmoodle/api_connect"
-import type { GetCoursesResponse } from "@backend.vcmoodle/api_pb"
+import type { Course, GetCoursesResponse } from "@backend.vcmoodle/api_pb"
 import { createPromiseClient } from "@connectrpc/connect"
 import { createConnectTransport } from "@connectrpc/connect-web"
 import { useSignals } from "@preact/signals-react/runtime"
@@ -37,7 +37,7 @@ export default function VCMoodleModule(props: { token: string }) {
 
   const returnHome = useReturnHome()
   const [completedCreds, setCompletedCreds] = useState<CredentialStatus[]>()
-  const [data, setData] = useState<GetCoursesResponse>()
+  const [data, setData] = useState<Course[]>()
 
   if (!completedCreds) {
     return (
@@ -69,7 +69,7 @@ export default function VCMoodleModule(props: { token: string }) {
         <CredentialsProvider value={completedCreds}>
           <VCMoodleDataLoadingPage
             onLoad={(data) => {
-              setData(data)
+              setData(data.courses)
             }}
           />
         </CredentialsProvider>
@@ -81,8 +81,9 @@ export default function VCMoodleModule(props: { token: string }) {
     <VCMoodleClientProvider value={vcmoodleClient}>
       <CredentialsProvider value={completedCreds}>
         <DataRefetchProvider
-          value={() => {
-            throw new Error("Currently unimplmented!")
+          value={async () => {
+            const res = await vcmoodleClient.refreshCourses({})
+            setData(res.courses)
           }}
         >
           <VCMoodleDataProvider value={data}>

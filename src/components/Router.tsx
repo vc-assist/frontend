@@ -80,7 +80,7 @@ export function Router(props: {
 
   if (!route) {
     return (
-      <ErrorPage message="Oh no! You're lost.'">
+      <ErrorPage message="Oh no! You're lost.">
         <LinkButton
           onClick={() => {
             setRoutePath(props.defaultRoute)
