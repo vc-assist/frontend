@@ -5,9 +5,10 @@ import {
   type Resource,
   type Section,
 } from "@backend.vcmoodle/api_pb"
-import { TextInput } from "@mantine/core"
+import { Kbd, TextInput } from "@mantine/core"
 import { createRef, useEffect, useMemo, useState } from "react"
 import {
+  MdArrowDownward,
   MdLink,
   MdOutlineArticle,
   MdOutlineBook,
@@ -226,6 +227,50 @@ function Courses(props: {
           </div>
         </Panel>
       </div>
+
+      <Panel className="flex flex-col gap-1">
+        <div className="flex gap-3">
+          <div>
+            <Kbd>k</Kbd> / ̷<Kbd>↑</Kbd>
+          </div>
+          <p>Up</p>
+        </div>
+
+        <div className="flex gap-3">
+          <div>
+            <Kbd>j</Kbd> / ̷<Kbd>↓</Kbd>
+          </div>
+          <p>Down</p>
+        </div>
+
+        <div className="flex gap-3">
+          <div>
+            <Kbd>h</Kbd> / ̷<Kbd>←</Kbd>
+          </div>
+          <p>Left</p>
+        </div>
+
+        <div className="flex gap-3">
+          <div>
+            <Kbd>l</Kbd> / ̷<Kbd>→</Kbd>
+          </div>
+          <p>Right</p>
+        </div>
+
+        <div className="flex gap-3">
+          <div>
+            <Kbd>/</Kbd>
+          </div>
+          <p>Focus search bar</p>
+        </div>
+
+        <div className="flex gap-3">
+          <div>
+            <Kbd>ESC</Kbd>
+          </div>
+          <p>Defocus search bar</p>
+        </div>
+      </Panel>
     </div>
   )
 }
