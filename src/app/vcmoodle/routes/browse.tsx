@@ -1,6 +1,7 @@
 import { Panel } from "@vcassist/ui"
 import {
   ResourceType,
+  type Chapter,
   type Course,
   type Resource,
   type Section,
@@ -8,7 +9,6 @@ import {
 import { Kbd, TextInput } from "@mantine/core"
 import { createRef, useEffect, useMemo, useState } from "react"
 import {
-  MdArrowDownward,
   MdLink,
   MdOutlineArticle,
   MdOutlineBook,
@@ -20,6 +20,8 @@ import { PanelTitle, ListItemButton } from "./components"
 import sanitize from "sanitize-html"
 import type { IconType } from "react-icons"
 import { useRouteContext } from "@/src/components/Router"
+import { ChapterDisplay } from "./chapter-content"
+import { useVCMoodleClient } from "../providers"
 
 function useScrollIntoViewRef(...dependsOn: unknown[]) {
   const selectedRef = createRef<HTMLDivElement>()
@@ -41,8 +43,24 @@ function Chapters(props: {
   resource: Resource
   selected?: number
   onSelect(idx?: number): void
+  onShow(idx: number): void
 }) {
   const selectedRef = useScrollIntoViewRef(props.selected)
+
+  useHotkeys([
+    [
+      "Enter",
+      () => {
+        if (
+          props.resource.chapters.length === 0 ||
+          props.selected === undefined
+        ) {
+          return
+        }
+        props.onShow(props.selected)
+      },
+    ],
+  ])
 
   if (props.resource.chapters.length === 0) {
     return <></>
@@ -59,7 +77,10 @@ function Chapters(props: {
               key={c.id}
               icon={MdOutlineArticle}
               selected={idx === props.selected}
-              onClick={() => props.onSelect(idx)}
+              onClick={() => {
+                props.onSelect(idx)
+                props.onShow(idx)
+              }}
             >
               <p
                 ref={idx === props.selected ? selectedRef : undefined}
@@ -79,8 +100,21 @@ function Resources(props: {
   section: Section
   selected?: number
   onSelect(idx?: number): void
+  onShow(idx: number): void
 }) {
   const selectedRef = useScrollIntoViewRef(props.selected)
+
+  useHotkeys([
+    [
+      "Enter",
+      () => {
+        if (props.selected === undefined) {
+          return
+        }
+        props.onShow(props.selected)
+      },
+    ],
+  ])
 
   return (
     <Panel className="flex flex-col gap-1 p-3 max-w-[280px]">
@@ -103,6 +137,9 @@ function Resources(props: {
                   key={r.idx}
                   selected={idx === props.selected}
                   className="content"
+                  onClick={() => {
+                    props.onSelect(idx)
+                  }}
                 >
                   <div
                     ref={idx === props.selected ? selectedRef : undefined}
@@ -121,7 +158,10 @@ function Resources(props: {
               key={r.idx}
               icon={icon}
               selected={idx === props.selected}
-              onClick={() => props.onSelect(idx)}
+              onClick={() => {
+                props.onSelect(idx)
+                props.onShow(idx)
+              }}
             >
               <p
                 ref={idx === props.selected ? selectedRef : undefined}
@@ -141,9 +181,13 @@ function Sections(props: {
   course: Course
   selected?: number
   onSelect(idx?: number): void
+  search?: string
+  onSearch(value: string): void
 }) {
   const selectedRef = useScrollIntoViewRef(props.selected)
   const searchBoxRef = createRef<HTMLInputElement>()
+
+  useHotkeys([["/", () => searchBoxRef.current?.focus()]])
 
   return (
     <div className="flex flex-col gap-3">
@@ -174,11 +218,13 @@ function Sections(props: {
       <Panel className="flex flex-col gap-1 p-3 max-w-[280px]">
         <PanelTitle label={`Search in ${props.course.name}`} />
         <TextInput
-          onChange={() => {}}
           ref={searchBoxRef}
           placeholder="Search"
           leftSection={<MdSearch size={20} />}
-          value={""}
+          value={props.search}
+          onChange={(e) => {
+            props.onSearch(e.currentTarget.value)
+          }}
           onKeyDown={(e) => {
             if (e.key === "Escape") {
               e.currentTarget.blur()
@@ -270,11 +316,19 @@ function Courses(props: {
           </div>
           <p>Defocus search bar</p>
         </div>
+
+        <div className="flex gap-3">
+          <div>
+            <Kbd>ENTER</Kbd>
+          </div>
+          <p>Open link / lesson plan</p>
+        </div>
       </Panel>
     </div>
   )
 }
 
+// this is probably not idiomatic react
 export function Browse(props: {
   courses: Course[]
 }) {
@@ -418,46 +472,102 @@ export function Browse(props: {
     ["ArrowLeft", left],
   ])
 
+  const [shownChapter, setShownChapter] = useState<Chapter>()
+  const chapterDisplayRef = createRef<HTMLDivElement>()
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: ref is always during render, you must change on state change
+  useEffect(() => {
+    chapterDisplayRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    })
+  }, [shownChapter])
+
+  const client = useVCMoodleClient()
+
+  const [search, setSearch] = useState("")
+
   return (
-    <div className="flex gap-3">
-      <Courses
-        courses={courses}
-        selected={path[0]}
-        onSelect={(idx) => {
-          setPath([idx])
-        }}
-      />
-
-      {path[0] !== undefined ? (
-        <Sections
-          course={courses[path[0]]}
-          selected={path[1]}
+    <div className="flex flex-col gap-3">
+      <div className="flex gap-3">
+        <Courses
+          courses={courses}
+          selected={path[0]}
           onSelect={(idx) => {
-            setPath([path[0], idx])
+            setPath([idx])
+            setCursor(0)
           }}
         />
-      ) : undefined}
 
-      {path[0] !== undefined && path[1] !== undefined ? (
-        <Resources
-          section={courses[path[0]].sections[path[1]]}
-          selected={path[2]}
-          onSelect={(idx) => {
-            setPath([path[0], path[1], idx])
-          }}
-        />
-      ) : undefined}
+        {path[0] !== undefined ? (
+          <Sections
+            course={courses[path[0]]}
+            selected={path[1]}
+            onSelect={(idx) => {
+              setPath([path[0], idx])
+              setCursor(1)
+            }}
+            search={search}
+            onSearch={(value) => {
+              setSearch(value)
+            }}
+          />
+        ) : undefined}
 
-      {path[0] !== undefined &&
-      path[1] !== undefined &&
-      path[2] !== undefined ? (
-        <Chapters
-          resource={courses[path[0]].sections[path[1]].resources[path[2]]}
-          selected={path[3]}
-          onSelect={(idx) => {
-            setPath([path[0], path[1], path[2], idx])
-          }}
-        />
+        {path[0] !== undefined && path[1] !== undefined ? (
+          <Resources
+            section={courses[path[0]].sections[path[1]]}
+            selected={path[2]}
+            onSelect={(idx) => {
+              setPath([path[0], path[1], idx])
+              setCursor(2)
+            }}
+            onShow={(idx) => {
+              const resource =
+                courses[path[0]!].sections[path[1]!].resources[idx]
+              if (resource.type !== ResourceType.GENERIC_URL) {
+                return
+              }
+              window.open(resource.url)
+            }}
+          />
+        ) : undefined}
+
+        {path[0] !== undefined &&
+        path[1] !== undefined &&
+        path[2] !== undefined ? (
+          <Chapters
+            resource={courses[path[0]].sections[path[1]].resources[path[2]]}
+            selected={path[3]}
+            onSelect={(idx) => {
+              setPath([path[0], path[1], path[2], idx])
+              setCursor(3)
+            }}
+            onShow={(idx) => {
+              const chapter =
+                courses[path[0]!].sections[path[1]!].resources[path[2]!]
+                  .chapters[idx]
+              setShownChapter(chapter)
+            }}
+          />
+        ) : undefined}
+      </div>
+
+      {shownChapter ? (
+        <div ref={chapterDisplayRef}>
+          <ChapterDisplay
+            chapter={shownChapter}
+            content={{
+              key: Number(shownChapter.id),
+              async fetch() {
+                const res = await client.getChapterContent({
+                  id: shownChapter.id,
+                })
+                return res.html
+              },
+            }}
+          />
+        </div>
       ) : undefined}
     </div>
   )
