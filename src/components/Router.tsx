@@ -33,11 +33,15 @@ export type Route =
 
 export type RouteContext = {
   currentRoute: string
+  params?: unknown
   profile: UserProfile
+  push(path: string, params?: unknown): void
 }
 const [RouteProvider, useRouteContext] = context<RouteContext>({
   currentRoute: "",
+  params: undefined,
   profile: { email: "" },
+  push: () => {},
 })
 export { useRouteContext }
 
@@ -56,6 +60,7 @@ export function Router(props: {
   const mobile = useLayout() === "mobile"
 
   const [routePath, setRoutePath] = useState(props.defaultRoute)
+  const [params, setParams] = useState<unknown>()
 
   const navbarItems: {
     title: string
@@ -101,7 +106,15 @@ export function Router(props: {
   if (mobile) {
     return (
       <RouteProvider
-        value={{ currentRoute: routePath, profile: props.profile }}
+        value={{
+          params,
+          currentRoute: routePath,
+          profile: props.profile,
+          push: (path, params) => {
+            setRoutePath(path)
+            setParams(params)
+          },
+        }}
       >
         <MobileLayout
           safeArea={safeArea}
@@ -128,7 +141,17 @@ export function Router(props: {
   }
 
   return (
-    <RouteProvider value={{ currentRoute: routePath, profile: props.profile }}>
+    <RouteProvider
+      value={{
+        params,
+        currentRoute: routePath,
+        profile: props.profile,
+        push: (path, params) => {
+          setRoutePath(path)
+          setParams(params)
+        },
+      }}
+    >
       <DesktopLayout
         profile={props.profile}
         safeArea={safeArea}

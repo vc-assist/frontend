@@ -129,7 +129,7 @@ export function removeNodeWithText(root: HTMLElement, text: string) {
 }
 
 // this turns all H1-H6 nodes into p + bold
-export function depromoteNonSectionHeaders(root: Element) {
+export function demoteNonSectionHeaders(root: Element) {
   if (root.nodeName.length === 2) {
     const no = Number.parseInt(root.nodeName[1])
     if (root.nodeName[0] === "H" && no >= 1 && no <= 6) {
@@ -141,6 +141,6 @@ export function depromoteNonSectionHeaders(root: Element) {
     }
   }
   for (const child of root.children) {
-    depromoteNonSectionHeaders(child)
+    demoteNonSectionHeaders(child)
   }
 }

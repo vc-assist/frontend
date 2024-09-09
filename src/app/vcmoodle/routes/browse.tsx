@@ -9,6 +9,7 @@ import { TextInput } from "@mantine/core"
 import { createRef, useEffect, useMemo, useState } from "react"
 import {
   MdLink,
+  MdOutlineArticle,
   MdOutlineBook,
   MdOutlineFolder,
   MdSearch,
@@ -17,6 +18,7 @@ import { useHotkeys } from "@mantine/hooks"
 import { PanelTitle, ListItemButton } from "./components"
 import sanitize from "sanitize-html"
 import type { IconType } from "react-icons"
+import { useRouteContext } from "@/src/components/Router"
 
 function useScrollIntoViewRef(...dependsOn: unknown[]) {
   const selectedRef = createRef<HTMLDivElement>()
@@ -54,6 +56,7 @@ function Chapters(props: {
           return (
             <ListItemButton
               key={c.id}
+              icon={MdOutlineArticle}
               selected={idx === props.selected}
               onClick={() => props.onSelect(idx)}
             >
@@ -199,18 +202,6 @@ function Courses(props: {
         <Panel className="flex flex-col gap-1 p-3 max-w-[240px]">
           <PanelTitle label="Courses" />
 
-          {/* <TextInput */}
-          {/*   ref={searchBoxRef} */}
-          {/*   placeholder="Search" */}
-          {/*   leftSection={<MdSearch size={20} />} */}
-          {/*   value={""} */}
-          {/*   onKeyDown={(e) => { */}
-          {/*     if (e.key === "Escape") { */}
-          {/*       e.currentTarget.blur() */}
-          {/*     } */}
-          {/*   }} */}
-          {/* /> */}
-
           <div className="flex flex-col gap-1">
             {props.courses.map((c, idx) => {
               return (
@@ -268,12 +259,38 @@ export function Browse(props: {
     [props.courses],
   )
 
-  const [path, setPath] = useState<(number | undefined)[]>([
-    undefined, // selected course
-    undefined, // selected section
-    undefined, // selected resource
-    undefined, // selected chapter
-  ])
+  const { params } = useRouteContext()
+
+  function getInitialPath() {
+    const defaultPath = [
+      undefined, // selected course
+      undefined, // selected section
+      undefined, // selected resource
+      undefined, // selected chapter
+    ]
+    if (!Array.isArray(params)) {
+      return defaultPath
+    }
+
+    const courseIdx = courses.findIndex((c) => c.id === params[0])
+    if (courseIdx < 0) {
+      return defaultPath
+    }
+
+    const sectionIdx = Number(params[1])
+    const resourceIdx = Number(params[2])
+
+    if (params[3] === undefined) {
+      return [courseIdx, sectionIdx, resourceIdx]
+    }
+
+    const chapterIdx = courses[courseIdx].sections[sectionIdx].resources[
+      resourceIdx
+    ].chapters.findIndex((c) => c.id === params[3])
+    return [courseIdx, sectionIdx, resourceIdx, chapterIdx]
+  }
+
+  const [path, setPath] = useState<(number | undefined)[]>(getInitialPath())
   const [cursor, setCursor] = useState(0)
 
   function pathCapacities() {

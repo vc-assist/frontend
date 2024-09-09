@@ -9,7 +9,7 @@ import { PanelTitle } from "./components"
 import sanitize from "sanitize-html"
 import { createRef, useEffect, useMemo, useState } from "react"
 import {
-  depromoteNonSectionHeaders,
+  demoteNonSectionHeaders,
   type LessonPlanSection,
   removeEmptySpace,
   removeNodeWithText,
@@ -18,6 +18,7 @@ import {
 import { Divider, ActionIcon } from "@mantine/core"
 import { MdArrowForward, MdLink, MdRawOff, MdRawOn } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
+import { useRouteContext } from "@/src/components/Router"
 
 function CourseLessonPlan(props: {
   course: Course
@@ -25,6 +26,8 @@ function CourseLessonPlan(props: {
   resource: Resource
   chapter: Chapter
 }) {
+  const { push } = useRouteContext()
+
   const layout = useLayout()
   const contentRef = createRef<HTMLDivElement>()
   const [raw, setRaw] = useState(false)
@@ -47,7 +50,7 @@ function CourseLessonPlan(props: {
 
     removeEmptySpace(contentRoot)
     removeNodeWithText(contentRoot, props.chapter.name)
-    depromoteNonSectionHeaders(contentRoot)
+    demoteNonSectionHeaders(contentRoot)
 
     const sections: LessonPlanSection[] = []
     segmentLessonPlan(contentRoot, sections)
@@ -153,9 +156,32 @@ function CourseLessonPlan(props: {
         </div>
 
         <div className="flex gap-1 flex-wrap items-center">
-          <LinkButton className="p-0">{props.resource.displayContent}</LinkButton>
+          <LinkButton
+            className="p-0"
+            onClick={() => {
+              push("/browse", [
+                props.course.id,
+                props.section.idx,
+                props.resource.idx,
+              ])
+            }}
+          >
+            {props.resource.displayContent}
+          </LinkButton>
           <MdArrowForward />
-          <LinkButton className="p-0">{props.chapter.name}</LinkButton>
+          <LinkButton
+            className="p-0"
+            onClick={() => {
+              push("/browse", [
+                props.course.id,
+                props.section.idx,
+                props.resource.idx,
+                props.chapter.id,
+              ])
+            }}
+          >
+            {props.chapter.name}
+          </LinkButton>
         </div>
       </div>
 
