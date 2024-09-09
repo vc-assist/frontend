@@ -22,6 +22,7 @@ import type { IconType } from "react-icons"
 import { useRouteContext } from "@/src/components/Router"
 import { ChapterDisplay } from "./chapter-content"
 import { useVCMoodleClient } from "../providers"
+import Fuse from "fuse.js"
 
 function useScrollIntoViewRef(...dependsOn: unknown[]) {
   const selectedRef = createRef<HTMLDivElement>()
@@ -486,6 +487,18 @@ export function Browse(props: {
   const client = useVCMoodleClient()
 
   const [search, setSearch] = useState("")
+
+  const resourceChapterAgg = useMemo(() => {
+    if (path[0] === undefined) {
+      return []
+    }
+    const course = courses[path[0]]
+    const resources = course.sections.flatMap((v) => v.resources)
+  }, [path[0], courses])
+
+  const fuse = useMemo(() => {
+    return new Fuse()
+  }, [])
 
   return (
     <div className="flex flex-col gap-3">
