@@ -291,7 +291,9 @@ export function Browse(props: {
   }
 
   const [path, setPath] = useState<(number | undefined)[]>(getInitialPath())
-  const [cursor, setCursor] = useState(0)
+  const [cursor, setCursor] = useState(
+    Array.isArray(params) ? params.length - 1 : 0,
+  )
 
   function pathCapacities() {
     return [
