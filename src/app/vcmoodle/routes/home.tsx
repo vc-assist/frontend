@@ -125,7 +125,7 @@ function CourseLessonPlan(props: {
     >
       <div className="flex flex-col gap-1">
         <div className="flex justify-between gap-3">
-          <PanelTitle label={props.course.name} />
+          <PanelTitle className="select-all" label={props.course.name} />
 
           <div className="flex gap-2">
             <ActionIcon
@@ -144,16 +144,16 @@ function CourseLessonPlan(props: {
               }}
             >
               {raw ? (
-                <MdRawOn className="size-6" />
-              ) : (
                 <MdRawOff className="size-6" />
+              ) : (
+                <MdRawOn className="size-6" />
               )}
             </ActionIcon>
           </div>
         </div>
 
         <div className="flex gap-1 flex-wrap items-center">
-          <LinkButton className="p-0">{props.section.name}</LinkButton>
+          <LinkButton className="p-0">{props.resource.displayContent}</LinkButton>
           <MdArrowForward />
           <LinkButton className="p-0">{props.chapter.name}</LinkButton>
         </div>
@@ -163,7 +163,7 @@ function CourseLessonPlan(props: {
 
       <div
         ref={contentRef}
-        className="content"
+        className="content select-text"
         // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
         dangerouslySetInnerHTML={{
           __html: sanitizedContent,

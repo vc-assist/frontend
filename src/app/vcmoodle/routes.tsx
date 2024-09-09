@@ -4,7 +4,7 @@ import { useUser } from "@/src/providers"
 import { MdHome, MdTravelExplore } from "react-icons/md"
 import { VCMoodleCredentialsPage } from "./credentials"
 import { useVCMoodleData } from "./providers"
-import { Courses as Browse } from "./routes/browse"
+import { Browse } from "./routes/browse"
 import { Home } from "./routes/home"
 
 export function Routes() {

@@ -6,7 +6,7 @@ import {
 import { config } from "@/src/singletons"
 import type { CredentialStatus } from "@backend.keychain/auth_flow_pb"
 import { MoodleService } from "@backend.vcmoodle/api_connect"
-import type { Course, GetCoursesResponse } from "@backend.vcmoodle/api_pb"
+import type { Course } from "@backend.vcmoodle/api_pb"
 import { createPromiseClient } from "@connectrpc/connect"
 import { createConnectTransport } from "@connectrpc/connect-web"
 import { useSignals } from "@preact/signals-react/runtime"
