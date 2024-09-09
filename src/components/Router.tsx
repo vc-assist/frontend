@@ -103,6 +103,11 @@ export function Router(props: {
     </ComponentWrapper>
   )
 
+  const push = (route: string, params?: unknown) => {
+    setRoutePath(route)
+    setParams(params)
+  }
+
   if (mobile) {
     return (
       <RouteProvider
@@ -110,10 +115,7 @@ export function Router(props: {
           params,
           currentRoute: routePath,
           profile: props.profile,
-          push: (path, params) => {
-            setRoutePath(path)
-            setParams(params)
-          },
+          push,
         }}
       >
         <MobileLayout
@@ -131,7 +133,7 @@ export function Router(props: {
                 },
               ]}
               layout="mobile"
-              onNavigate={setRoutePath}
+              onNavigate={push}
             />
           }
         />
@@ -146,10 +148,7 @@ export function Router(props: {
         params,
         currentRoute: routePath,
         profile: props.profile,
-        push: (path, params) => {
-          setRoutePath(path)
-          setParams(params)
-        },
+        push,
       }}
     >
       <DesktopLayout
@@ -161,7 +160,7 @@ export function Router(props: {
             route={routePath}
             layout="desktop"
             routes={navbarItems}
-            onNavigate={setRoutePath}
+            onNavigate={push}
           />
         }
         belowProfile={
