@@ -66,6 +66,7 @@
     "date-fns": "^3.6.0",
     "framer-motion": "^11.2.12",
     "fuse.js": "^7.0.0",
+    "pdfjs-dist": "^4.6.82",
     "react": "^18.3.1",
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18.3.1",

@@ -2,15 +2,15 @@ const sectionTitleMatchers: {
   re: RegExp
   show?: boolean
 }[] = [
-  { re: /unit *#?[\dA-Z]/gim },
-  { re: /objectives/gim },
-  { re: /unit *standard/gim },
-  { re: /learning *outcome/gim },
-  { re: /biblical *integration/gim },
-  { re: /learning *outcome/gim },
-  { re: /classroom *activities/gim },
-  { re: /homework/gim, show: true },
-]
+    { re: /unit *#?[\dA-Z]/gim },
+    { re: /objectives/gim },
+    { re: /unit *standard/gim },
+    { re: /learning *outcome/gim },
+    { re: /biblical *integration/gim },
+    { re: /learning *outcome/gim },
+    { re: /classroom *activities/gim },
+    { re: /homework/gim, show: true },
+  ]
 
 // a section title has to:
 // 1. be no longer than 80 chars.
@@ -144,3 +144,51 @@ export function demoteNonSectionHeaders(root: Element) {
     demoteNonSectionHeaders(child)
   }
 }
+
+const dangerMatchers: RegExp[] = [
+  /test/gim,
+  /quiz/gim,
+  /learning +opportunity/gim,
+  /final/gim,
+  /assessment/gim,
+]
+
+export function highlightDangerKeywords(root: HTMLElement, className: string) {
+  if (root.children.length === 0) {
+    let newContent = root.innerHTML
+    for (const match of dangerMatchers) {
+      newContent = newContent.replaceAll(match, (val) => {
+        return `<span class="${className}">${val}</span>`
+      })
+    }
+    root.innerHTML = newContent
+    return
+  }
+  for (const child of root.children) {
+    if (!(child instanceof HTMLElement)) {
+      console.warn(child, "is not an HTMLElement")
+      continue
+    }
+    highlightDangerKeywords(child, className)
+  }
+}
+
+export function handleLinks(root: HTMLElement, handle: (href: string) => void) {
+  if (root instanceof HTMLAnchorElement) {
+    const href = root.href
+    root.href = "#"
+    root.onclick = (e) => {
+      e.preventDefault()
+      handle(href)
+    }
+    return
+  }
+  for (const child of root.children) {
+    if (!(child instanceof HTMLElement)) {
+      console.warn(child, "is not an HTMLElement")
+      continue
+    }
+    handleLinks(child, handle)
+  }
+}
+

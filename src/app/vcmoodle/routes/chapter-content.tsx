@@ -1,12 +1,14 @@
 import { createRef, useEffect, useMemo, useState } from "react"
 import {
   demoteNonSectionHeaders,
+  handleLinks,
+  highlightDangerKeywords,
   type LessonPlanSection,
   removeEmptySpace,
   removeNodeWithText,
   segmentLessonPlan,
 } from "./lesson-plan-processing"
-import { ActionIcon, Divider } from "@mantine/core"
+import { ActionIcon, Divider, useComputedColorScheme } from "@mantine/core"
 import { LinkButton, Panel, useLayout } from "@vcassist/ui"
 import { MdArrowForward, MdLink, MdRawOff, MdRawOn } from "react-icons/md"
 import { PanelTitle } from "./components"
@@ -21,10 +23,16 @@ import type {
 import { useRouteContext } from "@/src/components/Router"
 import { useQuery } from "@tanstack/react-query"
 
+// import * as PDFJS from "pdfjs-dist"
+// import Worker from "pdfjs-dist/build/pdf.worker.mjs?worker"
+// PDFJS.GlobalWorkerOptions.workerPort = new Worker()
+
 function ChapterContent(props: {
   chapterName: string
   sanitizedContent: string
+  openFile: (href: string) => void
 }) {
+  const colorScheme = useComputedColorScheme()
   const contentRef = createRef<HTMLDivElement>()
 
   // cursed vanilla js dom manipulation within react
@@ -37,6 +45,14 @@ function ChapterContent(props: {
     removeEmptySpace(contentRoot)
     removeNodeWithText(contentRoot, props.chapterName)
     demoteNonSectionHeaders(contentRoot)
+    highlightDangerKeywords(contentRoot, colorScheme === "light" ? "bg-red-300" : "bg-red-700")
+    handleLinks(contentRoot, (href) => {
+      if (href.includes("learn.vcs.net") && href.includes("/mod/resource")) {
+        props.openFile(href)
+        return
+      }
+      window.open(href)
+    })
 
     const sections: LessonPlanSection[] = []
     segmentLessonPlan(contentRoot, sections)
@@ -103,7 +119,7 @@ function ChapterContent(props: {
     return () => {
       contentRoot.innerHTML = props.sanitizedContent
     }
-  }, [contentRef, props.sanitizedContent, props.chapterName])
+  }, [contentRef, props.sanitizedContent, props.chapterName, colorScheme, props.openFile])
 
   return (
     <div
@@ -120,6 +136,31 @@ function ChapterContent(props: {
     />
   )
 }
+
+// function PdfViewer(props: {
+//   pdf: PDFDocumentProxy
+// }) {
+//   const container = createRef<HTMLDivElement>()
+//
+//   useEffect(() => {
+//     if (!container.current) {
+//       return
+//     }
+//
+//     console.log(container.current)
+//     const viewer = new PDFViewer({
+//       eventBus: new EventBus(),
+//       container: container.current,
+//     })
+//     viewer.setDocument(props.pdf)
+//
+//     return () => {
+//       viewer.cleanup()
+//     }
+//   }, [container.current, props.pdf])
+//
+//   return <div ref={container} />
+// }
 
 export function ChapterDisplay(props: {
   chapter: Chapter
@@ -138,6 +179,30 @@ export function ChapterDisplay(props: {
   const layout = useLayout()
   const [raw, setRaw] = useState(false)
 
+  // const [openedFile, setOpenedFile] = useState<string>()
+  // const fileContents = useQuery({
+  //   queryKey: ["getFileContent", openedFile],
+  //   queryFn: async () => {
+  //     if (!openedFile) {
+  //       return null
+  //     }
+  //
+  //     const res = await client.getFileContent({ url: openedFile })
+  //
+  //     const isPdf =
+  //       res.file[0] === 37 &&
+  //       res.file[1] === 80 &&
+  //       res.file[2] === 68 &&
+  //       res.file[3] === 70
+  //     if (!isPdf) {
+  //       return res.file
+  //     }
+  //
+  //     const loadingTask = PDFJS.getDocument(res.file)
+  //     return await loadingTask.promise
+  //   },
+  // })
+
   const sanitizedHomepageContent = useMemo(
     () => sanitize(props.chapter.homepageContent),
     [props.chapter.homepageContent],
@@ -153,96 +218,110 @@ export function ChapterDisplay(props: {
     : sanitizedHomepageContent
 
   return (
-    <Panel
-      className={twMerge(
-        "flex flex-col gap-3",
-        layout === "mobile" ? "w-full" : "xl:max-w-lg 2xl:max-w-2xl",
-      )}
-    >
-      <div className="flex flex-col gap-1">
-        <div className="flex justify-between gap-3">
-          <PanelTitle
-            className="select-all"
-            label={
-              props.breadcrumb
-                ? props.breadcrumb.course.name
-                : props.chapter.name
-            }
-          />
+    <>
+      {/* {fileContents.data && !(fileContents.data instanceof Uint8Array) ? */}
+      {/*   <Portal> */}
+      {/*     <div className="fixed top-0 left-0 w-full h-full"> */}
+      {/*       <PdfViewer pdf={fileContents.data} /> */}
+      {/*     </div> */}
+      {/*   </Portal> */}
+      {/*   : undefined} */}
 
-          <div className="flex gap-2">
-            <ActionIcon
-              variant="subtle"
-              onClick={() => {
-                window.open(props.chapter.url)
-              }}
-            >
-              <MdLink />
-            </ActionIcon>
+      <Panel
+        className={twMerge(
+          "flex flex-col gap-3",
+          layout === "mobile" ? "w-full" : "xl:max-w-lg 2xl:max-w-2xl",
+        )}
+      >
+        <div className="flex flex-col gap-1">
+          <div className="flex justify-between gap-3">
+            <PanelTitle
+              className="select-all"
+              label={
+                props.breadcrumb
+                  ? props.breadcrumb.course.name
+                  : props.chapter.name
+              }
+            />
 
-            <ActionIcon
-              variant="subtle"
-              onClick={() => {
-                setRaw(!raw)
-              }}
-            >
-              {raw ? (
-                <MdRawOff className="size-6" />
-              ) : (
-                <MdRawOn className="size-6" />
-              )}
-            </ActionIcon>
+            <div className="flex gap-2">
+              <ActionIcon
+                variant="subtle"
+                onClick={() => {
+                  window.open(props.chapter.url)
+                }}
+              >
+                <MdLink />
+              </ActionIcon>
+
+              <ActionIcon
+                variant="subtle"
+                onClick={() => {
+                  setRaw(!raw)
+                }}
+              >
+                {raw ? (
+                  <MdRawOff className="size-6" />
+                ) : (
+                  <MdRawOn className="size-6" />
+                )}
+              </ActionIcon>
+            </div>
           </div>
+
+          {props.breadcrumb ? (
+            <div className="flex gap-1 flex-wrap items-center">
+              <LinkButton
+                className="p-0"
+                onClick={() => {
+                  push("/browse", [
+                    props.breadcrumb!.course.id,
+                    props.breadcrumb!.section.idx,
+                    props.breadcrumb!.resource.idx,
+                  ])
+                }}
+              >
+                {props.breadcrumb.resource.displayContent}
+              </LinkButton>
+              <MdArrowForward />
+              <LinkButton
+                className="p-0"
+                onClick={() => {
+                  push("/browse", [
+                    props.breadcrumb!.course.id,
+                    props.breadcrumb!.section.idx,
+                    props.breadcrumb!.resource.idx,
+                    props.chapter.id,
+                  ])
+                }}
+              >
+                {props.chapter.name}
+              </LinkButton>
+            </div>
+          ) : undefined}
         </div>
 
-        {props.breadcrumb ? (
-          <div className="flex gap-1 flex-wrap items-center">
-            <LinkButton
-              className="p-0"
-              onClick={() => {
-                push("/browse", [
-                  props.breadcrumb!.course.id,
-                  props.breadcrumb!.section.idx,
-                  props.breadcrumb!.resource.idx,
-                ])
-              }}
-            >
-              {props.breadcrumb.resource.displayContent}
-            </LinkButton>
-            <MdArrowForward />
-            <LinkButton
-              className="p-0"
-              onClick={() => {
-                push("/browse", [
-                  props.breadcrumb!.course.id,
-                  props.breadcrumb!.section.idx,
-                  props.breadcrumb!.resource.idx,
-                  props.chapter.id,
-                ])
-              }}
-            >
-              {props.chapter.name}
-            </LinkButton>
-          </div>
-        ) : undefined}
-      </div>
+        <Divider />
 
-      <Divider />
-
-      {raw ? (
-        <div
-          className="content select-text"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-          dangerouslySetInnerHTML={{
-            __html: content,
-          }}
-        />
-      ) : (
-        <ChapterContent
-          chapterName={props.chapter.name}
-          sanitizedContent={content}
-        />
-      )}
-    </Panel>
+        {raw ? (
+          <div
+            className="content select-text"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+            dangerouslySetInnerHTML={{
+              __html: content,
+            }}
+          />
+        ) : (
+          <ChapterContent
+            chapterName={props.chapter.name}
+            sanitizedContent={content}
+            openFile={(href) => {
+              window.open(href)
+              // setOpenedFile(href)
+            }}
+          />
+        )}
+      </Panel>
+    </>
   )
 }
