@@ -6,12 +6,13 @@ import {
   type Resource,
   type Section,
 } from "@backend.vcmoodle/api_pb"
-import { Kbd, TextInput } from "@mantine/core"
+import { Divider, Kbd, TextInput } from "@mantine/core"
 import { createRef, useEffect, useMemo, useState } from "react"
 import {
   MdLink,
   MdOutlineArticle,
   MdOutlineBook,
+  MdOutlineFileOpen,
   MdOutlineFolder,
   MdSearch,
 } from "react-icons/md"
@@ -132,6 +133,9 @@ function Resources(props: {
             case ResourceType.BOOK:
               icon = MdOutlineBook
               break
+            case ResourceType.FILE:
+              icon = MdOutlineFileOpen
+              break
             case ResourceType.HTML_AREA:
               return (
                 <ListItemButton
@@ -183,6 +187,7 @@ function Sections(props: {
   selected?: number
   onSelect(idx?: number): void
   search?: string
+  searchResults?: React.ReactNode
   onSearch(value: string): void
 }) {
   const selectedRef = useScrollIntoViewRef(props.selected)
@@ -232,6 +237,7 @@ function Sections(props: {
             }
           }}
         />
+        {props.searchResults}
       </Panel>
     </div>
   )
@@ -488,17 +494,42 @@ export function Browse(props: {
 
   const [search, setSearch] = useState("")
 
-  const resourceChapterAgg = useMemo(() => {
+  const resourceAgg = useMemo(() => {
     if (path[0] === undefined) {
       return []
     }
     const course = courses[path[0]]
-    const resources = course.sections.flatMap((v) => v.resources)
+    return course.sections
+      .flatMap((v) => v.resources
+        .map((r) => ({
+          value: r,
+          key: `${v.idx}.${r.idx}`
+        }))
+      )
+      .filter((r) => r.value.type !== ResourceType.HTML_AREA)
   }, [path[0], courses])
 
-  const fuse = useMemo(() => {
-    return new Fuse()
-  }, [])
+  const chapterAgg = useMemo(() => {
+    if (path[0] === undefined) {
+      return []
+    }
+    const course = courses[path[0]]
+    return course.sections.flatMap((section) =>
+      section.resources.flatMap((resource) =>
+        resource.chapters.map((c) => c)
+      )
+    )
+  }, [path[0], courses])
+
+  const resourceFuse = useMemo(() => resourceAgg.length > 0 ? new Fuse(resourceAgg, {
+    keys: ["value.displayContent"]
+  }) : undefined, [resourceAgg])
+  const chapterFuse = useMemo(() => chapterAgg.length > 0 ? new Fuse(chapterAgg, {
+    keys: ["name"]
+  }) : undefined, [chapterAgg])
+
+  const resourceResults = useMemo(() => resourceFuse?.search(search) ?? [], [resourceFuse, search])
+  const chapterResults = useMemo(() => chapterFuse?.search(search) ?? [], [chapterFuse, search])
 
   return (
     <div className="flex flex-col gap-3">
@@ -524,6 +555,30 @@ export function Browse(props: {
             onSearch={(value) => {
               setSearch(value)
             }}
+            searchResults={
+              <>
+                {resourceResults.map((r) => (
+                  <ListItemButton
+                    icon={r.item.value.type === ResourceType.FILE ?
+                      MdOutlineFileOpen : r.item.value.type === ResourceType.BOOK ?
+                        MdOutlineBook : MdLink}
+                    key={r.item.key}
+                  >
+                    {r.item.value.displayContent}
+                  </ListItemButton>
+                ))}
+
+                {resourceResults.length > 0 && chapterResults.length > 0 ?
+                  <Divider /> :
+                  undefined}
+
+                {chapterResults.map((c) => (
+                  <ListItemButton icon={MdOutlineArticle} key={c.item.id}>
+                    {c.item.name}
+                  </ListItemButton>
+                ))}
+              </>
+            }
           />
         ) : undefined}
 
@@ -547,8 +602,8 @@ export function Browse(props: {
         ) : undefined}
 
         {path[0] !== undefined &&
-        path[1] !== undefined &&
-        path[2] !== undefined ? (
+          path[1] !== undefined &&
+          path[2] !== undefined ? (
           <Chapters
             resource={courses[path[0]].sections[path[1]].resources[path[2]]}
             selected={path[3]}
