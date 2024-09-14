@@ -209,7 +209,7 @@ function MobileLayout(props: {
   return (
     <div className="w-full h-full">
       <div
-        className="h-full flex flex-col gap-6 p-6 overflow-y-auto"
+        className="h-full flex flex-col gap-6 p-6 overflow-y-auto overflow-x-hidden"
         style={{
           paddingTop: `calc(1.5rem + ${safeArea.top}px)`,
           paddingLeft: `calc(1.5rem + ${safeArea.left}px)`,

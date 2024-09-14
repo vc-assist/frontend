@@ -25,6 +25,7 @@ import { Courses } from "./Courses"
 import { Resources } from "./Resources"
 import { Sections } from "./Sections"
 import { useScrollIntoViewRef } from "./utils"
+import "./mantine-carousel-fix.css"
 
 export type BrowseParams = {
   path?: (bigint | undefined)[]
@@ -139,8 +140,8 @@ function useSearch(
     () =>
       resourceAgg.length > 0
         ? new Fuse(resourceAgg, {
-            keys: ["value.displayContent"],
-          })
+          keys: ["value.displayContent"],
+        })
         : undefined,
     [resourceAgg],
   )
@@ -148,8 +149,8 @@ function useSearch(
     () =>
       chapterAgg.length > 0
         ? new Fuse(chapterAgg, {
-            keys: ["value.name"],
-          })
+          keys: ["value.name"],
+        })
         : undefined,
     [chapterAgg],
   )
@@ -179,6 +180,7 @@ export function Browse(props: { courses: Course[] }) {
   const [cursor, setCursor] = useState(
     params?.path ? params.path.length - 1 : 0,
   )
+  const [shownChapter, setShownChapter] = useState<Chapter>()
 
   function pathCapacities() {
     return [
@@ -194,6 +196,10 @@ export function Browse(props: { courses: Course[] }) {
   }
 
   const down = () => {
+    if (cursor !== 3) {
+      setShownChapter(undefined)
+    }
+
     if (path[cursor] === undefined) {
       path[cursor] = 0
       setPath([...path])
@@ -209,6 +215,10 @@ export function Browse(props: { courses: Course[] }) {
   }
 
   const up = () => {
+    if (cursor !== 3) {
+      setShownChapter(undefined)
+    }
+
     if (path[cursor] === undefined) {
       path[cursor] = pathCapacities()[cursor]! - 1
       setPath([...path])
@@ -224,6 +234,10 @@ export function Browse(props: { courses: Course[] }) {
   }
 
   const left = () => {
+    if (cursor !== 3) {
+      setShownChapter(undefined)
+    }
+
     if (cursor === 0) {
       setPath([])
       return
@@ -234,6 +248,10 @@ export function Browse(props: { courses: Course[] }) {
   }
 
   const right = () => {
+    if (cursor !== 3) {
+      setShownChapter(undefined)
+    }
+
     if (path[cursor] === undefined) {
       path[cursor] = 0
       setPath([...path])
@@ -266,7 +284,6 @@ export function Browse(props: { courses: Course[] }) {
     ["ArrowLeft", left],
   ])
 
-  const [shownChapter, setShownChapter] = useState<Chapter>()
   const chapterDisplayRef = useScrollIntoViewRef(shownChapter)
 
   const client = useVCMoodleClient()
@@ -290,6 +307,7 @@ export function Browse(props: { courses: Course[] }) {
         onSelect={(idx) => {
           setPath([path[0], idx])
           setCursor(1)
+          setShownChapter(undefined)
         }}
         search={search}
         onSearch={(value) => {
@@ -309,6 +327,7 @@ export function Browse(props: { courses: Course[] }) {
                 key={resource.item.key}
                 onClick={() => {
                   setPath(resource.item.path)
+                  setShownChapter(undefined)
                 }}
               >
                 {resource.item.value.displayContent}
@@ -343,6 +362,7 @@ export function Browse(props: { courses: Course[] }) {
         onSelect={(idx) => {
           setPath([path[0], path[1], idx])
           setCursor(2)
+          setShownChapter(undefined)
         }}
         onShow={(idx) => {
           const resource = courses[path[0]!].sections[path[1]!].resources[idx]
@@ -369,7 +389,7 @@ export function Browse(props: { courses: Course[] }) {
         onShow={(idx) => {
           const chapter =
             courses[path[0]!].sections[path[1]!].resources[path[2]!].chapters[
-              idx
+            idx
             ]
           setShownChapter(chapter)
         }}
