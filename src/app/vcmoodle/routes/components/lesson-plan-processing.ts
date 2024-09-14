@@ -2,15 +2,15 @@ const sectionTitleMatchers: {
   re: RegExp
   show?: boolean
 }[] = [
-  { re: /unit *#?[\dA-Z]/gim },
-  { re: /objectives/gim },
-  { re: /unit *standard/gim },
-  { re: /learning *outcome/gim },
-  { re: /biblical *integration/gim },
-  { re: /learning *outcome/gim },
-  { re: /classroom *activities/gim },
-  { re: /homework/gim, show: true },
-]
+    { re: /unit *#?[\dA-Z]/gim },
+    { re: /objectives/gim },
+    { re: /unit *standard/gim },
+    { re: /learning *outcome/gim },
+    { re: /biblical *integration/gim },
+    { re: /learning *outcome/gim },
+    { re: /classroom *activities/gim },
+    { re: /homework/gim, show: true },
+  ]
 
 // a section title has to:
 // 1. be no longer than 80 chars.
@@ -156,17 +156,31 @@ const dangerMatchers: RegExp[] = [
 export function highlightDangerKeywords(root: HTMLElement, className: string) {
   if (root.children.length === 0) {
     let newContent = root.innerHTML
+    let hasDanger = false
     for (const match of dangerMatchers) {
       newContent = newContent.replaceAll(match, (val) => {
+        hasDanger = true
         return `<span class="${className}">${val}</span>`
       })
     }
     root.innerHTML = newContent
+
+    if (!hasDanger) {
+      return
+    }
+
+    let current: Node | null = root
+    while (current != null) {
+      if (current instanceof HTMLElement && current.getAttribute("data-is-content") === "true") {
+        current.setAttribute("data-has-danger", "true")
+        return
+      }
+      current = current.parentNode
+    }
     return
   }
   for (const child of root.children) {
     if (!(child instanceof HTMLElement)) {
-      console.warn(child, "is not an HTMLElement")
       continue
     }
     highlightDangerKeywords(child, className)

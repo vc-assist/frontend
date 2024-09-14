@@ -47,10 +47,6 @@ function ChapterContent(props: {
     removeEmptySpace(contentRoot)
     removeNodeWithText(contentRoot, props.chapterName)
     demoteNonSectionHeaders(contentRoot)
-    highlightDangerKeywords(
-      contentRoot,
-      colorScheme === "light" ? "bg-red-300" : "bg-red-700",
-    )
     handleLinks(contentRoot, (href) => {
       if (href.includes("learn.vcs.net") && href.includes("/mod/resource")) {
         props.openFile(href)
@@ -61,6 +57,18 @@ function ChapterContent(props: {
 
     const sections: LessonPlanSection[] = []
     segmentLessonPlan(contentRoot, sections)
+
+    for (const sec of sections) {
+      for (const e of sec.content) {
+        e.setAttribute("data-is-content", "true")
+        e.classList.add("overflow-hidden")
+      }
+    }
+
+    highlightDangerKeywords(
+      contentRoot,
+      colorScheme === "light" ? "bg-red-300" : "bg-red-700",
+    )
 
     for (const sec of sections) {
       if (sec.content.length === 0) {
@@ -83,10 +91,6 @@ function ChapterContent(props: {
       button.className = "mx-1 rounded-lg hover:bg-dimmed-subtle"
       button.style.padding = "0.15rem"
       button.style.color = "currentColor"
-
-      for (const e of sec.content) {
-        e.classList.add("overflow-hidden")
-      }
 
       const expandEffect = (expanded: boolean) => {
         button.style.transform = expanded
@@ -112,6 +116,12 @@ function ChapterContent(props: {
       }
 
       let expanded = sec.shownByDefault
+      for (const content of sec.content) {
+        if (content.getAttribute("data-has-danger") === "true") {
+          expanded = true
+        }
+      }
+
       expandEffect(expanded)
       button.onclick = () => {
         expanded = !expanded
