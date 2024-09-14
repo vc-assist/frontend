@@ -13,7 +13,12 @@ export function ListItemButton(props: {
 
   const activeBorder =
     colorScheme === "light" ? "border-zinc-300" : "border-zinc-700"
-  const hoveredBg =
+
+  const hoverPrefixedClass = colorScheme === "light"
+    ? "hover:bg-zinc-200 hover:bg-opacity-70"
+    : "hover:bg-zinc-900 hover:bg-opacity-30"
+
+  const hoverClass =
     colorScheme === "light"
       ? "bg-zinc-200 bg-opacity-70"
       : "bg-zinc-900 bg-opacity-30"
@@ -22,8 +27,8 @@ export function ListItemButton(props: {
     <UnstyledButton
       className={twMerge(
         `px-2 py-1 rounded-lg border border-solid border-transparent active:${activeBorder}`,
-        `hover:${hoveredBg} transition-all flex gap-2 items-center`,
-        props.selected ? `${activeBorder} ${hoveredBg}` : "",
+        `${hoverPrefixedClass} transition-all flex gap-2 items-center`,
+        props.selected ? `${activeBorder} ${hoverClass}` : "",
         props.className,
       )}
       onClick={props.onClick}

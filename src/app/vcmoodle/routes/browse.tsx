@@ -24,6 +24,7 @@ import { useRouteContext } from "@/src/components/Router"
 import { ChapterDisplay } from "./chapter-content"
 import { useVCMoodleClient } from "../providers"
 import Fuse from "fuse.js"
+import { HighlightSearch } from "./highlight-search"
 
 function useScrollIntoViewRef(...dependsOn: unknown[]) {
   const selectedRef = createRef<HTMLDivElement>()
@@ -335,6 +336,11 @@ function Courses(props: {
   )
 }
 
+export type BrowseParams = {
+  path?: (bigint | undefined)[]
+  search?: string
+}
+
 // this is probably not idiomatic react
 export function Browse(props: {
   courses: Course[]
@@ -365,7 +371,8 @@ export function Browse(props: {
     [props.courses],
   )
 
-  const { params } = useRouteContext()
+  const { params: untypedParams } = useRouteContext()
+  const params = untypedParams as BrowseParams | undefined
 
   function getInitialPath() {
     const defaultPath = [
@@ -374,31 +381,33 @@ export function Browse(props: {
       undefined, // selected resource
       undefined, // selected chapter
     ]
-    if (!Array.isArray(params)) {
+
+    const inputPath = params?.path
+    if (!inputPath) {
       return defaultPath
     }
 
-    const courseIdx = courses.findIndex((c) => c.id === params[0])
+    const courseIdx = courses.findIndex((c) => c.id === inputPath[0])
     if (courseIdx < 0) {
       return defaultPath
     }
 
-    const sectionIdx = Number(params[1])
-    const resourceIdx = Number(params[2])
+    const sectionIdx = inputPath[1] !== undefined ? Number(inputPath[1]) : undefined
+    const resourceIdx = inputPath[2] !== undefined ? Number(inputPath[2]) : undefined
 
-    if (params[3] === undefined) {
-      return [courseIdx, sectionIdx, resourceIdx]
+    if (sectionIdx !== undefined && resourceIdx !== undefined) {
+      const chapterIdx = courses[courseIdx].sections[sectionIdx].resources[
+        resourceIdx
+      ].chapters.findIndex((c) => c.id === inputPath[3])
+      return [courseIdx, sectionIdx, resourceIdx, chapterIdx]
     }
 
-    const chapterIdx = courses[courseIdx].sections[sectionIdx].resources[
-      resourceIdx
-    ].chapters.findIndex((c) => c.id === params[3])
-    return [courseIdx, sectionIdx, resourceIdx, chapterIdx]
+    return [courseIdx, sectionIdx, resourceIdx]
   }
 
   const [path, setPath] = useState<(number | undefined)[]>(getInitialPath())
   const [cursor, setCursor] = useState(
-    Array.isArray(params) ? params.length - 1 : 0,
+    params?.path ? params.path.length - 1 : 0,
   )
 
   function pathCapacities() {
@@ -492,7 +501,7 @@ export function Browse(props: {
 
   const client = useVCMoodleClient()
 
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState(params?.search ?? "")
 
   const resourceAgg = useMemo(() => {
     if (path[0] === undefined) {
@@ -500,10 +509,11 @@ export function Browse(props: {
     }
     const course = courses[path[0]]
     return course.sections
-      .flatMap((v) => v.resources
-        .map((r) => ({
-          value: r,
-          key: `${v.idx}.${r.idx}`
+      .flatMap((section) => section.resources
+        .map((resource) => ({
+          value: resource,
+          key: `${section.idx}.${resource.idx}`,
+          path: [path[0], Number(section.idx), Number(resource.idx)]
         }))
       )
       .filter((r) => r.value.type !== ResourceType.HTML_AREA)
@@ -516,16 +526,20 @@ export function Browse(props: {
     const course = courses[path[0]]
     return course.sections.flatMap((section) =>
       section.resources.flatMap((resource) =>
-        resource.chapters.map((c) => c)
+        resource.chapters.map((chapter) => ({
+          value: chapter,
+          path: [path[0], Number(section.idx), Number(resource.idx), Number(chapter.id)]
+        }))
       )
     )
   }, [path[0], courses])
+
 
   const resourceFuse = useMemo(() => resourceAgg.length > 0 ? new Fuse(resourceAgg, {
     keys: ["value.displayContent"]
   }) : undefined, [resourceAgg])
   const chapterFuse = useMemo(() => chapterAgg.length > 0 ? new Fuse(chapterAgg, {
-    keys: ["name"]
+    keys: ["value.name"]
   }) : undefined, [chapterAgg])
 
   const resourceResults = useMemo(() => resourceFuse?.search(search) ?? [], [resourceFuse, search])
@@ -557,14 +571,17 @@ export function Browse(props: {
             }}
             searchResults={
               <>
-                {resourceResults.map((r) => (
+                {resourceResults.map((resource) => (
                   <ListItemButton
-                    icon={r.item.value.type === ResourceType.FILE ?
-                      MdOutlineFileOpen : r.item.value.type === ResourceType.BOOK ?
+                    icon={resource.item.value.type === ResourceType.FILE ?
+                      MdOutlineFileOpen : resource.item.value.type === ResourceType.BOOK ?
                         MdOutlineBook : MdLink}
-                    key={r.item.key}
+                    key={resource.item.key}
+                    onClick={() => {
+                      setPath(resource.item.path)
+                    }}
                   >
-                    {r.item.value.displayContent}
+                    {resource.item.value.displayContent}
                   </ListItemButton>
                 ))}
 
@@ -572,9 +589,15 @@ export function Browse(props: {
                   <Divider /> :
                   undefined}
 
-                {chapterResults.map((c) => (
-                  <ListItemButton icon={MdOutlineArticle} key={c.item.id}>
-                    {c.item.name}
+                {chapterResults.map((chapter) => (
+                  <ListItemButton
+                    icon={MdOutlineArticle}
+                    key={chapter.item.value.id}
+                    onClick={() => {
+                      setPath(chapter.item.path)
+                    }}
+                  >
+                    {chapter.item.value.name}
                   </ListItemButton>
                 ))}
               </>
@@ -593,7 +616,10 @@ export function Browse(props: {
             onShow={(idx) => {
               const resource =
                 courses[path[0]!].sections[path[1]!].resources[idx]
-              if (resource.type !== ResourceType.GENERIC_URL) {
+              if (
+                resource.type !== ResourceType.GENERIC_URL &&
+                resource.type !== ResourceType.FILE
+              ) {
                 return
               }
               window.open(resource.url)
@@ -621,9 +647,10 @@ export function Browse(props: {
         ) : undefined}
       </div>
 
-      {shownChapter ? (
+      {shownChapter && path[0] !== undefined ? (
         <div ref={chapterDisplayRef}>
           <ChapterDisplay
+            courseId={path[0]}
             chapter={shownChapter}
             content={{
               key: Number(shownChapter.id),
@@ -637,6 +664,8 @@ export function Browse(props: {
           />
         </div>
       ) : undefined}
+
+      <HighlightSearch />
     </div>
   )
 }

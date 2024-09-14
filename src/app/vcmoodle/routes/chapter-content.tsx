@@ -22,12 +22,14 @@ import type {
 } from "@backend.vcmoodle/api_pb"
 import { useRouteContext } from "@/src/components/Router"
 import { useQuery } from "@tanstack/react-query"
+import type { BrowseParams } from "./browse"
 
 // import * as PDFJS from "pdfjs-dist"
 // import Worker from "pdfjs-dist/build/pdf.worker.mjs?worker"
 // PDFJS.GlobalWorkerOptions.workerPort = new Worker()
 
 function ChapterContent(props: {
+  courseId: number
   chapterName: string
   sanitizedContent: string
   openFile: (href: string) => void
@@ -133,6 +135,7 @@ function ChapterContent(props: {
       dangerouslySetInnerHTML={{
         __html: props.sanitizedContent,
       }}
+      data-course-id={props.courseId}
     />
   )
 }
@@ -163,6 +166,7 @@ function ChapterContent(props: {
 // }
 
 export function ChapterDisplay(props: {
+  courseId: number
   chapter: Chapter
   content?: {
     key: string | number | boolean
@@ -274,11 +278,13 @@ export function ChapterDisplay(props: {
               <LinkButton
                 className="p-0"
                 onClick={() => {
-                  push("/browse", [
-                    props.breadcrumb!.course.id,
-                    props.breadcrumb!.section.idx,
-                    props.breadcrumb!.resource.idx,
-                  ])
+                  push("/browse", {
+                    path: [
+                      props.breadcrumb!.course.id,
+                      props.breadcrumb!.section.idx,
+                      props.breadcrumb!.resource.idx,
+                    ]
+                  } satisfies BrowseParams)
                 }}
               >
                 {props.breadcrumb.resource.displayContent}
@@ -287,41 +293,44 @@ export function ChapterDisplay(props: {
               <LinkButton
                 className="p-0"
                 onClick={() => {
-                  push("/browse", [
-                    props.breadcrumb!.course.id,
-                    props.breadcrumb!.section.idx,
-                    props.breadcrumb!.resource.idx,
-                    props.chapter.id,
-                  ])
+                  push("/browse", {
+                    path: [
+                      props.breadcrumb!.course.id,
+                      props.breadcrumb!.section.idx,
+                      props.breadcrumb!.resource.idx,
+                      props.chapter.id,
+                    ]
+                  } satisfies BrowseParams)
                 }}
               >
-                {props.chapter.name}
-              </LinkButton>
+              {props.chapter.name}
+            </LinkButton>
             </div>
           ) : undefined}
-        </div>
+      </div>
 
-        <Divider />
+      <Divider />
 
-        {raw ? (
-          <div
-            className="content select-text"
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-            dangerouslySetInnerHTML={{
-              __html: content,
-            }}
-          />
-        ) : (
-          <ChapterContent
-            chapterName={props.chapter.name}
-            sanitizedContent={content}
-            openFile={(href) => {
-              window.open(href)
-              // setOpenedFile(href)
-            }}
-          />
-        )}
-      </Panel>
+      {raw ? (
+        <div
+          className="content select-text"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+          dangerouslySetInnerHTML={{
+            __html: content,
+          }}
+        />
+      ) : (
+        <ChapterContent
+          courseId={props.courseId}
+          chapterName={props.chapter.name}
+          sanitizedContent={content}
+          openFile={(href) => {
+            window.open(href)
+            // setOpenedFile(href)
+          }}
+        />
+      )}
+    </Panel >
     </>
   )
 }

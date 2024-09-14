@@ -19,17 +19,17 @@ import { twMerge } from "tailwind-merge"
 
 export type Route =
   | {
-      title: string
-      icon: IconType
-      rootClassName?: string
-      render(): JSX.Element
-    }
+    title: string
+    icon: IconType
+    rootClassName?: string
+    render(): JSX.Element
+  }
   | {
-      title: string
-      noNavbar: true
-      rootClassName?: string
-      render(): JSX.Element
-    }
+    title: string
+    noNavbar: true
+    rootClassName?: string
+    render(): JSX.Element
+  }
 
 export type RouteContext = {
   currentRoute: string
@@ -41,7 +41,7 @@ const [RouteProvider, useRouteContext] = context<RouteContext>({
   currentRoute: "",
   params: undefined,
   profile: { email: "" },
-  push: () => {},
+  push: () => { },
 })
 export { useRouteContext }
 
@@ -98,9 +98,7 @@ export function Router(props: {
   }
 
   const component = (
-    <ComponentWrapper className={route.rootClassName}>
-      {route.render()}
-    </ComponentWrapper>
+    <RouteWrapper key={routePath} className={route.rootClassName} render={route.render} />
   )
 
   const push = (route: string, params?: unknown) => {
@@ -137,7 +135,6 @@ export function Router(props: {
             />
           }
         />
-        {component}
       </RouteProvider>
     )
   }
@@ -184,18 +181,17 @@ export function Router(props: {
   )
 }
 
-function ComponentWrapper(props: {
+function RouteWrapper(props: {
   className?: string
-  children: React.ReactNode
+  render: () => JSX.Element
 }) {
   return (
     <motion.div
       className={twMerge("w-full h-fit mb-auto", props.className)}
       initial={{ y: 20, opacity: 0.5 }}
       animate={{ y: 0, opacity: 1 }}
-      exit={{ y: 20, opacity: 0.5 }}
     >
-      {props.children}
+      <props.render />
     </motion.div>
   )
 }
