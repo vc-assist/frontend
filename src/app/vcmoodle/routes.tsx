@@ -25,6 +25,7 @@ export function Routes() {
         "/browse": {
           title: "Browse",
           icon: MdTravelExplore,
+          rootClassName: "p-0",
           render() {
             return <Browse courses={data} />
           },

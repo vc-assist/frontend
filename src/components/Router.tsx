@@ -19,17 +19,17 @@ import { twMerge } from "tailwind-merge"
 
 export type Route =
   | {
-    title: string
-    icon: IconType
-    rootClassName?: string
-    render(): JSX.Element
-  }
+      title: string
+      icon: IconType
+      rootClassName?: string
+      render(): JSX.Element
+    }
   | {
-    title: string
-    noNavbar: true
-    rootClassName?: string
-    render(): JSX.Element
-  }
+      title: string
+      noNavbar: true
+      rootClassName?: string
+      render(): JSX.Element
+    }
 
 export type RouteContext = {
   currentRoute: string
@@ -41,7 +41,7 @@ const [RouteProvider, useRouteContext] = context<RouteContext>({
   currentRoute: "",
   params: undefined,
   profile: { email: "" },
-  push: () => { },
+  push: () => {},
 })
 export { useRouteContext }
 
@@ -98,7 +98,11 @@ export function Router(props: {
   }
 
   const component = (
-    <RouteWrapper key={routePath} className={route.rootClassName} render={route.render} />
+    <RouteWrapper
+      key={routePath}
+      className={route.rootClassName}
+      render={route.render}
+    />
   )
 
   const push = (route: string, params?: unknown) => {

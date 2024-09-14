@@ -1,6 +1,7 @@
 import { LoginPage } from "@/src/components/Auth"
 import { useSignals } from "@preact/signals-react/runtime"
 import { LogoutModal, Panel, Positioned, persistentSignal } from "@vcassist/ui"
+import { motion } from "framer-motion"
 import { Suspense, useState } from "react"
 import type { IconType } from "react-icons"
 import { twMerge } from "tailwind-merge"
@@ -10,7 +11,6 @@ import {
   type UserContext,
   UserProvider,
 } from "../providers"
-import { motion } from "framer-motion"
 
 const token = persistentSignal({
   key: "token",
@@ -67,8 +67,8 @@ export function App(props: {
           value={
             props.modules.length > 1
               ? () => {
-                activeModule.value = undefined
-              }
+                  activeModule.value = undefined
+                }
               : undefined
           }
         >

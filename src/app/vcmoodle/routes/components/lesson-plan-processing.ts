@@ -2,15 +2,15 @@ const sectionTitleMatchers: {
   re: RegExp
   show?: boolean
 }[] = [
-    { re: /unit *#?[\dA-Z]/gim },
-    { re: /objectives/gim },
-    { re: /unit *standard/gim },
-    { re: /learning *outcome/gim },
-    { re: /biblical *integration/gim },
-    { re: /learning *outcome/gim },
-    { re: /classroom *activities/gim },
-    { re: /homework/gim, show: true },
-  ]
+  { re: /unit *#?[\dA-Z]/gim },
+  { re: /objectives/gim },
+  { re: /unit *standard/gim },
+  { re: /learning *outcome/gim },
+  { re: /biblical *integration/gim },
+  { re: /learning *outcome/gim },
+  { re: /classroom *activities/gim },
+  { re: /homework/gim, show: true },
+]
 
 // a section title has to:
 // 1. be no longer than 80 chars.
@@ -191,4 +191,3 @@ export function handleLinks(root: HTMLElement, handle: (href: string) => void) {
     handleLinks(child, handle)
   }
 }
-

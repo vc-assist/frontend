@@ -1,9 +1,9 @@
 import { useRouteContext } from "@/src/components/Router"
-import { Panel } from "@/ui"
+import { Panel } from "@vcassist/ui"
 import { AnimatePresence, motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { MdSearch } from "react-icons/md"
-import type { BrowseParams } from "./browse"
+import type { BrowseParams } from "../browse"
 
 export function HighlightSearch(props: {
   courseId?: bigint
@@ -24,11 +24,11 @@ export function HighlightSearch(props: {
       setTimeout(() => {
         const selection = document.getSelection()
         if (!selection || selection.isCollapsed) {
-          setSelectBounds(undefined);
+          setSelectBounds(undefined)
           setSelection(undefined)
           return
         }
-        const range = selection.getRangeAt(0);
+        const range = selection.getRangeAt(0)
         setSelectBounds(range.getBoundingClientRect())
         setSelection(selection)
       }, 100)
@@ -58,7 +58,7 @@ export function HighlightSearch(props: {
 
   return (
     <AnimatePresence>
-      {selectBounds ?
+      {selectBounds ? (
         <motion.div
           style={{
             position: "fixed",
@@ -92,12 +92,12 @@ export function HighlightSearch(props: {
             } satisfies BrowseParams)
           }}
         >
-          <Panel className="hover:cursor-pointer px-3 py-2 flex gap-1 items-start max-w-sm" >
-            <MdSearch className="min-w-5 max-w-5 min-h-5 max-h-5" />
-            "<span>{selectionStr}</span>"
+          <Panel className="hover:cursor-pointer px-3 py-2 flex gap-1 items-start max-w-sm">
+            <MdSearch className="min-w-5 max-w-5 min-h-5 max-h-5" />"
+            <span>{selectionStr}</span>"
           </Panel>
         </motion.div>
-        : undefined}
+      ) : undefined}
     </AnimatePresence>
   )
 }

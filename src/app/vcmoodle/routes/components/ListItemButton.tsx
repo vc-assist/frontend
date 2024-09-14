@@ -14,9 +14,10 @@ export function ListItemButton(props: {
   const activeBorder =
     colorScheme === "light" ? "border-zinc-300" : "border-zinc-700"
 
-  const hoverPrefixedClass = colorScheme === "light"
-    ? "hover:bg-zinc-200 hover:bg-opacity-70"
-    : "hover:bg-zinc-900 hover:bg-opacity-30"
+  const hoverPrefixedClass =
+    colorScheme === "light"
+      ? "hover:bg-zinc-200 hover:bg-opacity-70"
+      : "hover:bg-zinc-900 hover:bg-opacity-30"
 
   const hoverClass =
     colorScheme === "light"
@@ -33,16 +34,10 @@ export function ListItemButton(props: {
       )}
       onClick={props.onClick}
     >
-      {props.icon ? <props.icon className="min-w-5 min-h-5 max-w-5 max-h-5" /> : undefined}
+      {props.icon ? (
+        <props.icon className="min-w-5 min-h-5 max-w-5 max-h-5" />
+      ) : undefined}
       {props.children}
     </UnstyledButton>
-  )
-}
-
-export function PanelTitle(props: { className?: string; label: string }) {
-  return (
-    <h4 className={twMerge("font-semibold text-lg", props.className)}>
-      {props.label}
-    </h4>
   )
 }

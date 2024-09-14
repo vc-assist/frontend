@@ -1,28 +1,28 @@
-import { createRef, useEffect, useMemo, useState } from "react"
-import {
-  demoteNonSectionHeaders,
-  handleLinks,
-  highlightDangerKeywords,
-  type LessonPlanSection,
-  removeEmptySpace,
-  removeNodeWithText,
-  segmentLessonPlan,
-} from "./lesson-plan-processing"
-import { ActionIcon, Divider, useComputedColorScheme } from "@mantine/core"
-import { LinkButton, Panel, useLayout } from "@vcassist/ui"
-import { MdArrowForward, MdLink, MdRawOff, MdRawOn } from "react-icons/md"
-import { PanelTitle } from "./components"
-import { twMerge } from "tailwind-merge"
-import sanitize from "sanitize-html"
+import { useRouteContext } from "@/src/components/Router"
 import type {
   Chapter,
   Course,
   Resource,
   Section,
 } from "@backend.vcmoodle/api_pb"
-import { useRouteContext } from "@/src/components/Router"
+import { ActionIcon, Divider, useComputedColorScheme } from "@mantine/core"
 import { useQuery } from "@tanstack/react-query"
-import type { BrowseParams } from "./browse"
+import { LinkButton, Panel, useLayout } from "@vcassist/ui"
+import { createRef, useEffect, useMemo, useState } from "react"
+import { MdArrowForward, MdLink, MdRawOff, MdRawOn } from "react-icons/md"
+import sanitize from "sanitize-html"
+import { twMerge } from "tailwind-merge"
+import type { BrowseParams } from "../browse"
+import { PanelTitle } from "./PanelTitle"
+import {
+  type LessonPlanSection,
+  demoteNonSectionHeaders,
+  handleLinks,
+  highlightDangerKeywords,
+  removeEmptySpace,
+  removeNodeWithText,
+  segmentLessonPlan,
+} from "./lesson-plan-processing"
 
 // import * as PDFJS from "pdfjs-dist"
 // import Worker from "pdfjs-dist/build/pdf.worker.mjs?worker"
@@ -47,7 +47,10 @@ function ChapterContent(props: {
     removeEmptySpace(contentRoot)
     removeNodeWithText(contentRoot, props.chapterName)
     demoteNonSectionHeaders(contentRoot)
-    highlightDangerKeywords(contentRoot, colorScheme === "light" ? "bg-red-300" : "bg-red-700")
+    highlightDangerKeywords(
+      contentRoot,
+      colorScheme === "light" ? "bg-red-300" : "bg-red-700",
+    )
     handleLinks(contentRoot, (href) => {
       if (href.includes("learn.vcs.net") && href.includes("/mod/resource")) {
         props.openFile(href)
@@ -121,7 +124,13 @@ function ChapterContent(props: {
     return () => {
       contentRoot.innerHTML = props.sanitizedContent
     }
-  }, [contentRef, props.sanitizedContent, props.chapterName, colorScheme, props.openFile])
+  }, [
+    contentRef,
+    props.sanitizedContent,
+    props.chapterName,
+    colorScheme,
+    props.openFile,
+  ])
 
   return (
     <div
@@ -283,7 +292,7 @@ export function ChapterDisplay(props: {
                       props.breadcrumb!.course.id,
                       props.breadcrumb!.section.idx,
                       props.breadcrumb!.resource.idx,
-                    ]
+                    ],
                   } satisfies BrowseParams)
                 }}
               >
@@ -299,38 +308,38 @@ export function ChapterDisplay(props: {
                       props.breadcrumb!.section.idx,
                       props.breadcrumb!.resource.idx,
                       props.chapter.id,
-                    ]
+                    ],
                   } satisfies BrowseParams)
                 }}
               >
-              {props.chapter.name}
-            </LinkButton>
+                {props.chapter.name}
+              </LinkButton>
             </div>
           ) : undefined}
-      </div>
+        </div>
 
-      <Divider />
+        <Divider />
 
-      {raw ? (
-        <div
-          className="content select-text"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-          dangerouslySetInnerHTML={{
-            __html: content,
-          }}
-        />
-      ) : (
-        <ChapterContent
-          courseId={props.courseId}
-          chapterName={props.chapter.name}
-          sanitizedContent={content}
-          openFile={(href) => {
-            window.open(href)
-            // setOpenedFile(href)
-          }}
-        />
-      )}
-    </Panel >
+        {raw ? (
+          <div
+            className="content select-text"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+            dangerouslySetInnerHTML={{
+              __html: content,
+            }}
+          />
+        ) : (
+          <ChapterContent
+            courseId={props.courseId}
+            chapterName={props.chapter.name}
+            sanitizedContent={content}
+            openFile={(href) => {
+              window.open(href)
+              // setOpenedFile(href)
+            }}
+          />
+        )}
+      </Panel>
     </>
   )
 }

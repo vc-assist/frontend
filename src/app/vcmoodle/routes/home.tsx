@@ -1,12 +1,12 @@
 import type {
   Chapter,
   Course,
-  Section,
   Resource,
+  Section,
 } from "@backend.vcmoodle/api_pb"
-import { ChapterDisplay } from "./chapter-content"
 import { motion } from "framer-motion"
-import { HighlightSearch } from "./highlight-search"
+import { ChapterDisplay } from "./components/ChapterDisplay"
+import { HighlightSearch } from "./components/HighlightSearch"
 
 export function Home(props: {
   courses: Course[]
@@ -31,11 +31,12 @@ export function Home(props: {
   }
 
   return (
-    <div className="flex flex-wrap gap-5">
+    <div className="flex flex-wrap gap-5 max-w-full">
       {traces.map((trace, i) => {
         return (
           <motion.div
             key={trace.course.id}
+            className="max-w-full"
             transition={{ delay: 0.05 * (i + 1) }}
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
