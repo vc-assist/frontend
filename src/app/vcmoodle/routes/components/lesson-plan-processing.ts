@@ -1,15 +1,32 @@
+// biome-ignore lint/suspicious/noControlCharactersInRegex: this is correct
+const matchNonASCII = /[^\x00-\x7F]/g
+const consecutiveWhitespaceMatch = /\s\s+/g
+
+function normalize(text: string): string {
+  let out = text
+  out = out.replaceAll(matchNonASCII, "");
+  out = out.trim()
+  out = out.replaceAll(consecutiveWhitespaceMatch, " ")
+  out = out.toLowerCase()
+  return out
+}
+
 const sectionTitleMatchers: {
   re: RegExp
   show?: boolean
+  maxWordLength?: number
 }[] = [
-    { re: /unit *#?[\dA-Z]/gim },
-    { re: /objectives/gim },
-    { re: /unit *standard/gim },
-    { re: /learning *outcome/gim },
-    { re: /biblical *integration/gim },
-    { re: /learning *outcome/gim },
-    { re: /classroom *activities/gim },
-    { re: /homework/gim, show: true },
+    { re: /homework/gm, show: true, maxWordLength: 8 },
+    { re: /(?: |^)hw:?/gm, show: true, maxWordLength: 8 },
+    { re: /assignments/gm, show: true, maxWordLength: 8 },
+    { re: /unit *#?[\da-z]/gm },
+    { re: /day *#?[\da-z]?/gm },
+    { re: /objectives/gm, maxWordLength: 8 },
+    { re: /unit *standard/gm },
+    { re: /learning *outcome/gm },
+    { re: /biblical *integration/gm },
+    { re: /learning *outcome/gm },
+    { re: /classroom *activities/gm },
   ]
 
 // a section title has to:
@@ -18,11 +35,15 @@ const sectionTitleMatchers: {
 // 3. is not underneath a ul, ol or table
 
 function isSectionTitle(title: string): { shownByDefault: boolean } | null {
-  if (title.length >= 80) {
+  const normalized = normalize(title)
+  if (normalized.length >= 120) {
     return null
   }
   for (const match of sectionTitleMatchers) {
-    if (title.match(match.re)) {
+    if (normalized.match(match.re)) {
+      if (match.maxWordLength !== undefined && normalized.split(" ").length >= match.maxWordLength) {
+        continue
+      }
       return { shownByDefault: match.show ?? false }
     }
   }

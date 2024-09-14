@@ -116,12 +116,6 @@ function ChapterContent(props: {
       }
 
       let expanded = sec.shownByDefault
-      for (const content of sec.content) {
-        if (content.getAttribute("data-has-danger") === "true") {
-          expanded = true
-        }
-      }
-
       expandEffect(expanded)
       button.onclick = () => {
         expanded = !expanded
@@ -129,6 +123,19 @@ function ChapterContent(props: {
       }
 
       title.append(button)
+
+      if (sec.shownByDefault) {
+        continue
+      }
+      for (const content of sec.content) {
+        if (content.getAttribute("data-has-danger") === "true") {
+          const dangerIcon = document.createElement("span")
+          dangerIcon.innerText = "⚠"
+          dangerIcon.style.color = "red"
+          title.append(dangerIcon)
+          break
+        }
+      }
     }
 
     return () => {
