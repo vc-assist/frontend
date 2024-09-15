@@ -7,6 +7,7 @@ import DayBlock from "./DayBlock"
 import Gpa from "./Gpa"
 import GradeList from "./GradeList"
 import Schedule from "./Schedule"
+import { dateFromUnix } from "@/lib/date"
 
 const meter = createDefaultMeter("routes.dashboard")
 const viewPage = meter.createCounter("view")
@@ -24,13 +25,29 @@ export default function Dashboard({ data }: { data: Data }) {
   }
   const dayNames = Array.from(daySet)
 
+  const now = new Date()
+  let currentDay = ""
+  courses: for (const course of data.courses) {
+    for (const meeting of course.meetings) {
+      const startDate = dateFromUnix(meeting.start)
+      if (
+        startDate.getFullYear() === now.getFullYear() &&
+        startDate.getMonth() === now.getMonth() &&
+        startDate.getDate() === now.getDate()
+      ) {
+        currentDay = course.dayName
+        break courses
+      }
+    }
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="flex flex-col gap-6">
         {/* grid is used here so I don't have to deal with
         flexbox flex shenanigans */}
         <div className="grid grid-cols-2 gap-6">
-          <DayBlock dayNames={dayNames} currentDay="" />
+          <DayBlock dayNames={dayNames} currentDay={currentDay} />
           {!settings.dashboard.hideGPA.value ? (
             <Gpa gpa={data.profile?.currentGpa ?? -1} />
           ) : (
