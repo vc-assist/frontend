@@ -1,3 +1,4 @@
+import { Favicon } from "@vcassist/ui"
 import { Title } from "@mantine/core"
 import {
   LinkButton,
@@ -19,17 +20,17 @@ import { twMerge } from "tailwind-merge"
 
 export type Route =
   | {
-      title: string
-      icon: IconType
-      rootClassName?: string
-      render(): JSX.Element
-    }
+    title: string
+    icon: IconType
+    rootClassName?: string
+    render(): JSX.Element
+  }
   | {
-      title: string
-      noNavbar: true
-      rootClassName?: string
-      render(): JSX.Element
-    }
+    title: string
+    noNavbar: true
+    rootClassName?: string
+    render(): JSX.Element
+  }
 
 export type RouteContext = {
   currentRoute: string
@@ -41,7 +42,7 @@ const [RouteProvider, useRouteContext] = context<RouteContext>({
   currentRoute: "",
   params: undefined,
   profile: { email: "" },
-  push: () => {},
+  push: () => { },
 })
 export { useRouteContext }
 
@@ -263,7 +264,7 @@ function DesktopLayout(props: {
           <div className="flex flex-col gap-6 min-w-[200px]">
             {/* Branding */}
             <Panel className="flex gap-3 items-center">
-              <img src="/favicon.svg" alt="brand" width={36} height={36} />
+              <Favicon className="w-[36px] h-[36]px" />
               <Title className="font-black whitespace-nowrap" order={3}>
                 VC Assist
               </Title>
