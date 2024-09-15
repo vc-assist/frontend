@@ -18,6 +18,14 @@ const token = persistentSignal({
   defaultValue: "",
 })
 
+window.addEventListener("storage", () => {
+  const setValue = localStorage.getItem("token")
+  if (!setValue || setValue === token.value) {
+    return
+  }
+  token.value = setValue
+})
+
 const activeModule = persistentSignal({
   key: "active-module",
   schema: z.string().optional(),
