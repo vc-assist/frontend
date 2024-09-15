@@ -235,7 +235,7 @@ importers:
         specifier: ^2.0.2
         version: 2.1.0(react@18.3.1)
       '@tanstack/react-query':
-        specifier: ^5.53.3
+        specifier: 5.53.3
         version: 5.53.3(react@18.3.1)
       chroma-js:
         specifier: ^2.4.2
