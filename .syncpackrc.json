@@ -1,0 +1,15 @@
+{
+  "semverGroups": [
+    {
+      "label": "Use exact version numbers.",
+      "dependencies": ["!@vcassist/*"],
+      "range": ""
+    }
+  ],
+  "versionGroups": [
+    {
+      "dependencies": ["@vcassist/*"],
+      "isIgnored": true
+    }
+  ]
+}

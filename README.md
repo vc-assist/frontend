@@ -33,6 +33,7 @@
 - `pnpm lint` - lints the entire frontend using biome and tsc.
 - `pnpm build` - transpiles & bundles the frontend into the `dist/` directory.
 - `pnpm preview` - starts a dev server using the result of a `pnpm run build` (useful if there are differences between build and dev because of vite).
+- `pnpm syncpack fix-mismatches` - makes all dependencies an exact version, you should run `pnpm install` afterwards
 
 ## Implementing the Native API
 
