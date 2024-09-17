@@ -73,7 +73,7 @@ function CourseDependentForm(props: {
               : `${(
                   (categoryRecord[props.selectedCategory.id].earnedPoints /
                     categoryRecord[props.selectedCategory.id].totalPoints) *
-                  100
+                    100
                 ).toFixed(1)}%`}
           </Text>
           <div className="w-[1px] h-[1rem] bg-primary" />

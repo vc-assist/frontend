@@ -1,13 +1,13 @@
-import { Panel } from "@vcassist/ui"
 import type { Course } from "@backend.vcmoodle/api_pb"
 import { TextInput } from "@mantine/core"
 import { useHotkeys } from "@mantine/hooks"
+import { Panel } from "@vcassist/ui"
 import { createRef } from "react"
 import { MdOutlineFolder, MdSearch } from "react-icons/md"
+import { twMerge } from "tailwind-merge"
 import { ListItemButton } from "../components/ListItemButton"
 import { PanelTitle } from "../components/PanelTitle"
 import { useListMaxWidthClass, useScrollIntoViewRef } from "./utils"
-import { twMerge } from "tailwind-merge"
 
 export function Sections(props: {
   course: Course

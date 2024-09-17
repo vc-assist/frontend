@@ -1,3 +1,4 @@
+import { dateFromUnix } from "@/lib/date"
 import { settings } from "@/src/components/profile/Settings"
 import type { Data } from "@backend.sis/api_pb"
 import { useSignals } from "@preact/signals-react/runtime"
@@ -7,7 +8,6 @@ import DayBlock from "./DayBlock"
 import Gpa from "./Gpa"
 import GradeList from "./GradeList"
 import Schedule from "./Schedule"
-import { dateFromUnix } from "@/lib/date"
 
 const meter = createDefaultMeter("routes.dashboard")
 const viewPage = meter.createCounter("view")

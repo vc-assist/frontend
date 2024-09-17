@@ -1,10 +1,10 @@
-import { Panel, useLayout } from "@vcassist/ui"
 import type { Course } from "@backend.vcmoodle/api_pb"
 import { Kbd } from "@mantine/core"
+import { Panel, useLayout } from "@vcassist/ui"
+import { twMerge } from "tailwind-merge"
 import { ListItemButton } from "../components/ListItemButton"
 import { PanelTitle } from "../components/PanelTitle"
 import { useListMaxWidthClass, useScrollIntoViewRef } from "./utils"
-import { twMerge } from "tailwind-merge"
 
 export function Courses(props: {
   courses: Course[]

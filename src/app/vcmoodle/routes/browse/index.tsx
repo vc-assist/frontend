@@ -140,8 +140,8 @@ function useSearch(
     () =>
       resourceAgg.length > 0
         ? new Fuse(resourceAgg, {
-          keys: ["value.displayContent"],
-        })
+            keys: ["value.displayContent"],
+          })
         : undefined,
     [resourceAgg],
   )
@@ -149,8 +149,8 @@ function useSearch(
     () =>
       chapterAgg.length > 0
         ? new Fuse(chapterAgg, {
-          keys: ["value.name"],
-        })
+            keys: ["value.name"],
+          })
         : undefined,
     [chapterAgg],
   )
@@ -389,7 +389,7 @@ export function Browse(props: { courses: Course[] }) {
         onShow={(idx) => {
           const chapter =
             courses[path[0]!].sections[path[1]!].resources[path[2]!].chapters[
-            idx
+              idx
             ]
           setShownChapter(chapter)
         }}

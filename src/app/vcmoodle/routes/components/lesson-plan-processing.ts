@@ -4,7 +4,7 @@ const consecutiveWhitespaceMatch = /\s\s+/g
 
 function normalize(text: string): string {
   let out = text
-  out = out.replaceAll(matchNonASCII, "");
+  out = out.replaceAll(matchNonASCII, "")
   out = out.trim()
   out = out.replaceAll(consecutiveWhitespaceMatch, " ")
   out = out.toLowerCase()
@@ -16,18 +16,18 @@ const sectionTitleMatchers: {
   show?: boolean
   maxWordLength?: number
 }[] = [
-    { re: /homework/gm, show: true, maxWordLength: 8 },
-    { re: /(?: |^)hw:?/gm, show: true, maxWordLength: 8 },
-    { re: /assignments/gm, show: true, maxWordLength: 8 },
-    { re: /unit *#?[\da-z]/gm },
-    { re: /day *#?[\da-z]?/gm },
-    { re: /objectives/gm, maxWordLength: 8 },
-    { re: /unit *standard/gm },
-    { re: /learning *outcome/gm },
-    { re: /biblical *integration/gm },
-    { re: /learning *outcome/gm },
-    { re: /classroom *activities/gm },
-  ]
+  { re: /homework/gm, show: true, maxWordLength: 8 },
+  { re: /(?: |^)hw:?/gm, show: true, maxWordLength: 8 },
+  { re: /assignments/gm, show: true, maxWordLength: 8 },
+  { re: /unit *#?[\da-z]/gm },
+  { re: /day *#?[\da-z]?/gm },
+  { re: /objectives/gm, maxWordLength: 8 },
+  { re: /unit *standard/gm },
+  { re: /learning *outcome/gm },
+  { re: /biblical *integration/gm },
+  { re: /learning *outcome/gm },
+  { re: /classroom *activities/gm },
+]
 
 // a section title has to:
 // 1. be no longer than 80 chars.
@@ -41,7 +41,10 @@ function isSectionTitle(title: string): { shownByDefault: boolean } | null {
   }
   for (const match of sectionTitleMatchers) {
     if (normalized.match(match.re)) {
-      if (match.maxWordLength !== undefined && normalized.split(" ").length >= match.maxWordLength) {
+      if (
+        match.maxWordLength !== undefined &&
+        normalized.split(" ").length >= match.maxWordLength
+      ) {
         continue
       }
       return { shownByDefault: match.show ?? false }
@@ -192,7 +195,10 @@ export function highlightDangerKeywords(root: HTMLElement, className: string) {
 
     let current: Node | null = root
     while (current != null) {
-      if (current instanceof HTMLElement && current.getAttribute("data-is-content") === "true") {
+      if (
+        current instanceof HTMLElement &&
+        current.getAttribute("data-is-content") === "true"
+      ) {
         current.setAttribute("data-has-danger", "true")
         return
       }

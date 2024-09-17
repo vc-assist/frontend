@@ -1,13 +1,13 @@
-import { Panel } from "@vcassist/ui"
 import { ResourceType, type Section } from "@backend.vcmoodle/api_pb"
 import { useHotkeys } from "@mantine/hooks"
+import { Panel } from "@vcassist/ui"
 import type { IconType } from "react-icons"
 import { MdLink, MdOutlineBook, MdOutlineFileOpen } from "react-icons/md"
 import sanitize from "sanitize-html"
+import { twMerge } from "tailwind-merge"
 import { ListItemButton } from "../components/ListItemButton"
 import { PanelTitle } from "../components/PanelTitle"
 import { useListMaxWidthClass, useScrollIntoViewRef } from "./utils"
-import { twMerge } from "tailwind-merge"
 
 export function Resources(props: {
   section: Section

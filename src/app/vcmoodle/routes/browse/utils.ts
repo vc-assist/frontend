@@ -3,7 +3,9 @@ import { createRef, useEffect } from "react"
 
 export function useListMaxWidthClass(): string {
   const layout = useLayout()
-  return layout === "mobile" ? "max-w-[320px] sm:max-w-[500px]" : "max-w-[280px]"
+  return layout === "mobile"
+    ? "max-w-[320px] sm:max-w-[500px]"
+    : "max-w-[280px]"
 }
 
 export function useScrollIntoViewRef(...dependsOn: unknown[]) {
