@@ -6,23 +6,12 @@
 
 - `ui/` - a submodule containing the ui component library
 - `backend/` - a submodule containing the backend repository (because the services' gRPC types are stored there)
-- `public/` - static files
-- `lib/` - shared packages
-- `src/` - source code
-   - `routes/` - the pages you see after logging in, providing credentials & fetching data 
-      - `dashboard/` - dashboard route
-      - `grade-calculator/` - necessary score & what if calculator.
-      - `grade-trends/` - grade trends page
-      - `profile/` - profile page
-      - `CourseChip.tsx` - a shared component used in these routes (the thing that pops up when you click on a course name)
-      - `Router.tsx` - the component that handles routing and the app layout
-      - `index.tsx` - the component that specifies which routes exist and uses `Router.tsx`
-   - `auth/` - ui code that handles logging in
-   - `credentials/` - ui code that handles providing credentials
-   - `loading-data/` - ui code that handles loading student data
+- `lib/` - general shared internal libraries
+- `src/` - main code
+   - `app/` - WIP
+   - `components/` - shared internal components
    - `singletons.ts` - singletons in general
    - `providers.ts` - react context singletons
-   - `App.tsx` - the component that handles the main setup logic (login, credentials, then data fetch)
    - `main.tsx` - the ui entrypoint, sets up providers, `@vcassist/ui` and other foundational things
 
 ## Commands
