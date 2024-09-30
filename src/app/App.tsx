@@ -5,6 +5,7 @@ import {
   type CredentialState,
   ErrorPage,
   IconButton,
+  LogoutModal,
   Positioned,
 } from "@vcassist/ui"
 import { MdArrowBack } from "react-icons/md"
@@ -34,19 +35,27 @@ export function App(props: {
   const credentialStatesQuery = useQuery({
     queryKey: ["credentialStates", tokenValue],
     queryFn: () => {
-      return Promise.all(props.modules.map((mod) => mod.afterLogin(tokenValue!)))
+      return Promise.all(
+        props.modules.map((mod) => mod.afterLogin(tokenValue!)),
+      )
     },
     enabled: !!tokenValue,
   })
+
+  const provided = !!credentialStatesQuery.data?.every((value) =>
+    value.credentialStates.every((state) => state.provided),
+  )
 
   const routesQuery = useQuery({
     queryKey: ["loginRoutes", tokenValue],
     queryFn: () => {
       return Promise.all(
-        credentialStatesQuery.data!.map((mod) => mod.afterCredentialsProvided()),
+        credentialStatesQuery.data!.map((mod) =>
+          mod.afterCredentialsProvided(),
+        ),
       )
     },
-    enabled: !!credentialStatesQuery.data
+    enabled: provided,
   })
 
   if (!profile) {
@@ -76,17 +85,13 @@ export function App(props: {
     return <LoadingPage />
   }
 
-  let complete = true
   const credentialStates: CredentialState[] = []
   for (const mod of credentialStatesQuery.data) {
     for (const state of mod.credentialStates) {
-      if (!state.provided) {
-        complete = false
-      }
       credentialStates.push(state)
     }
   }
-  if (!complete) {
+  if (!provided) {
     return (
       <div className="flex w-full h-full">
         <CredentialCarousel
@@ -97,12 +102,10 @@ export function App(props: {
           }}
         />
         <Positioned x="left" y="top" padding="2rem">
-          <IconButton
-            icon={MdArrowBack}
-            label="Back"
-            color="dark"
-            horizontal
-            onClick={open}
+          <LogoutModal
+            handleLogout={() => {
+              useUser.getState().logout()
+            }}
           />
         </Positioned>
       </div>
