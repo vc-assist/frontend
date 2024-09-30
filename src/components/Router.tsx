@@ -1,4 +1,6 @@
-import { Title } from "@mantine/core"
+import { Text, Button, Title } from "@mantine/core"
+import { notifications } from "@mantine/notifications"
+import { useMutation } from "@tanstack/react-query"
 import { Favicon, type SafeAreaInsets } from "@vcassist/ui"
 import {
   LinkButton,
@@ -12,7 +14,7 @@ import {
 import { ErrorPage } from "@vcassist/ui"
 import { AnimatePresence, motion } from "framer-motion"
 import type { IconType } from "react-icons"
-import { MdPerson, MdSettings } from "react-icons/md"
+import { MdPerson, MdRefresh, MdSettings } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
@@ -65,6 +67,7 @@ export function Router(props: {
   }
   defaultRoute: string
   profile: UserProfile
+  onRefresh(route: string): Promise<void>
 }) {
   const safeArea = useSafeArea((area) => area.insets)
   const mobile = useLayout() === "mobile"
@@ -115,6 +118,39 @@ export function Router(props: {
     />
   )
 
+  const refreshMutation = useMutation({
+    mutationFn: props.onRefresh,
+    onError(err) {
+      notifications.show({
+        title: "Failed to refresh data.",
+        message: err.message,
+        color: "red",
+        autoClose: 10000,
+      })
+    },
+    onSuccess() {
+      notifications.show({
+        message: "Successfully refreshed data.",
+        color: "green",
+        autoClose: 3000,
+      })
+    }
+  })
+
+  const RefreshButton = (props: { className?: string }) => (
+    <Button
+      className={props.className}
+      variant="subtle"
+      leftSection={<MdRefresh className="size-5" />}
+      loading={refreshMutation.isPending}
+      onClick={() => {
+        refreshMutation.mutate(routePath)
+      }}
+    >
+      Refresh Data
+    </Button>
+  )
+
   if (mobile) {
     return (
       <MobileLayout
@@ -135,9 +171,33 @@ export function Router(props: {
             onNavigate={push}
           />
         }
+        aboveNavbar={routePath !== PROFILE_ROUTE_PATH ?
+          <div className="flex">
+            <RefreshButton
+              className="m-auto rounded-xl bg-bg shadow-xl border border-solid border-dimmed-subtle"
+            />
+          </div>
+          : undefined}
       />
     )
   }
+
+  const settingsButton = (
+    <button
+      type="button"
+      className={twMerge(
+        "p-1 text-dimmed hover:text-primary transition-all rounded-lg",
+        routePath === PROFILE_ROUTE_PATH
+          ? "hover:text-dimmed hover:cursor-default bg-bg-dimmed"
+          : "",
+      )}
+      disabled={routePath === PROFILE_ROUTE_PATH}
+      color="gray"
+      onClick={() => push(PROFILE_ROUTE_PATH)}
+    >
+      <MdSettings className="size-6" />
+    </button>
+  )
 
   return (
     <DesktopLayout
@@ -153,20 +213,10 @@ export function Router(props: {
         />
       }
       belowProfile={
-        <button
-          type="button"
-          className={twMerge(
-            "p-1 text-dimmed hover:text-primary transition-all rounded-lg",
-            routePath === PROFILE_ROUTE_PATH
-              ? "hover:text-dimmed hover:cursor-default bg-bg-dimmed"
-              : "",
-          )}
-          disabled={routePath === PROFILE_ROUTE_PATH}
-          color="gray"
-          onClick={() => push(PROFILE_ROUTE_PATH)}
-        >
-          <MdSettings className="size-6" />
-        </button>
+        <div className="flex gap-3 justify-between">
+          {routePath !== PROFILE_ROUTE_PATH ? <RefreshButton /> : <div />}
+          {settingsButton}
+        </div>
       }
     />
   )
@@ -191,6 +241,7 @@ function MobileLayout(props: {
   safeArea: SafeAreaInsets
   component: React.ReactNode
   navbar: React.ReactNode
+  aboveNavbar?: React.ReactNode
 }) {
   const { safeArea, component, navbar } = props
   return (
@@ -206,13 +257,14 @@ function MobileLayout(props: {
       >
         <AnimatePresence>{component}</AnimatePresence>
         {/* Routes */}
-        <div className="flex flex-col gap-4 sticky bottom-0 z-50">
+        <div className="flex flex-col gap-2 sticky bottom-0 z-50">
+          {props.aboveNavbar}
           <div className="flex gap-4">{navbar}</div>
         </div>
       </div>
       <div
         className={twMerge(
-          "absolute bottom-0 backdrop-blur-lg w-full z-40",
+          "absolute bottom-0 backdrop-blur-lg w-full z-40 h-[160px]",
           "transition-all duration-500 pointer-events-none",
         )}
         style={{ mask: "linear-gradient(transparent, black 50%)" }}
@@ -258,19 +310,21 @@ function DesktopLayout(props: {
             {/* Routes */}
             {navbar}
             {/* Profile */}
-            <Panel className="flex gap-2 items-center">
-              <UserAvatar {...profile} />
-              <Title
-                order={5}
-                c="dimmed"
-                className={twMerge(
-                  "flex-1 text-left max-w-[110px]",
-                  "overflow-ellipsis overflow-hidden",
-                )}
-              >
-                {profile.name ?? profile.email}
-              </Title>
-              <div className="flex items-center gap-3">{belowProfile}</div>
+            <Panel className="flex flex-col gap-3">
+              <div className="flex gap-2 items-center">
+                <UserAvatar {...profile} />
+                <Title
+                  order={5}
+                  c="dimmed"
+                  className={twMerge(
+                    "flex-1 text-left max-w-[110px]",
+                    "overflow-ellipsis overflow-hidden",
+                  )}
+                >
+                  {profile.name ?? profile.email}
+                </Title>
+              </div>
+              {belowProfile}
             </Panel>
           </div>
         </div>

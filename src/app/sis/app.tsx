@@ -203,10 +203,16 @@ export const sisModule: AppModule = {
         if (!res.data) {
           throw new Error("sis student data is undefined.")
         }
-
         useSISContext.setState({ data: res.data })
 
         return {
+          async refetch() {
+            const res = await client.getData({})
+            if (!res.data) {
+              throw new Error("sis student data is undefined.")
+            }
+            useSISContext.setState({ data: res.data })
+          },
           routes: {
             "/dashboard": {
               title: "Dashboard",

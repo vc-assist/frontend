@@ -15,6 +15,7 @@ import { useToken, useUser } from "../stores"
 
 export type AppModuleCredentialsProvided = {
   routes: Record<string, Route>
+  refetch(): Promise<void>
 }
 export type AppModuleLoggedIn = {
   credentialStates: CredentialState[]
@@ -134,6 +135,14 @@ export function App(props: {
         render() {
           return <Profile profile={profile} />
         },
+      }}
+      onRefresh={(route) => {
+        for (const mod of routesQuery.data) {
+          if (mod.routes[route]) {
+            return mod.refetch()
+          }
+        }
+        throw new Error(`unknown route: ${route}`)
       }}
     />
   )
