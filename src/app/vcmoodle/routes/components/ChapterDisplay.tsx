@@ -9,7 +9,7 @@ import { ActionIcon, Divider, useComputedColorScheme } from "@mantine/core"
 import { useQuery } from "@tanstack/react-query"
 import { LinkButton, Panel, useLayout } from "@vcassist/ui"
 import { createRef, useEffect, useMemo, useState } from "react"
-import { MdArrowForward, MdLink, MdRawOff, MdRawOn } from "react-icons/md"
+import { MdArrowForward, MdFullscreen, MdFullscreenExit, MdLink } from "react-icons/md"
 import sanitize from "sanitize-html"
 import { twMerge } from "tailwind-merge"
 import type { BrowseParams } from "../browse"
@@ -292,9 +292,9 @@ export function ChapterDisplay(props: {
                 }}
               >
                 {raw ? (
-                  <MdRawOff className="size-6" />
+                  <MdFullscreenExit className="size-6" />
                 ) : (
-                  <MdRawOn className="size-6" />
+                  <MdFullscreen className="size-6" />
                 )}
               </ActionIcon>
             </div>
