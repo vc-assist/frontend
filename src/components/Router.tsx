@@ -11,7 +11,6 @@ import {
   useSafeArea,
 } from "@vcassist/ui"
 import { AnimatePresence, motion } from "framer-motion"
-import { useEffect } from "react"
 import type { IconType } from "react-icons"
 import { MdPerson, MdRefresh, MdSettings } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
@@ -20,17 +19,17 @@ import { persist } from "zustand/middleware"
 
 export type Route =
   | {
-    title: string
-    icon: IconType
-    rootClassName?: string
-    render(): JSX.Element
-  }
+      title: string
+      icon: IconType
+      rootClassName?: string
+      render(): JSX.Element
+    }
   | {
-    title: string
-    noNavbar: true
-    rootClassName?: string
-    render(): JSX.Element
-  }
+      title: string
+      noNavbar: true
+      rootClassName?: string
+      render(): JSX.Element
+    }
 
 export type RouteContext = {
   currentRoute: string
@@ -51,7 +50,7 @@ export const useRouteContext = create<RouteContext>()(
       name: "route",
       partialize(state) {
         return { currentRoute: state.currentRoute }
-      }
+      },
     },
   ),
 )
@@ -71,7 +70,12 @@ export function Router(props: {
   const safeArea = useSafeArea((area) => area.insets)
   const mobile = useLayout() === "mobile"
 
-  const routePath = useRouteContext((ctx) => ctx.currentRoute)
+  const routePath = useRouteContext((ctx) => {
+    if (!props.routes[ctx.currentRoute]) {
+      return props.defaultRoute
+    }
+    return ctx.currentRoute
+  })
   const push = useRouteContext((ctx) => ctx.push)
 
   const navbarItems: {
@@ -94,16 +98,6 @@ export function Router(props: {
     routePath === PROFILE_ROUTE_PATH
       ? props.profileRoute
       : props.routes[routePath]
-
-  useEffect(() => {
-    if (!route) {
-      useRouteContext.setState({ currentRoute: props.defaultRoute })
-    }
-  }, [route, props.defaultRoute])
-
-  if (!route) {
-    return <></>
-  }
 
   const component = (
     <RouteWrapper
@@ -129,7 +123,7 @@ export function Router(props: {
         color: "green",
         autoClose: 3000,
       })
-    }
+    },
   })
 
   const RefreshButton = (props: { className?: string }) => (
@@ -166,13 +160,13 @@ export function Router(props: {
             onNavigate={push}
           />
         }
-        aboveNavbar={routePath !== PROFILE_ROUTE_PATH ?
-          <div className="flex">
-            <RefreshButton
-              className="m-auto rounded-xl bg-bg shadow-xl border border-solid border-dimmed-subtle"
-            />
-          </div>
-          : undefined}
+        aboveNavbar={
+          routePath !== PROFILE_ROUTE_PATH ? (
+            <div className="flex">
+              <RefreshButton className="m-auto rounded-xl bg-bg shadow-xl border border-solid border-dimmed-subtle" />
+            </div>
+          ) : undefined
+        }
       />
     )
   }
