@@ -6,7 +6,7 @@ import type {
 } from "@backend.vcmoodle/api_pb"
 import { motion } from "framer-motion"
 import { ChapterDisplay } from "./components/ChapterDisplay"
-import { HighlightSearch } from "./components/HighlightSearch"
+// import { HighlightSearch } from "./components/HighlightSearch"
 
 export function Home(props: {
   courses: Course[]
@@ -55,7 +55,7 @@ export function Home(props: {
         )
       })}
 
-      <HighlightSearch />
+      {/* <HighlightSearch /> */}
     </div>
   )
 }
