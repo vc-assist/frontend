@@ -71,7 +71,7 @@ export function Router(props: {
   const mobile = useLayout() === "mobile"
 
   const routePath = useRouteContext((ctx) => {
-    if (!props.routes[ctx.currentRoute]) {
+    if (!props.routes[ctx.currentRoute] && ctx.currentRoute !== PROFILE_ROUTE_PATH) {
       return props.defaultRoute
     }
     return ctx.currentRoute
