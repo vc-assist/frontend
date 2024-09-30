@@ -1,4 +1,4 @@
-import type { SafeArea } from "@vcassist/ui"
+import type { SafeAreaInsets } from "@vcassist/ui"
 
 export type Unsubscriber = Promise<() => Promise<void>>
 
@@ -34,5 +34,5 @@ export interface NativeAPI {
   /**
    * Should listen to safe area changes (and the initial safe area).
    */
-  onSafeAreaChange(fn: (safeArea: SafeArea) => void): Unsubscriber
+  onSafeAreaChange(fn: (safeArea: SafeAreaInsets) => void): Unsubscriber
 }

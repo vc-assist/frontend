@@ -1,4 +1,4 @@
-import type { SafeArea } from "@vcassist/ui"
+import type { SafeAreaInsets } from "@vcassist/ui"
 import type { NativeAPI, Unsubscriber } from "."
 
 export default class NoopAPI implements NativeAPI {
@@ -27,7 +27,7 @@ export default class NoopAPI implements NativeAPI {
     console.warn("noop:onWebviewClosed()")
     return Promise.resolve(() => Promise.resolve())
   }
-  onSafeAreaChange(fn: (safeArea: SafeArea) => void): Unsubscriber {
+  onSafeAreaChange(fn: (safeArea: SafeAreaInsets) => void): Unsubscriber {
     console.warn("noop:onSafeAreaChange()")
     fn({
       bottom: 0,

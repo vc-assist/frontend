@@ -203,6 +203,7 @@ export function ChapterDisplay(props: {
     section: Section
     resource: Resource
   }
+  breadcrumbLinkToUrl?: boolean
 }) {
   const { push } = useRouteContext()
 
@@ -304,6 +305,11 @@ export function ChapterDisplay(props: {
               <LinkButton
                 className="p-0"
                 onClick={() => {
+                  if (props.breadcrumbLinkToUrl) {
+                    window.open(props.breadcrumb!.section.url)
+                    return
+                  }
+
                   push("/browse", {
                     path: [
                       props.breadcrumb!.course.id,
@@ -315,10 +321,17 @@ export function ChapterDisplay(props: {
               >
                 {props.breadcrumb.resource.displayContent}
               </LinkButton>
+
               <MdArrowForward />
+
               <LinkButton
                 className="p-0"
                 onClick={() => {
+                  if (props.breadcrumbLinkToUrl) {
+                    window.open(props.chapter.url)
+                    return
+                  }
+
                   push("/browse", {
                     path: [
                       props.breadcrumb!.course.id,

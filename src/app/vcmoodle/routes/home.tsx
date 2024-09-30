@@ -49,6 +49,7 @@ export function Home(props: {
                 section: trace.section,
                 resource: trace.resource,
               }}
+              breadcrumbLinkToUrl
             />
           </motion.div>
         )

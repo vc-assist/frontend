@@ -1,35 +1,31 @@
-import {
-  BooleanOption,
-  Panel,
-  StaggeredList,
-  persistentSignal,
-} from "@vcassist/ui"
+import { BooleanOption, Panel, StaggeredList } from "@vcassist/ui"
 import { twMerge } from "tailwind-merge"
-import { z } from "zod"
+import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
 export const settings = {
   dashboard: {
-    hideGPA: persistentSignal({
-      key: "dashboard-hide-gpa",
-      defaultValue: false,
-      schema: z.boolean(),
-    }),
-    hideGrades: persistentSignal({
-      key: "dashboard-hide-grades",
-      defaultValue: false,
-      schema: z.boolean(),
-    }),
-    disableGradeVisualizers: persistentSignal({
-      key: "dashboard-disable-grade-visualizers",
-      defaultValue: false,
-      schema: z.boolean(),
-    }),
+    hideGPA: create<{ on: boolean }>()(
+      persist(() => ({ on: false as boolean }), { name: "settings.dashboard-hide-gpa" }),
+    ),
+    hideGrades: create<{ on: boolean }>()(
+      persist(() => ({ on: false as boolean }), { name: "settings.dashboard-hide-grades" }),
+    ),
+    disableGradeVisualizers: create<{ on: boolean }>()(
+      persist(() => ({ on: false as boolean }), {
+        name: "settings.dashboard-disable-grade-visualizers",
+      }),
+    ),
   },
 }
 
 export function SettingsPanel(props: {
   className?: string
 }) {
+  const hideGPA = settings.dashboard.hideGPA((s) => s.on)
+  const hideGrades = settings.dashboard.hideGrades((s) => s.on)
+  const disableGradeVisualizers = settings.dashboard.disableGradeVisualizers((s) => s.on)
+
   return (
     <Panel
       className={twMerge(
@@ -42,27 +38,27 @@ export function SettingsPanel(props: {
           key="hide-gpa"
           title="Hide GPA"
           description="Hide the GPA widget on the dashboard."
-          checked={settings.dashboard.hideGPA.value}
+          checked={hideGPA}
           onChange={(value) => {
-            settings.dashboard.hideGPA.value = !value
+            settings.dashboard.hideGPA.setState({ on: !value })
           }}
         />
         <BooleanOption
           key="hide-grades"
           title="Hide Grades"
           description="Hide the grades widget on the dashboard."
-          checked={settings.dashboard.hideGrades.value}
+          checked={hideGrades}
           onChange={(value) => {
-            settings.dashboard.hideGrades.value = !value
+            settings.dashboard.hideGrades.setState({ on: !value })
           }}
         />
         <BooleanOption
           key="disable-grade-viz"
           title="Disable Grade Warnings"
           description="Disable the coloring of grades as well as the progress circle shown next to the grades on the dashboard."
-          checked={settings.dashboard.disableGradeVisualizers.value}
+          checked={disableGradeVisualizers}
           onChange={(value) => {
-            settings.dashboard.disableGradeVisualizers.value = !value
+            settings.dashboard.disableGradeVisualizers.setState({ on: !value })
           }}
         />
       </StaggeredList>

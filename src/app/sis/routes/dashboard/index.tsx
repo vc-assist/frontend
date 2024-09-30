@@ -1,7 +1,6 @@
 import { dateFromUnix } from "@/lib/date"
 import { settings } from "@/src/components/profile/Settings"
 import type { Data } from "@backend.sis/api_pb"
-import { useSignals } from "@preact/signals-react/runtime"
 import { WidgetHiddenPanel, createDefaultMeter } from "@vcassist/ui"
 import { useEffect } from "react"
 import DayBlock from "./DayBlock"
@@ -13,8 +12,6 @@ const meter = createDefaultMeter("routes.dashboard")
 const viewPage = meter.createCounter("view")
 
 export default function Dashboard({ data }: { data: Data }) {
-  useSignals()
-
   useEffect(() => {
     viewPage.add(1)
   }, [])
@@ -41,6 +38,10 @@ export default function Dashboard({ data }: { data: Data }) {
     }
   }
 
+  const hideGPA = settings.dashboard.hideGPA((s) => s.on)
+  const hideGrades = settings.dashboard.hideGrades((s) => s.on)
+  const disableGradeVisualizers = settings.dashboard.disableGradeVisualizers((s) => s.on)
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="flex flex-col gap-6">
@@ -48,7 +49,7 @@ export default function Dashboard({ data }: { data: Data }) {
         flexbox flex shenanigans */}
         <div className="grid grid-cols-2 gap-6">
           <DayBlock dayNames={dayNames} currentDay={currentDay} />
-          {!settings.dashboard.hideGPA.value ? (
+          {!hideGPA ? (
             <Gpa gpa={data.profile?.currentGpa ?? -1} />
           ) : (
             <WidgetHiddenPanel message="GPA is hidden" />
@@ -60,12 +61,12 @@ export default function Dashboard({ data }: { data: Data }) {
           courses={data.courses}
         />
       </div>
-      {!settings.dashboard.hideGrades.value ? (
+      {!hideGrades ? (
         <GradeList
           className="w-full"
           dayNames={dayNames}
           courses={data.courses}
-          plain={settings.dashboard.disableGradeVisualizers.value}
+          plain={disableGradeVisualizers}
         />
       ) : (
         <WidgetHiddenPanel

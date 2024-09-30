@@ -1,133 +1,140 @@
 import { LoginPage } from "@/src/components/Auth"
-import { useSignals } from "@preact/signals-react/runtime"
-import { LogoutModal, Panel, Positioned, persistentSignal } from "@vcassist/ui"
-import { motion } from "framer-motion"
-import { Suspense, useState } from "react"
-import type { IconType } from "react-icons"
-import { twMerge } from "tailwind-merge"
-import { z } from "zod"
+import { useQuery } from "@tanstack/react-query"
 import {
-  ReturnHomeProvider,
-  type UserContext,
-  UserProvider,
-} from "../providers"
+  CredentialCarousel,
+  type CredentialState,
+  ErrorPage,
+  IconButton,
+  Positioned,
+} from "@vcassist/ui"
+import { MdArrowBack } from "react-icons/md"
+import { LoadingPage } from "../components/LoadingPage"
+import { type Route, Router } from "../components/Router"
+import Profile from "../components/profile"
+import { useToken, useUser } from "../stores"
 
-const token = persistentSignal({
-  key: "token",
-  schema: z.string(),
-  defaultValue: "",
-})
-
-window.addEventListener("storage", () => {
-  const setValue = localStorage.getItem("token")
-  if (!setValue || setValue === token.value) {
-    return
-  }
-  token.value = setValue
-})
-
-const activeModule = persistentSignal({
-  key: "active-module",
-  schema: z.string().optional(),
-  defaultValue: undefined,
-})
-
-export interface AppModule {
-  name: string
-  icon: IconType
-  enabled: boolean
-  render(props: { token: string }): React.ReactNode
+export type AppModuleCredentialsProvided = {
+  routes: Record<string, Route>
+}
+export type AppModuleLoggedIn = {
+  credentialStates: CredentialState[]
+  afterCredentialsProvided(): Promise<AppModuleCredentialsProvided>
+}
+export type AppModule = {
+  afterLogin(token: string): Promise<AppModuleLoggedIn>
 }
 
 export function App(props: {
   modules: AppModule[]
 }) {
-  useSignals()
+  const tokenValue = useToken((token) => token.token)
+  const profile = useUser((state) => state.profile)
 
-  const [user, setUser] = useState<UserContext>()
-  const active = props.modules.find((m) => m.name === activeModule.value)
+  const credentialStatesQuery = useQuery({
+    queryKey: ["credentialStates", tokenValue],
+    queryFn: () => {
+      return Promise.all(props.modules.map((mod) => mod.afterLogin(tokenValue!)))
+    },
+    enabled: !!tokenValue,
+  })
 
-  const logout = () => {
-    setUser(undefined)
-    token.value = ""
-  }
+  const routesQuery = useQuery({
+    queryKey: ["loginRoutes", tokenValue],
+    queryFn: () => {
+      return Promise.all(
+        credentialStatesQuery.data!.map((mod) => mod.afterCredentialsProvided()),
+      )
+    },
+    enabled: !!credentialStatesQuery.data
+  })
 
-  if (!user) {
+  if (!profile) {
     return (
       <LoginPage
-        token={token.value}
+        token={tokenValue}
         onLogin={(newToken, profile) => {
-          token.value = newToken
-          setUser({ profile, logout })
+          useToken.setState({ token: newToken })
+          useUser.setState({ profile })
         }}
         onInvalidToken={() => {
-          token.value = ""
+          useUser.getState().logout()
         }}
       />
     )
   }
 
-  if (props.modules.length === 1 || active) {
-    const ModuleRender = active?.render ?? props.modules[0].render
+  if (credentialStatesQuery.isError) {
     return (
-      <UserProvider value={user}>
-        <ReturnHomeProvider
-          value={
-            props.modules.length > 1
-              ? () => {
-                  activeModule.value = undefined
-                }
-              : undefined
-          }
-        >
-          <Suspense>
-            <ModuleRender token={token.value} />
-          </Suspense>
-        </ReturnHomeProvider>
-      </UserProvider>
+      <ErrorPage
+        message="Failed to get credential status."
+        description={credentialStatesQuery.error.message}
+      />
+    )
+  }
+  if (!credentialStatesQuery.data) {
+    return <LoadingPage />
+  }
+
+  let complete = true
+  const credentialStates: CredentialState[] = []
+  for (const mod of credentialStatesQuery.data) {
+    for (const state of mod.credentialStates) {
+      if (!state.provided) {
+        complete = false
+      }
+      credentialStates.push(state)
+    }
+  }
+  if (!complete) {
+    return (
+      <div className="flex w-full h-full">
+        <CredentialCarousel
+          profile={profile}
+          credentials={credentialStates}
+          onComplete={() => {
+            credentialStatesQuery.refetch()
+          }}
+        />
+        <Positioned x="left" y="top" padding="2rem">
+          <IconButton
+            icon={MdArrowBack}
+            label="Back"
+            color="dark"
+            horizontal
+            onClick={open}
+          />
+        </Positioned>
+      </div>
     )
   }
 
-  return (
-    <motion.div
-      className="flex h-full"
-      initial={{ y: 10 }}
-      animate={{ y: 0 }}
-      exit={{ y: 10 }}
-    >
-      <div className="flex flex-col gap-3 p-6 m-auto">
-        {props.modules
-          .filter((m) => m.enabled)
-          .map((m) => (
-            <button
-              key={m.name}
-              type="button"
-              onClick={() => {
-                activeModule.value = m.name
-              }}
-            >
-              <Panel
-                className={twMerge(
-                  "flex gap-2 items-center text-dimmed",
-                  "hover:text-primary transition-all active:translate-y-2",
-                )}
-              >
-                <m.icon className="size-6" />
-                <h2 className="text-md">{m.name}</h2>
-              </Panel>
-            </button>
-          ))}
-      </div>
+  if (routesQuery.isError) {
+    return (
+      <ErrorPage
+        message="Failed to fetch data."
+        description={routesQuery.error.message}
+      />
+    )
+  }
+  if (!routesQuery.data) {
+    return <LoadingPage />
+  }
 
-      <Positioned x="right" y="top" padding="2rem">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 10 }}
-        >
-          <LogoutModal handleLogout={logout} />
-        </motion.div>
-      </Positioned>
-    </motion.div>
+  const allRoutes: Record<string, Route> = {}
+  for (const mod of routesQuery.data) {
+    Object.assign(allRoutes, mod.routes)
+  }
+
+  return (
+    <Router
+      profile={profile}
+      routes={allRoutes}
+      defaultRoute={Object.keys(allRoutes)[0]}
+      profileRoute={{
+        render() {
+          return <Profile profile={profile} />
+        },
+      }}
+    />
   )
 }

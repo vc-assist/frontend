@@ -11,7 +11,7 @@
    - `app/` - WIP
    - `components/` - shared internal components
    - `singletons.ts` - singletons in general
-   - `providers.ts` - react context singletons
+   - `providers.ts` - zustand stores
    - `main.tsx` - the ui entrypoint, sets up providers, `@vcassist/ui` and other foundational things
 
 ## Commands

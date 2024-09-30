@@ -16,7 +16,7 @@ import {
   MdOutlineBook,
   MdOutlineFileOpen,
 } from "react-icons/md"
-import { useVCMoodleClient } from "../../providers"
+import { useMoodleContext } from "../../stores"
 import { ChapterDisplay } from "../components/ChapterDisplay"
 import { HighlightSearch } from "../components/HighlightSearch"
 import { ListItemButton } from "../components/ListItemButton"
@@ -286,7 +286,7 @@ export function Browse(props: { courses: Course[] }) {
 
   const chapterDisplayRef = useScrollIntoViewRef(shownChapter)
 
-  const client = useVCMoodleClient()
+  const client = useMoodleContext((c) => c.client)
 
   const coursesList = (
     <Courses

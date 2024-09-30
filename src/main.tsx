@@ -3,12 +3,10 @@ import "@mantine/notifications/styles.css"
 import "@mantine/carousel/styles.css"
 import "@vcassist/ui/styles.css"
 
-import { signal } from "@preact/signals-react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { Foundation, type SafeArea } from "@vcassist/ui/foundation"
-import { StrictMode, lazy } from "react"
+import { Foundation, useSafeArea } from "@vcassist/ui/foundation"
+import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
-import { MdAnalytics, MdPages } from "react-icons/md"
 import { App, type AppModule } from "./app/App"
 import { config, native } from "./singletons"
 
@@ -20,19 +18,11 @@ window.open = (url) => {
   return window
 }
 
-const safeArea = signal<SafeArea>({
-  bottom: 0,
-  left: 0,
-  right: 0,
-  top: 0,
-})
-
 await native.onSafeAreaChange((insets) => {
-  safeArea.value = insets
+  useSafeArea.setState({ insets })
 })
 
 const FoundationProvider = Foundation({
-  safeArea,
   telemetry: {
     serviceName: "frontend",
     otlp: {
@@ -55,20 +45,13 @@ if (!root) {
   throw new Error("could not find root element.")
 }
 
-const modules: AppModule[] = [
-  {
-    name: "School Information System",
-    icon: MdAnalytics,
-    render: lazy(() => import("./app/sis")),
-    enabled: config.enabled_modules.sis,
-  },
-  {
-    name: "Quick Moodle",
-    icon: MdPages,
-    render: lazy(() => import("./app/vcmoodle")),
-    enabled: config.enabled_modules.vcmoodle,
-  },
-]
+const modules: AppModule[] = []
+if (config.enabled_modules.sis) {
+  modules.push((await import("./app/sis/app")).sisModule)
+}
+if (config.enabled_modules.vcmoodle) {
+  modules.push((await import("./app/vcmoodle/app")).vcmoodleModule)
+}
 
 ReactDOM.createRoot(root).render(
   <StrictMode>

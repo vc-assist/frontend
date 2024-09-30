@@ -1,50 +1,59 @@
 import { Title } from "@mantine/core"
-import { Favicon } from "@vcassist/ui"
+import { Favicon, type SafeAreaInsets } from "@vcassist/ui"
 import {
   LinkButton,
   NavbarList,
   Panel,
   UserAvatar,
   type UserProfile,
-  context,
   useLayout,
   useSafeArea,
 } from "@vcassist/ui"
 import { ErrorPage } from "@vcassist/ui"
-import type { SafeArea } from "@vcassist/ui/foundation/safe-area"
 import { AnimatePresence, motion } from "framer-motion"
-import { useState } from "react"
 import type { IconType } from "react-icons"
 import { MdPerson, MdSettings } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
+import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
 export type Route =
   | {
-      title: string
-      icon: IconType
-      rootClassName?: string
-      render(): JSX.Element
-    }
+    title: string
+    icon: IconType
+    rootClassName?: string
+    render(): JSX.Element
+  }
   | {
-      title: string
-      noNavbar: true
-      rootClassName?: string
-      render(): JSX.Element
-    }
+    title: string
+    noNavbar: true
+    rootClassName?: string
+    render(): JSX.Element
+  }
 
 export type RouteContext = {
   currentRoute: string
   params?: unknown
-  profile: UserProfile
   push(path: string, params?: unknown): void
 }
-const [RouteProvider, useRouteContext] = context<RouteContext>({
-  currentRoute: "",
-  params: undefined,
-  profile: { email: "" },
-  push: () => {},
-})
-export { useRouteContext }
+
+export const useRouteContext = create<RouteContext>()(
+  persist(
+    (set) => ({
+      currentRoute: "",
+      params: undefined,
+      push: (path, params) => {
+        set({ currentRoute: path, params })
+      },
+    }),
+    {
+      name: "route",
+      partialize(state) {
+        return { currentRoute: state.currentRoute }
+      }
+    },
+  ),
+)
 
 const PROFILE_ROUTE_PATH = "/__profile__"
 
@@ -57,11 +66,11 @@ export function Router(props: {
   defaultRoute: string
   profile: UserProfile
 }) {
-  const safeArea = useSafeArea()
+  const safeArea = useSafeArea((area) => area.insets)
   const mobile = useLayout() === "mobile"
 
-  const [routePath, setRoutePath] = useState(props.defaultRoute)
-  const [params, setParams] = useState<unknown>()
+  const routePath = useRouteContext((ctx) => ctx.currentRoute)
+  const push = useRouteContext((ctx) => ctx.push)
 
   const navbarItems: {
     title: string
@@ -89,7 +98,7 @@ export function Router(props: {
       <ErrorPage message="Oh no! You're lost.">
         <LinkButton
           onClick={() => {
-            setRoutePath(props.defaultRoute)
+            useRouteContext.setState({ currentRoute: props.defaultRoute })
           }}
         >
           Return to the dashboard
@@ -106,83 +115,60 @@ export function Router(props: {
     />
   )
 
-  const push = (route: string, params?: unknown) => {
-    setRoutePath(route)
-    setParams(params)
-  }
-
   if (mobile) {
     return (
-      <RouteProvider
-        value={{
-          params,
-          currentRoute: routePath,
-          profile: props.profile,
-          push,
-        }}
-      >
-        <MobileLayout
-          safeArea={safeArea}
-          component={component}
-          navbar={
-            <NavbarList
-              route={routePath}
-              routes={[
-                ...navbarItems,
-                {
-                  title: "Profile",
-                  icon: MdPerson,
-                  route: PROFILE_ROUTE_PATH,
-                },
-              ]}
-              layout="mobile"
-              onNavigate={push}
-            />
-          }
-        />
-      </RouteProvider>
-    )
-  }
-
-  return (
-    <RouteProvider
-      value={{
-        params,
-        currentRoute: routePath,
-        profile: props.profile,
-        push,
-      }}
-    >
-      <DesktopLayout
-        profile={props.profile}
+      <MobileLayout
         safeArea={safeArea}
         component={component}
         navbar={
           <NavbarList
             route={routePath}
-            layout="desktop"
-            routes={navbarItems}
+            routes={[
+              ...navbarItems,
+              {
+                title: "Profile",
+                icon: MdPerson,
+                route: PROFILE_ROUTE_PATH,
+              },
+            ]}
+            layout="mobile"
             onNavigate={push}
           />
         }
-        belowProfile={
-          <button
-            type="button"
-            className={twMerge(
-              "p-1 text-dimmed hover:text-primary transition-all rounded-lg",
-              routePath === PROFILE_ROUTE_PATH
-                ? "hover:text-dimmed hover:cursor-default bg-bg-dimmed"
-                : "",
-            )}
-            disabled={routePath === PROFILE_ROUTE_PATH}
-            color="gray"
-            onClick={() => setRoutePath(PROFILE_ROUTE_PATH)}
-          >
-            <MdSettings className="size-6" />
-          </button>
-        }
       />
-    </RouteProvider>
+    )
+  }
+
+  return (
+    <DesktopLayout
+      profile={props.profile}
+      safeArea={safeArea}
+      component={component}
+      navbar={
+        <NavbarList
+          route={routePath}
+          layout="desktop"
+          routes={navbarItems}
+          onNavigate={push}
+        />
+      }
+      belowProfile={
+        <button
+          type="button"
+          className={twMerge(
+            "p-1 text-dimmed hover:text-primary transition-all rounded-lg",
+            routePath === PROFILE_ROUTE_PATH
+              ? "hover:text-dimmed hover:cursor-default bg-bg-dimmed"
+              : "",
+          )}
+          disabled={routePath === PROFILE_ROUTE_PATH}
+          color="gray"
+          onClick={() => push(PROFILE_ROUTE_PATH)}
+        >
+          <MdSettings className="size-6" />
+        </button>
+      }
+    />
   )
 }
 
@@ -202,7 +188,7 @@ function RouteWrapper(props: {
 }
 
 function MobileLayout(props: {
-  safeArea: SafeArea
+  safeArea: SafeAreaInsets
   component: React.ReactNode
   navbar: React.ReactNode
 }) {
@@ -237,7 +223,7 @@ function MobileLayout(props: {
 
 function DesktopLayout(props: {
   profile: UserProfile
-  safeArea: SafeArea
+  safeArea: SafeAreaInsets
   component: React.ReactNode
   navbar: React.ReactNode
   belowProfile: React.ReactNode

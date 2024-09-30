@@ -12,8 +12,6 @@ import {
   UnstyledButton,
 } from "@mantine/core"
 import type { Span } from "@opentelemetry/api"
-import { useComputed, useSignal } from "@preact/signals-react"
-import { useSignals } from "@preact/signals-react/runtime"
 import {
   type CellContext,
   type ColumnFilter,
@@ -41,7 +39,6 @@ import Fuse, { type FuseResult } from "fuse.js"
 import {
   Fragment,
   createRef,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -192,11 +189,11 @@ const columnDef = [
             style={{
               color:
                 assignment.pointsEarned !== undefined &&
-                assignment.pointsPossible !== undefined
+                  assignment.pointsPossible !== undefined
                   ? Color.fromGrade(
-                      (assignment.pointsEarned / assignment.pointsPossible) *
-                        100,
-                    )
+                    (assignment.pointsEarned / assignment.pointsPossible) *
+                    100,
+                  )
                   : undefined,
             }}
           >
@@ -215,6 +212,11 @@ const columnDef = [
               return
             }
             assignment.ctx.onUpdate(assignment)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.currentTarget.blur()
+            }
           }}
         />
       ),
@@ -241,6 +243,11 @@ const columnDef = [
               return
             }
             assignment.ctx.onUpdate(assignment)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.currentTarget.blur()
+            }
           }}
         />
       ),
@@ -450,112 +457,102 @@ export function WhatIfInterface(props: {
   course: CourseData
   assignmentTypes: BaseAssignmentType[]
 }) {
-  useSignals()
-
   const [, startTransition] = useTransition()
   const span = useSpan(fnSpan, props.parentSpan, "what-if")
 
   const layout = useCalculatorLayout()
 
-  const course = useSignal(props.course)
-  const assignmentTypes = useSignal(props.assignmentTypes)
+  const course = props.course
+  const assignmentTypes = props.assignmentTypes
 
-  const addedAssignments = useSignal<WhatIfAssignment[]>([])
-  const replacedAssignments = useSignal<Record<string, WhatIfAssignment>>({})
-  const disabledAssignments = useSignal<number[]>([])
-  const filterString = useSignal("")
+  const [addedAssignments, setAddedAssignments] = useState<WhatIfAssignment[]>(
+    [],
+  )
+  const [replacedAssignments, setReplacedAssignments] = useState<
+    Record<string, WhatIfAssignment>
+  >({})
+  const [disabledAssignments, setDisabledAssignments] = useState<number[]>([])
+  const [filterString, setFilterString] = useState("")
 
-  useEffect(() => {
-    course.value = props.course
-    addedAssignments.value = []
-    replacedAssignments.value = {}
-    disabledAssignments.value = []
-    filterString.value = ""
-  }, [
-    addedAssignments,
-    replacedAssignments,
-    disabledAssignments,
-    filterString,
-    course,
-    props.course,
-  ])
-  useEffect(() => {
-    assignmentTypes.value = props.assignmentTypes
-  }, [assignmentTypes, props.assignmentTypes])
-
-  const ctx = useComputed<WhatIfTableContext>(() => ({
-    layout,
-    filterResults: [],
-    assignmentTypes: [],
-    onToggleVisibility: (assignment) => {
-      startTransition(() => {
-        assignment.disabled = !assignment.disabled
-        switch (assignment.state) {
-          case WhatIfAssignmentState.ADDED: {
-            addedAssignments.value = [...addedAssignments.value]
-            break
-          }
-          case WhatIfAssignmentState.REPLACED: {
-            replacedAssignments.value[assignment.index] = assignment
-            replacedAssignments.value = { ...replacedAssignments.value }
-            break
-          }
-          case WhatIfAssignmentState.NORMAL:
-            if (assignment.disabled) {
-              disabledAssignments.value = [
-                ...disabledAssignments.value,
-                assignment.index,
-              ]
-              return
+  const ctx = useMemo<WhatIfTableContext>(
+    () => ({
+      __debug_key: addedAssignments,
+      layout,
+      filterResults: [],
+      assignmentTypes: [],
+      onToggleVisibility: (assignment) => {
+        startTransition(() => {
+          assignment.disabled = !assignment.disabled
+          switch (assignment.state) {
+            case WhatIfAssignmentState.ADDED: {
+              setAddedAssignments([...addedAssignments])
+              break
             }
-            disabledAssignments.value = disabledAssignments.value.filter(
-              (v) => v !== assignment.index,
-            )
-            break
-        }
-      })
-    },
-    onUpdate: (a) => {
-      startTransition(() => {
-        switch (a.state) {
-          case WhatIfAssignmentState.ADDED:
-            addedAssignments.value = [...addedAssignments.value]
-            break
-          case WhatIfAssignmentState.REPLACED:
-            replacedAssignments.value = {
-              ...replacedAssignments.value,
-              [a.index]: a,
+            case WhatIfAssignmentState.REPLACED: {
+              replacedAssignments[assignment.index] = assignment
+              setReplacedAssignments({ ...replacedAssignments })
+              break
             }
-            break
-        }
-      })
-    },
-    onEdit: (a) => {
-      startTransition(() => {
-        a.state = WhatIfAssignmentState.REPLACED
-        replacedAssignments.value = {
-          ...replacedAssignments.value,
-          [a.index]: a,
-        }
-      })
-    },
-    onReset: (a) => {
-      startTransition(() => {
-        const { [a.index]: _, ...without } = replacedAssignments.value
-        replacedAssignments.value = without
-      })
-    },
-    onDelete: (deleted) => {
-      startTransition(() => {
-        addedAssignments.value = addedAssignments.value.filter((a) => {
-          return a.index !== deleted.index
+            case WhatIfAssignmentState.NORMAL:
+              if (assignment.disabled) {
+                setDisabledAssignments([
+                  ...disabledAssignments,
+                  assignment.index,
+                ])
+                return
+              }
+              setDisabledAssignments(
+                disabledAssignments.filter((v) => v !== assignment.index),
+              )
+              break
+          }
         })
-      })
-    },
-  }))
+      },
+      onUpdate: (a) => {
+        startTransition(() => {
+          switch (a.state) {
+            case WhatIfAssignmentState.ADDED:
+              setAddedAssignments([...addedAssignments])
+              break
+            case WhatIfAssignmentState.REPLACED:
+              setReplacedAssignments({
+                ...replacedAssignments,
+                [a.index]: a,
+              })
+              break
+          }
+        })
+      },
+      onEdit: (a) => {
+        startTransition(() => {
+          a.state = WhatIfAssignmentState.REPLACED
+          setReplacedAssignments({
+            ...replacedAssignments,
+            [a.index]: a,
+          })
+        })
+      },
+      onReset: (a) => {
+        startTransition(() => {
+          const { [a.index]: _, ...without } = replacedAssignments
+          setReplacedAssignments(without)
+        })
+      },
+      onDelete: (deleted) => {
+        startTransition(() => {
+          setAddedAssignments(
+            addedAssignments.filter((a) => {
+              return a.index !== deleted.index
+            }),
+          )
+        })
+      },
+    }),
+    [addedAssignments, replacedAssignments, disabledAssignments, layout],
+  )
 
-  const baseAssignments = useComputed(() => {
-    return course.value.assignments.map((a, i): WhatIfAssignment => {
+  const baseAssignments = useMemo(() => {
+    return course.assignments.map((a, i): WhatIfAssignment => {
       const date = dateFromUnix(a.dueDate)
       const value: WhatIfAssignment = {
         index: i,
@@ -566,35 +563,39 @@ export function WhatIfInterface(props: {
         pointsPossible: a.pointsPossible,
         state: WhatIfAssignmentState.NORMAL,
         disabled: false,
-        ctx: ctx.value,
+        ctx,
       }
       return value
     })
-  })
+  }, [ctx, course])
 
-  const editedAssignments = useComputed(() => {
-    return baseAssignments.value.map((a, i): WhatIfAssignment => {
+  const editedAssignments = useMemo(() => {
+    return baseAssignments.map((a, i): WhatIfAssignment => {
       const value: WhatIfAssignment = {
         ...a,
-        disabled: disabledAssignments.value.includes(i),
+        disabled: disabledAssignments.includes(i),
       }
-      Object.assign(value, replacedAssignments.value[i])
+      Object.assign(value, replacedAssignments[i])
       return value
     })
-  })
+  }, [baseAssignments, disabledAssignments, replacedAssignments])
 
-  const whatIfAssignments = useComputed(() => {
+  const whatIfAssignments = useMemo(() => {
     const assignmentTypeGroups: {
       assignmentTypeName?: string
       assignments: WhatIfAssignment[]
     }[] = []
 
-    for (const assignment of addedAssignments.value) {
+    for (const assignment of addedAssignments) {
       const group = assignmentTypeGroups.find(
         (v) => v.assignmentTypeName === assignment.category,
       )
 
-      assignment.index += baseAssignments.value.length
+      // because when the assignment is added, it is using
+      // the old value of "ctx", we have to manually override it
+      // here
+      assignment.ctx = ctx
+      assignment.index += baseAssignments.length
 
       if (group) {
         group.assignments.push(assignment)
@@ -609,28 +610,29 @@ export function WhatIfInterface(props: {
     for (const group of assignmentTypeGroups) {
       let i = 1
       for (const assignment of group.assignments) {
-        assignment.title = `+ ${
-          assignment.category ? assignment.category : "Unknown"
-        } | ${i}/${group.assignments.length}`
+        assignment.title = `+ ${assignment.category ? assignment.category : "Unknown"
+          } | ${i}/${group.assignments.length}`
         i++
       }
     }
 
-    return [...addedAssignments.value, ...editedAssignments.value]
-  })
+    return [...addedAssignments, ...editedAssignments]
+  }, [addedAssignments, baseAssignments, editedAssignments, ctx])
 
-  const assignmentTypeNames = useComputed(() =>
-    assignmentTypes.value.map((a) => a.name),
+  const assignmentTypeNames = useMemo(
+    () => assignmentTypes.map((a) => a.name),
+    [assignmentTypes],
   )
 
-  const beforeCategories = useComputed(() =>
-    calculateGradeCategories(course.value.assignments, assignmentTypes.value),
+  const beforeCategories = useMemo(
+    () => calculateGradeCategories(course.assignments, assignmentTypes),
+    [course.assignments, assignmentTypes],
   )
 
-  const afterCategories = useComputed(() => {
+  const afterCategories = useMemo(() => {
     const disabledIgnored: WhatIfAssignment[] = []
 
-    for (const assignment of whatIfAssignments.value) {
+    for (const assignment of whatIfAssignments) {
       if (!assignment.disabled) {
         disabledIgnored.push(assignment)
         continue
@@ -638,9 +640,7 @@ export function WhatIfInterface(props: {
       if (assignment.state !== WhatIfAssignmentState.REPLACED) {
         continue
       }
-      const original = baseAssignments.value.find(
-        (a) => a.index === assignment.index,
-      )
+      const original = baseAssignments.find((a) => a.index === assignment.index)
       if (!original) {
         span.addEvent("Base assignment is missing.", {
           "log.severity": "error",
@@ -652,49 +652,51 @@ export function WhatIfInterface(props: {
       disabledIgnored.push(original)
     }
 
-    return calculateGradeCategories(disabledIgnored, assignmentTypes.value)
-  })
+    return calculateGradeCategories(disabledIgnored, assignmentTypes)
+  }, [assignmentTypes, baseAssignments, span, whatIfAssignments])
 
   const addedAssignmentsIdOffset = useRef(props.course.assignments.length)
 
   function addAssignment() {
     startTransition(() => {
-      addedAssignments.value = [
-        ...addedAssignments.value,
+      setAddedAssignments([
+        ...addedAssignments,
         {
           index: addedAssignmentsIdOffset.current++,
           title: "",
           time: new Date(),
           state: WhatIfAssignmentState.ADDED,
           disabled: false,
-          ctx: ctx.value,
+          ctx: ctx,
         },
-      ]
+      ])
     })
   }
 
-  const fuse = useComputed(() => {
-    if (!whatIfAssignments.value) {
+  const fuse = useMemo(() => {
+    if (!whatIfAssignments) {
       return
     }
-    return new Fuse(whatIfAssignments.value.map((a) => a.title))
-  })
+    return new Fuse(whatIfAssignments.map((a) => a.title))
+  }, [whatIfAssignments])
 
-  const filterResults = useComputed(() => {
-    if (!filterString.value || !fuse.value) {
+  const filterResults = useMemo(() => {
+    if (!filterString || !fuse) {
       return
     }
-    return fuse.value.search(filterString.value)
-  })
+    return fuse.search(filterString)
+  }, [fuse, filterString])
 
-  ctx.value.filterResults = filterResults.value
-  ctx.value.assignmentTypes = assignmentTypeNames.value
+  ctx.filterResults = filterResults
+  ctx.assignmentTypes = assignmentTypeNames
 
-  const beforeSections = useComputed(() =>
-    getSectionsFromCategories(beforeCategories.value, true),
+  const beforeSections = useMemo(
+    () => getSectionsFromCategories(beforeCategories, true),
+    [beforeCategories],
   )
-  const afterSections = useComputed(() =>
-    getSectionsFromCategories(afterCategories.value, true),
+  const afterSections = useMemo(
+    () => getSectionsFromCategories(afterCategories, true),
+    [afterCategories],
   )
 
   return (
@@ -705,13 +707,13 @@ export function WhatIfInterface(props: {
           <Title order={4}>Before</Title>
           <RingProgressPicker
             className="m-auto"
-            sections={beforeSections.value}
+            sections={beforeSections}
             disabled
           />
           <Title order={4}>After</Title>
           <RingProgressPicker
             className="m-auto"
-            sections={afterSections.value}
+            sections={afterSections}
             disabled
           />
         </div>
@@ -728,9 +730,9 @@ export function WhatIfInterface(props: {
         <TextInput
           placeholder="Search"
           leftSection={<MdSearch size={20} />}
-          value={filterString.value}
+          value={filterString}
           onChange={(value) => {
-            filterString.value = value.currentTarget.value
+            setFilterString(value.currentTarget.value)
           }}
         />
 
@@ -768,8 +770,8 @@ export function WhatIfInterface(props: {
         noPadding
       >
         <WhatIfAssignmentTable
-          filterString={filterString.value}
-          assignments={whatIfAssignments.value}
+          filterString={filterString}
+          assignments={whatIfAssignments}
         />
       </Panel>
 

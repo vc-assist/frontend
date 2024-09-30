@@ -1,27 +1,15 @@
-import { useDataRefetch, useReturnHome, useUser } from "@/src/providers"
+import { useUser } from "@/src/stores"
 import { Title } from "@mantine/core"
-import { useDisclosure } from "@mantine/hooks"
-import { notifications } from "@mantine/notifications"
-import { signal } from "@preact/signals-react"
-import { useSignals } from "@preact/signals-react/runtime"
 import {
   IconButton,
   LogoutModal,
-  Modal,
   Panel,
   ThemeToggleButton,
   type UserProfile,
   createDefaultMeter,
-  notifyError,
 } from "@vcassist/ui"
 import { useEffect } from "react"
-import {
-  MdCreditCard,
-  MdDelete,
-  MdGetApp,
-  MdHome,
-  MdRefresh,
-} from "react-icons/md"
+import { MdDelete, MdGetApp } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
 import ProfileHeader from "./ProfileHeader"
 import { SettingsPanel } from "./Settings"
@@ -31,22 +19,10 @@ const requestData = meter.createCounter("request-data")
 const deleteData = meter.createCounter("delete-data")
 const viewPage = meter.createCounter("view")
 
-const isRefreshing = signal(false)
-
 export default function Profile(props: {
   profile: UserProfile
-  credentials: React.FC<{ onComplete(): void }>
 }) {
-  useSignals()
-
-  const { logout } = useUser()
-  const refreshStudentData = useDataRefetch()
-  const returnHome = useReturnHome()
-
-  const [
-    credentialsOpened,
-    { open: openCredentials, close: closeCredentials },
-  ] = useDisclosure(false)
+  const logout = useUser((user) => user.logout)
 
   useEffect(() => {
     viewPage.add(1)
@@ -59,15 +35,6 @@ export default function Profile(props: {
         "lg:grid-cols-5 xl:grid-cols-3 lg:grid-rows-[1fr_2fr] gap-6",
       )}
     >
-      <Modal
-        opened={credentialsOpened}
-        onClose={() => {
-          closeCredentials()
-        }}
-      >
-        <props.credentials onComplete={() => {}} />
-      </Modal>
-
       <ProfileHeader
         className="lg:col-span-5 xl:col-span-3"
         {...props.profile}
@@ -85,7 +52,7 @@ export default function Profile(props: {
             <div className="flex gap-3">
               <IconButton
                 icon={MdGetApp}
-                label="Request Data"
+                label="Request Account Data"
                 color="blue"
                 onClick={() => {
                   requestData.add(1)
@@ -98,7 +65,7 @@ export default function Profile(props: {
               />
               <IconButton
                 icon={MdDelete}
-                label="Delete Data"
+                label="Delete Account Data"
                 color="red"
                 onClick={() => {
                   deleteData.add(1)
@@ -112,49 +79,33 @@ export default function Profile(props: {
             </div>
 
             <div className="flex gap-3">
-              <IconButton
-                icon={MdRefresh}
-                label="Refresh Data"
-                color="orange"
-                disabled={isRefreshing.value}
-                onClick={async () => {
-                  isRefreshing.value = true
-                  notifications.show({
-                    id: "refresh-user-data",
-                    message: "Refreshing user data.",
-                  })
-                  try {
-                    await refreshStudentData()
-                    notifications.show({
-                      message: "Refreshed successfully.",
-                      autoClose: 3000,
-                    })
-                  } catch (err) {
-                    notifyError(err)
-                  }
-                  notifications.hide("refresh-user-data")
-                  isRefreshing.value = false
-                }}
-              />
-
-              <IconButton
-                icon={MdCreditCard}
-                label="Edit Credentials"
-                color="gray"
-                onClick={() => {
-                  openCredentials()
-                }}
-              />
+              {/* <IconButton */}
+              {/*   icon={MdRefresh} */}
+              {/*   label="Refresh Data" */}
+              {/*   color="orange" */}
+              {/*   disabled={isRefreshing.value} */}
+              {/*   onClick={async () => { */}
+              {/*     isRefreshing.value = true */}
+              {/*     notifications.show({ */}
+              {/*       id: "refresh-user-data", */}
+              {/*       message: "Refreshing user data.", */}
+              {/*     }) */}
+              {/*     try { */}
+              {/*       await refreshStudentData() */}
+              {/*       notifications.show({ */}
+              {/*         message: "Refreshed successfully.", */}
+              {/*         autoClose: 3000, */}
+              {/*       }) */}
+              {/*     } catch (err) { */}
+              {/*       notifyError(err) */}
+              {/*     } */}
+              {/*     notifications.hide("refresh-user-data") */}
+              {/*     isRefreshing.value = false */}
+              {/*   }} */}
+              {/* /> */}
             </div>
 
             <div className="flex gap-3 flex-wrap justify-end">
-              <IconButton
-                icon={MdHome}
-                label="Home"
-                color="green"
-                onClick={returnHome}
-                horizontal
-              />
               <LogoutModal handleLogout={logout} />
             </div>
           </div>
