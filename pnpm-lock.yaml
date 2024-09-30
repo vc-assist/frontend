@@ -192,9 +192,6 @@ importers:
 
   ui:
     dependencies:
-      '@connectrpc/connect':
-        specifier: 1.4.0
-        version: 1.4.0(@bufbuild/protobuf@1.10.0)
       '@mantine/carousel':
         specifier: 7.12.2
         version: 7.12.2(@mantine/core@7.12.2(@mantine/hooks@7.12.2(react@18.3.1))(@types/react@18.3.7)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(@mantine/hooks@7.12.2(react@18.3.1))(embla-carousel-react@8.1.8(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -234,9 +231,6 @@ importers:
       '@opentelemetry/semantic-conventions':
         specifier: 1.27.0
         version: 1.27.0
-      '@preact/signals-react':
-        specifier: 2.2.0
-        version: 2.2.0(react@18.3.1)
       '@tanstack/react-query':
         specifier: 5.56.2
         version: 5.56.2(react@18.3.1)
@@ -276,9 +270,9 @@ importers:
       tailwindcss-themer:
         specifier: 4.0.0
         version: 4.0.0(tailwindcss@3.4.12)
-      zod:
-        specifier: 3.23.8
-        version: 3.23.8
+      zustand:
+        specifier: 5.0.0-rc.2
+        version: 5.0.0-rc.2(@types/react@18.3.7)(react@18.3.1)(use-sync-external-store@1.2.2(react@18.3.1))
     devDependencies:
       '@biomejs/biome':
         specifier: 1.9.1
@@ -843,14 +837,6 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==, tarball: https://registry.npmjs.org/@pkgjs/parseargs/-/parseargs-0.11.0.tgz}
     engines: {node: '>=14'}
-
-  '@preact/signals-core@1.8.0':
-    resolution: {integrity: sha512-OBvUsRZqNmjzCZXWLxkZfhcgT+Fk8DDcT/8vD6a1xhDemodyy87UJRJfASMuSD8FaAIeGgGm85ydXhm7lr4fyA==, tarball: https://registry.npmjs.org/@preact/signals-core/-/signals-core-1.8.0.tgz}
-
-  '@preact/signals-react@2.2.0':
-    resolution: {integrity: sha512-EPYlhXqqcOUxz2gTQGt4rtK6X7Jr04517DcJVZ4I5a7Gxy39haK24uFeVWtiU/tnEReRFcxpQN6poYra1jf68A==, tarball: https://registry.npmjs.org/@preact/signals-react/-/signals-react-2.2.0.tgz}
-    peerDependencies:
-      react: ^16.14.0 || 17.x || 18.x
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==, tarball: https://registry.npmjs.org/@protobufjs/aspromise/-/aspromise-1.1.2.tgz}
@@ -4151,14 +4137,6 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@preact/signals-core@1.8.0': {}
-
-  '@preact/signals-react@2.2.0(react@18.3.1)':
-    dependencies:
-      '@preact/signals-core': 1.8.0
-      react: 18.3.1
-      use-sync-external-store: 1.2.2(react@18.3.1)
-
   '@protobufjs/aspromise@1.1.2': {}
 
   '@protobufjs/base64@1.1.2': {}
@@ -6945,6 +6923,7 @@ snapshots:
   use-sync-external-store@1.2.2(react@18.3.1):
     dependencies:
       react: 18.3.1
+    optional: true
 
   util-deprecate@1.0.2: {}
 
