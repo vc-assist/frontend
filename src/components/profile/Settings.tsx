@@ -6,10 +6,14 @@ import { persist } from "zustand/middleware"
 export const settings = {
   dashboard: {
     hideGPA: create<{ on: boolean }>()(
-      persist(() => ({ on: false as boolean }), { name: "settings.dashboard-hide-gpa" }),
+      persist(() => ({ on: false as boolean }), {
+        name: "settings.dashboard-hide-gpa",
+      }),
     ),
     hideGrades: create<{ on: boolean }>()(
-      persist(() => ({ on: false as boolean }), { name: "settings.dashboard-hide-grades" }),
+      persist(() => ({ on: false as boolean }), {
+        name: "settings.dashboard-hide-grades",
+      }),
     ),
     disableGradeVisualizers: create<{ on: boolean }>()(
       persist(() => ({ on: false as boolean }), {
@@ -24,7 +28,9 @@ export function SettingsPanel(props: {
 }) {
   const hideGPA = settings.dashboard.hideGPA((s) => s.on)
   const hideGrades = settings.dashboard.hideGrades((s) => s.on)
-  const disableGradeVisualizers = settings.dashboard.disableGradeVisualizers((s) => s.on)
+  const disableGradeVisualizers = settings.dashboard.disableGradeVisualizers(
+    (s) => s.on,
+  )
 
   return (
     <Panel

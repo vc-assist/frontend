@@ -4,11 +4,9 @@ import {
   CredentialCarousel,
   type CredentialState,
   ErrorPage,
-  IconButton,
   LogoutModal,
   Positioned,
 } from "@vcassist/ui"
-import { MdArrowBack } from "react-icons/md"
 import { LoadingPage } from "../components/LoadingPage"
 import { type Route, Router } from "../components/Router"
 import Profile from "../components/profile"

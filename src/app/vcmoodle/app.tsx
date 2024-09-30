@@ -67,7 +67,7 @@ export const vcmoodleModule: AppModule = {
           async refetch() {
             const res = await client.getCourses({})
             useMoodleContext.setState({ data: res.courses })
-          }
+          },
         }
       },
     }

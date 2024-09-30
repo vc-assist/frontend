@@ -3,7 +3,7 @@ import { SegmentedControl, Title, UnstyledButton } from "@mantine/core"
 import { Panel } from "@vcassist/ui"
 import type { ApexOptions } from "apexcharts"
 import { AnimatePresence, motion } from "framer-motion"
-import { createRef, forwardRef, useEffect, useMemo, useRef, useState } from "react"
+import { createRef, forwardRef, useEffect, useMemo, useState } from "react"
 import Chart from "react-apexcharts"
 import type { IconType } from "react-icons"
 import { MdExpandLess, MdTrendingFlat, MdTrendingUp } from "react-icons/md"
@@ -66,9 +66,9 @@ export default function Grades(props: {
           interval === GradeInterval.ALL
             ? undefined
             : {
-              months: interval === GradeInterval.MONTH ? 1 : undefined,
-              weeks: interval === GradeInterval.WEEK ? 1 : undefined,
-            },
+                months: interval === GradeInterval.MONTH ? 1 : undefined,
+                weeks: interval === GradeInterval.WEEK ? 1 : undefined,
+              },
       }),
     [analysis, flatTrends, interval],
   )
@@ -152,7 +152,11 @@ export default function Grades(props: {
       return
     }
     setTimeout(() => {
-      (document.querySelector(".apexcharts-reset-icon") as HTMLDivElement | null)?.click()
+      ;(
+        document.querySelector(
+          ".apexcharts-reset-icon",
+        ) as HTMLDivElement | null
+      )?.click()
     }, 50)
   }, [])
 

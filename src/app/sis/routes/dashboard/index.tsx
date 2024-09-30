@@ -40,7 +40,9 @@ export default function Dashboard({ data }: { data: Data }) {
 
   const hideGPA = settings.dashboard.hideGPA((s) => s.on)
   const hideGrades = settings.dashboard.hideGrades((s) => s.on)
-  const disableGradeVisualizers = settings.dashboard.disableGradeVisualizers((s) => s.on)
+  const disableGradeVisualizers = settings.dashboard.disableGradeVisualizers(
+    (s) => s.on,
+  )
 
   return (
     <div className="grid gap-6 lg:grid-cols-2">

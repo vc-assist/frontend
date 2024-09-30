@@ -76,7 +76,7 @@ export const sisModule: AppModule = {
                 "intercept-token",
                 async (span) => {
                   return new Promise<void>((resolve, reject) => {
-                    ; (async () => {
+                    ;(async () => {
                       try {
                         span.addEvent(
                           "Opening webview - iOS wants a listener BEFORE loading URLs.",
@@ -187,8 +187,8 @@ export const sisModule: AppModule = {
           provided: status.provided ?? false,
           loginFlow: {
             type: "usernamePassword",
-            async onSubmit(username, password) { },
-          }
+            async onSubmit(username, password) {},
+          },
         }
         break
       default:

@@ -189,11 +189,11 @@ const columnDef = [
             style={{
               color:
                 assignment.pointsEarned !== undefined &&
-                  assignment.pointsPossible !== undefined
+                assignment.pointsPossible !== undefined
                   ? Color.fromGrade(
-                    (assignment.pointsEarned / assignment.pointsPossible) *
-                    100,
-                  )
+                      (assignment.pointsEarned / assignment.pointsPossible) *
+                        100,
+                    )
                   : undefined,
             }}
           >
@@ -610,8 +610,9 @@ export function WhatIfInterface(props: {
     for (const group of assignmentTypeGroups) {
       let i = 1
       for (const assignment of group.assignments) {
-        assignment.title = `+ ${assignment.category ? assignment.category : "Unknown"
-          } | ${i}/${group.assignments.length}`
+        assignment.title = `+ ${
+          assignment.category ? assignment.category : "Unknown"
+        } | ${i}/${group.assignments.length}`
         i++
       }
     }

@@ -8,9 +8,9 @@ import { Foundation, useSafeArea } from "@vcassist/ui/foundation"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 import { App, type AppModule } from "./app/App"
-import { config, native } from "./singletons"
 import { sisModule } from "./app/sis/app"
 import { vcmoodleModule } from "./app/vcmoodle/app"
+import { config, native } from "./singletons"
 
 window.open = (url) => {
   if (!url) {
