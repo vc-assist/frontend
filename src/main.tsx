@@ -9,6 +9,8 @@ import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
 import { App, type AppModule } from "./app/App"
 import { config, native } from "./singletons"
+import { sisModule } from "./app/sis/app"
+import { vcmoodleModule } from "./app/vcmoodle/app"
 
 window.open = (url) => {
   if (!url) {
@@ -47,10 +49,10 @@ if (!root) {
 
 const modules: AppModule[] = []
 if (config.enabled_modules.sis) {
-  modules.push((await import("./app/sis/app")).sisModule)
+  modules.push(sisModule)
 }
 if (config.enabled_modules.vcmoodle) {
-  modules.push((await import("./app/vcmoodle/app")).vcmoodleModule)
+  modules.push(vcmoodleModule)
 }
 
 ReactDOM.createRoot(root).render(
