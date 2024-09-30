@@ -1,9 +1,8 @@
-import { Text, Button, Title } from "@mantine/core"
+import { Button, Title } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import { useMutation } from "@tanstack/react-query"
 import { Favicon, type SafeAreaInsets } from "@vcassist/ui"
 import {
-  LinkButton,
   NavbarList,
   Panel,
   UserAvatar,
@@ -11,8 +10,8 @@ import {
   useLayout,
   useSafeArea,
 } from "@vcassist/ui"
-import { ErrorPage } from "@vcassist/ui"
 import { AnimatePresence, motion } from "framer-motion"
+import { useEffect } from "react"
 import type { IconType } from "react-icons"
 import { MdPerson, MdRefresh, MdSettings } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
@@ -96,18 +95,14 @@ export function Router(props: {
       ? props.profileRoute
       : props.routes[routePath]
 
+  useEffect(() => {
+    if (!route) {
+      useRouteContext.setState({ currentRoute: props.defaultRoute })
+    }
+  }, [route, props.defaultRoute])
+
   if (!route) {
-    return (
-      <ErrorPage message="Oh no! You're lost.">
-        <LinkButton
-          onClick={() => {
-            useRouteContext.setState({ currentRoute: props.defaultRoute })
-          }}
-        >
-          Return to the dashboard
-        </LinkButton>
-      </ErrorPage>
-    )
+    return <></>
   }
 
   const component = (
