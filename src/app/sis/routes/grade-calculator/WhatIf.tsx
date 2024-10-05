@@ -93,6 +93,8 @@ function TableHeader<T>(props: {
   title: string
   onSort?: (newValue: SortDirection | false) => void
 }): React.ReactNode {
+  "use no memo"
+
   const title = <Title order={6}>{props.title}</Title>
 
   if (!props.ctx.column.getCanSort()) {
@@ -478,7 +480,6 @@ export function WhatIfInterface(props: {
 
   const ctx = useMemo<WhatIfTableContext>(
     () => ({
-      __debug_key: addedAssignments,
       layout,
       filterResults: [],
       assignmentTypes: [],
