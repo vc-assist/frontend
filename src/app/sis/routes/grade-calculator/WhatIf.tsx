@@ -343,6 +343,8 @@ function WhatIfAssignmentTable(props: {
   filterString?: string
   assignments: WhatIfAssignment[]
 }) {
+  "use no memo"
+  
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: "time",

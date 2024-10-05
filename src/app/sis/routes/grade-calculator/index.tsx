@@ -13,6 +13,7 @@ import { twMerge } from "tailwind-merge"
 import NecessaryScore from "./NecessaryScore"
 import { WhatIfInterface } from "./WhatIf"
 import { fnSpan } from "./internal"
+import { useMemo } from "react"
 
 enum CalcTab {
   WHAT_IF = "what-if",
@@ -42,6 +43,17 @@ export default function GradeCalculator({
   const course = courseForm.values.course
     ? courses.find((v) => v.name === courseForm.values.course)
     : undefined
+
+  const courseAssignmentTypes = useMemo(() => {
+    if (!course) {
+      return
+    }
+    return course.assignmentCategories.map((t) => ({
+      name: t.name,
+      courseName: course.name,
+      weight: t.weight,
+    }))
+  }, [course])
 
   return (
     <div
@@ -175,15 +187,11 @@ export default function GradeCalculator({
         </Panel>
       </div>
 
-      {course && activeTab === CalcTab.WHAT_IF ? (
+      {course && courseAssignmentTypes && activeTab === CalcTab.WHAT_IF ? (
         <WhatIfInterface
           parentSpan={span}
           course={course}
-          assignmentTypes={course.assignmentCategories.map((t) => ({
-            name: t.name,
-            courseName: course.name,
-            weight: t.weight,
-          }))}
+          assignmentTypes={courseAssignmentTypes}
         />
       ) : undefined}
 
