@@ -1,5 +1,5 @@
 import { join } from "node:path"
-import react from "@vitejs/plugin-react-swc"
+import react from "@vitejs/plugin-react"
 import * as vite from "vite"
 import { loadConfig } from "./lib/config"
 
@@ -64,6 +64,10 @@ export default vite.defineConfig((env) => ({
           },
         }
       : undefined,
-    react(),
+    react({
+      babel: {
+        plugins: ["babel-plugin-react-compiler", {}]
+      }
+    }),
   ],
 }))
