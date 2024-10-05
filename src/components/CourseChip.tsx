@@ -41,6 +41,7 @@ export default function CourseChip(props: {
             <div className="flex flex-col gap-1">
               <Text>Grade</Text>
               <Text
+                className="select-all"
                 style={
                   !props.disableGradeColoring
                     ? {
@@ -76,14 +77,14 @@ export default function CourseChip(props: {
             {props.course.room ? (
               <div className="flex flex-col gap-1">
                 <Text>Room</Text>
-                <Text c="dimmed">{props.course.room}</Text>
+                <Text className="select-all" c="dimmed">{props.course.room}</Text>
               </div>
             ) : undefined}
 
             {props.course.homeworkPasses !== undefined ? (
               <div className="flex flex-col gap-1">
                 <Text>Homework passes</Text>
-                <Text c="dimmed">{props.course.homeworkPasses}</Text>
+                <Text className="select-all" c="dimmed">{props.course.homeworkPasses}</Text>
               </div>
             ) : undefined}
           </div>
