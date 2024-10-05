@@ -121,16 +121,20 @@ export default function Schedule(props: {
             {/* ) : undefined} */}
           </div>
           <Text className="font-normal" c="dimmed">
-            {[
-              course.teacher,
-              "•",
-              format(section.startTime, "h:mm a"),
-              "-",
-              format(section.endTime, "h:mm a"),
-            ].join(" ")}
+            <span className="select-all">
+              {course.teacher}
+            </span>
+            {" • "}
+            <span className="select-all">
+              {format(section.startTime, "h:mm a")}
+            </span>
+            {" - "}
+            <span className="select-all">
+              {format(section.endTime, "h:mm a")}
+            </span>
           </Text>
           <Text
-            className="font-normal"
+            className="font-normal select-all"
             size="sm"
             c={!inProgress ? "dimmed" : undefined}
           >
