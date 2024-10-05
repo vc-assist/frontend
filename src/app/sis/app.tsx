@@ -76,7 +76,7 @@ export const sisModule: AppModule = {
                 "intercept-token",
                 async (span) => {
                   return new Promise<void>((resolve, reject) => {
-                    ;(async () => {
+                    ; (async () => {
                       try {
                         span.addEvent(
                           "Opening webview - iOS wants a listener BEFORE loading URLs.",
@@ -187,7 +187,7 @@ export const sisModule: AppModule = {
           provided: status.provided ?? false,
           loginFlow: {
             type: "usernamePassword",
-            async onSubmit(username, password) {},
+            async onSubmit(username, password) { },
           },
         }
         break
@@ -199,20 +199,27 @@ export const sisModule: AppModule = {
     return {
       credentialStates: [credentialState],
       async afterCredentialsProvided() {
-        const res = await client.getData({})
-        if (!res.data) {
-          throw new Error("sis student data is undefined.")
+        async function getData() {
+          const res = await client.getData({})
+          if (!res.data) {
+            throw new Error("sis student data is undefined.")
+          }
+
+          // hard-coded workaround
+          res.data.courses = res.data.courses.filter((c) => {
+            const lowered = c.name.toLowerCase()
+            return !(lowered.includes("chapel") ||
+              lowered.includes("unscheduled") ||
+              lowered.includes("open period"))
+          })
+
+          useSISContext.setState({ data: res.data })
         }
-        useSISContext.setState({ data: res.data })
+
+        await getData()
 
         return {
-          async refetch() {
-            const res = await client.getData({})
-            if (!res.data) {
-              throw new Error("sis student data is undefined.")
-            }
-            useSISContext.setState({ data: res.data })
-          },
+          refetch: getData,
           routes: {
             "/dashboard": {
               title: "Dashboard",
