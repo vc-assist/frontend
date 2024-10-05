@@ -24,7 +24,7 @@ export default function DayBlock(props: {
 }) {
   const day = props.currentDay
 
-  const dayIdx = props.dayNames.findIndex((v) => v === day)
+  const dayIdx = props.dayNames.filter(n => !!n).sort().findIndex((v) => v === day)
   const color = dayIdx >= 0 ? Color.DAY_COLORS_LIST[dayIdx] : undefined
 
   const today = new Date()
