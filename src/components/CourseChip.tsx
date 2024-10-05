@@ -1,5 +1,6 @@
 import type { CourseData } from "@backend.sis/data_pb"
 import { Text } from "@mantine/core"
+import { notifications } from "@mantine/notifications"
 import { LinkButton, PopoutChip } from "@vcassist/ui"
 import { Color } from "@vcassist/ui/lib/color"
 import { type CSSProperties, useState } from "react"
@@ -43,8 +44,8 @@ export default function CourseChip(props: {
                 style={
                   !props.disableGradeColoring
                     ? {
-                        color: Color.fromGrade(overallGrade),
-                      }
+                      color: Color.fromGrade(overallGrade),
+                    }
                     : undefined
                 }
               >
@@ -56,9 +57,14 @@ export default function CourseChip(props: {
               <Text>Instructor</Text>
               {props.course.teacherEmail ? (
                 <LinkButton
-                  onClick={() =>
-                    window.open(`mailto:${props.course.teacherEmail}`)
-                  }
+                  onClick={() => {
+                    navigator.clipboard.writeText(props.course.teacherEmail)
+                    notifications.show({
+                      color: "green",
+                      message: "Email copied to clipboard!",
+                      autoClose: 3000
+                    })
+                  }}
                 >
                   {props.course.teacher}
                 </LinkButton>
@@ -103,7 +109,7 @@ export default function CourseChip(props: {
                 style={{
                   background:
                     Color.DAY_COLORS_LIST[
-                      props.dayNames.findIndex((value) => value === dayName)
+                    props.dayNames.findIndex((value) => value === dayName)
                     ] ?? "black",
                 }}
                 key={dayName}
@@ -112,7 +118,7 @@ export default function CourseChip(props: {
               </div>
             </div>
           ) : undefined}
-        </div>
+        </ div>
       }
     >
       <Text
