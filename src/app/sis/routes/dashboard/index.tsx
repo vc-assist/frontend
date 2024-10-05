@@ -1,17 +1,21 @@
 import { dateFromUnix } from "@/lib/date"
 import { settings } from "@/src/components/profile/Settings"
 import type { Data } from "@backend.sis/api_pb"
-import { WidgetHiddenPanel, createDefaultMeter } from "@vcassist/ui"
+import { WidgetHiddenPanel, createDefaultMeter, useLayout } from "@vcassist/ui"
 import { useEffect } from "react"
 import DayBlock from "./DayBlock"
 import Gpa from "./Gpa"
 import GradeList from "./GradeList"
 import Schedule from "./Schedule"
+import { RecentScores } from "./RecentScores"
+import { twMerge } from "tailwind-merge"
 
 const meter = createDefaultMeter("routes.dashboard")
 const viewPage = meter.createCounter("view")
 
 export default function Dashboard({ data }: { data: Data }) {
+  const layout = useLayout()
+
   useEffect(() => {
     viewPage.add(1)
   }, [])
@@ -44,9 +48,11 @@ export default function Dashboard({ data }: { data: Data }) {
     (s) => s.on,
   )
 
+  const columnClass = twMerge("flex flex-col gap-6", layout === "desktop" ? "flex-1" : "")
+
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
-      <div className="flex flex-col gap-6">
+    <div className={twMerge("flex gap-6 w-full", layout === "mobile" ? "flex-col" : "")}>
+      <div className={columnClass}>
         {/* grid is used here so I don't have to deal with
         flexbox flex shenanigans */}
         <div className="grid grid-cols-2 gap-6">
@@ -63,19 +69,23 @@ export default function Dashboard({ data }: { data: Data }) {
           courses={data.courses}
         />
       </div>
-      {!hideGrades ? (
-        <GradeList
-          className="w-full"
-          dayNames={dayNames}
-          courses={data.courses}
-          plain={disableGradeVisualizers}
-        />
-      ) : (
-        <WidgetHiddenPanel
-          className="max-h-[500px] min-h-[300px]"
-          message="Grade List is hidden"
-        />
-      )}
+
+      <div className={columnClass}>
+        {!hideGrades ? (
+          <GradeList
+            className="w-full"
+            dayNames={dayNames}
+            courses={data.courses}
+            plain={disableGradeVisualizers}
+          />
+        ) : (
+          <WidgetHiddenPanel
+            className="max-h-[500px] min-h-[300px]"
+            message="Grade List is hidden"
+          />
+        )}
+        <RecentScores courses={data.courses} />
+      </div>
     </div>
   )
 }
