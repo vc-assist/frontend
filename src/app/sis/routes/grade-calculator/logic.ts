@@ -15,6 +15,7 @@ export type BaseAssignment = {
   pointsEarned?: number
   pointsPossible?: number
   category?: string
+  isExempt?: boolean
 }
 
 export type BaseAssignmentType = {
@@ -49,13 +50,15 @@ export function calculateGradeCategories(
     if (
       a.pointsEarned === undefined ||
       a.pointsPossible === undefined ||
-      a.category === undefined
+      a.category === undefined ||
+      a.isExempt
     ) {
       continue
     }
 
     const assignmentType = categoryAggregation.get(a.category)
     if (!assignmentType) {
+      console.warn("did not find assignment category", a.category, a)
       continue
     }
     assignmentType.sum += a.pointsEarned
@@ -132,7 +135,7 @@ export function calculatePointsForGrade(
   const final =
     ((information[input.category].totalPoints + input.pointValue) *
       (input.targetGrade - otherWeightedSum)) /
-      information[input.category].weight -
+    information[input.category].weight -
     information[input.category].earnedPoints
 
   // return final > 0 && final < input.pointValue ? final : -1;

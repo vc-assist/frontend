@@ -191,11 +191,11 @@ const columnDef = [
             style={{
               color:
                 assignment.pointsEarned !== undefined &&
-                assignment.pointsPossible !== undefined
+                  assignment.pointsPossible !== undefined
                   ? Color.fromGrade(
-                      (assignment.pointsEarned / assignment.pointsPossible) *
-                        100,
-                    )
+                    (assignment.pointsEarned / assignment.pointsPossible) *
+                    100,
+                  )
                   : undefined,
             }}
           >
@@ -346,7 +346,7 @@ function WhatIfAssignmentTable(props: {
   assignments: WhatIfAssignment[]
 }) {
   "use no memo"
-  
+
   const [sorting, setSorting] = useState<SortingState>([
     {
       id: "time",
@@ -475,6 +475,7 @@ export function WhatIfInterface(props: {
   const [replacedAssignments, setReplacedAssignments] = useState<
     Record<string, WhatIfAssignment>
   >({})
+
   const [disabledAssignments, setDisabledAssignments] = useState<number[]>([])
   const [filterString, setFilterString] = useState("")
 
@@ -559,11 +560,11 @@ export function WhatIfInterface(props: {
       const date = dateFromUnix(a.dueDate)
       const value: WhatIfAssignment = {
         index: i,
-        title: a.title,
+        title: a.isExempt ? `${a.title} (EXEMPTED)` : a.title,
         category: a.category,
         time: date,
         pointsEarned: a.pointsEarned,
-        pointsPossible: a.pointsPossible,
+        pointsPossible: a.isExempt ? 0 : a.pointsPossible,
         state: WhatIfAssignmentState.NORMAL,
         disabled: false,
         ctx,
@@ -613,9 +614,8 @@ export function WhatIfInterface(props: {
     for (const group of assignmentTypeGroups) {
       let i = 1
       for (const assignment of group.assignments) {
-        assignment.title = `+ ${
-          assignment.category ? assignment.category : "Unknown"
-        } | ${i}/${group.assignments.length}`
+        assignment.title = `+ ${assignment.category ? assignment.category : "Unknown"
+          } | ${i}/${group.assignments.length}`
         i++
       }
     }
