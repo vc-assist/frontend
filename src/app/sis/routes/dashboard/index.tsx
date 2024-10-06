@@ -16,6 +16,10 @@ export default function Dashboard({ data }: { data: Data }) {
     viewPage.add(1)
   }, [])
 
+  const hideGPA = settings.dashboard.useHideGPA()
+  const hideGrades = settings.dashboard.useHideGrades()
+  const disableGradeVisualizers = settings.dashboard.useDisableGradeVisualizers()
+
   const daySet = new Set<string>()
   for (const course of data.courses) {
     daySet.add(course.dayName)
@@ -38,12 +42,6 @@ export default function Dashboard({ data }: { data: Data }) {
     }
   }
 
-  const hideGPA = settings.dashboard.hideGPA((s) => s.on)
-  const hideGrades = settings.dashboard.hideGrades((s) => s.on)
-  const disableGradeVisualizers = settings.dashboard.disableGradeVisualizers(
-    (s) => s.on,
-  )
-
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="flex flex-col gap-6">
@@ -51,7 +49,7 @@ export default function Dashboard({ data }: { data: Data }) {
         flexbox flex shenanigans */}
         <div className="grid grid-cols-2 gap-6">
           <DayBlock dayNames={dayNames} currentDay={currentDay} />
-          {!hideGPA ? (
+          {!hideGPA.on ? (
             <Gpa gpa={data.profile?.currentGpa ?? -1} />
           ) : (
             <WidgetHiddenPanel message="GPA is hidden" />
@@ -63,12 +61,13 @@ export default function Dashboard({ data }: { data: Data }) {
           courses={data.courses}
         />
       </div>
-      {!hideGrades ? (
+
+      {!hideGrades.on ? (
         <GradeList
           className="w-full"
           dayNames={dayNames}
           courses={data.courses}
-          plain={disableGradeVisualizers}
+          plain={disableGradeVisualizers.on}
         />
       ) : (
         <WidgetHiddenPanel

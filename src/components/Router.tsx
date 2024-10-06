@@ -19,17 +19,17 @@ import { persist } from "zustand/middleware"
 
 export type Route =
   | {
-      title: string
-      icon: IconType
-      rootClassName?: string
-      render(): JSX.Element
-    }
+    title: string
+    icon: IconType
+    rootClassName?: string
+    render(): JSX.Element
+  }
   | {
-      title: string
-      noNavbar: true
-      rootClassName?: string
-      render(): JSX.Element
-    }
+    title: string
+    noNavbar: true
+    rootClassName?: string
+    render(): JSX.Element
+  }
 
 export type RouteContext = {
   currentRoute: string
@@ -37,9 +37,9 @@ export type RouteContext = {
   push(path: string, params?: unknown): void
 }
 
-export const useRouteContext = create<RouteContext>()(
-  persist(
-    (set) => ({
+export const useRouteContext = create(
+  persist<RouteContext>(
+    (set): RouteContext => ({
       currentRoute: "",
       params: undefined,
       push: (path, params) => {
@@ -49,7 +49,7 @@ export const useRouteContext = create<RouteContext>()(
     {
       name: "route",
       partialize(state) {
-        return { currentRoute: state.currentRoute }
+        return { currentRoute: state.currentRoute } as RouteContext
       },
     },
   ),
