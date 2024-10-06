@@ -19,6 +19,7 @@ import Dashboard from "./routes/dashboard"
 import GradeCalculator from "./routes/grade-calculator"
 import GradeTrends from "./routes/grade-trends"
 import { useSISContext } from "./stores"
+import type { Data } from "@backend.sis/api_pb"
 
 const fnSpan = createFnSpanner("credentials")
 
@@ -199,27 +200,30 @@ export const sisModule: AppModule = {
     return {
       credentialStates: [credentialState],
       async afterCredentialsProvided() {
-        async function getData() {
-          const res = await client.getData({})
-          if (!res.data) {
+        function handleData(data: Data | undefined) {
+          if (!data) {
             throw new Error("sis student data is undefined.")
           }
 
           // hard-coded workaround
-          res.data.courses = res.data.courses.filter((c) => {
+          data.courses = data.courses.filter((c) => {
             const lowered = c.name.toLowerCase()
             return !(lowered.includes("chapel") ||
               lowered.includes("unscheduled") ||
               lowered.includes("open period"))
           })
 
-          useSISContext.setState({ data: res.data })
+          useSISContext.setState({ data: data })
         }
 
-        await getData()
+        const res = await client.getData({})
+        handleData(res.data)
 
         return {
-          refetch: getData,
+          refetch: async () => {
+            const res = await client.refreshData({})
+            handleData(res.data)
+          },
           routes: {
             "/dashboard": {
               title: "Dashboard",

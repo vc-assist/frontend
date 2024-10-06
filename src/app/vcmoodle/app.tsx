@@ -45,6 +45,10 @@ export const vcmoodleModule: AppModule = {
         useMoodleContext.setState({ data: res.courses })
 
         return {
+          async refetch() {
+            const res = await client.refreshCourses({})
+            useMoodleContext.setState({ data: res.courses })
+          },
           routes: {
             "/vcmoodle-lesson-plans": {
               title: "Lesson Plans",
@@ -63,10 +67,6 @@ export const vcmoodleModule: AppModule = {
             //     return <Browse courses={data} />
             //   },
             // },
-          },
-          async refetch() {
-            const res = await client.getCourses({})
-            useMoodleContext.setState({ data: res.courses })
           },
         }
       },
