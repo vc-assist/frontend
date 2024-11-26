@@ -1,12 +1,11 @@
-import type { GetCoursesResponse } from "@/backend/proto/vcassist/services/vcmoodle/v1/api_pb";
 import { createClient, type Client } from "@connectrpc/connect";
-import { MoodleService } from "@/backend/proto/vcassist/services/vcmoodle/v1/api_connect";
-import type { ServiceType } from "@bufbuild/protobuf";
 import { createConnectTransport } from "@connectrpc/connect-web";
+import { SIService } from "@backend.sis/api_connect";
+import { MoodleService } from "@backend.vcmoodle/api_connect";
+import type { ServiceType } from "@bufbuild/protobuf";
+import type { Data } from "@backend.sis/api_pb";
 import vcassistConfig from "@/vcassist.config";
 import { CredentialForm } from "./CredentialForm";
-import { SIService } from "@/backend/proto/vcassist/services/sis/v1/api_connect";
-import type { Data } from "@/backend/proto/vcassist/services/sis/v1/api_pb";
 // Required for TypeScript
 function defineModule<Name extends string, Data, Service extends ServiceType>(
 	module: Module<Name, Data, Service>,
