@@ -72,7 +72,6 @@ export function CredentialForm(props: {
 	return (
 		<Panel className={twMerge("flex flex-col gap-4 max-w-xs", props.className)}>
 			<Avatar.Group>
-				{/* biome-ignore lint/style/noNonNullAssertion: Shut up Biome */}
 				<UserAvatar className="rounded-full w-14 h-14" {...profile!} />
 				<Avatar
 					classNames={{

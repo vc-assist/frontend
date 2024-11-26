@@ -1,4 +1,5 @@
 export type Config = {
+	// environment: "dev" | "prod";
 	endpoints: {
 		traces: {
 			httpEndpoint: string;
@@ -14,7 +15,7 @@ export type Config = {
 	};
 };
 export default {
-	environment: "dev",
+	// environment: "dev",
 	endpoints: {
 		traces: {
 			httpEndpoint: "http://127.0.0.1:4318/v1/traces",
@@ -28,4 +29,4 @@ export default {
 		sis: true,
 		vcmoodle: true,
 	},
-} as Config;
+} satisfies Config;

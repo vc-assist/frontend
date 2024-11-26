@@ -27,7 +27,6 @@ export default function LoginComponent(props: {
 	const [user, setUser] = useAtom(UserAtom);
 	return (
 		<AuthFlow
-			// biome-ignore lint/style/noNonNullAssertion: <explanation>
 			token={user.token!}
 			state={props.state}
 			startLogin={async (email) => {

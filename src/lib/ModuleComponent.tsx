@@ -13,7 +13,6 @@ export function ModuleComponent(props: { user: User }) {
 		queryFn: () => {
 			return Promise.all(
 				pendingModules.map((mod) =>
-					// biome-ignore lint/style/noNonNullAssertion: <explanation>
 					mod(props.user.token!).then((x) => {
 						setDataModules((prev) => ({
 							...(prev ?? {}),

@@ -41,7 +41,7 @@ function App() {
 	const dataModulesLoaded = useAtomValue(DataModulesLoaded);
 	// Don't use TanStack router's authenticated routes or whatever
 	// to handle auth, I already tried that.
-	// This code which bypasses the auth code from TanStack Router
+	// This code which bypasses the auth/router context code from TanStack Router
 	// is SIGNIFICANTLY simpler and easier to understand.
 	// - ThatXliner
 	if (!user?.token) {
@@ -55,6 +55,17 @@ function App() {
 			</React.StrictMode>
 		);
 	}
+	// While yes I could've made the `index.tsx` just have whatever
+	// is in the ModuleComponent and then return when authenticated a <Navigate>
+	// to say `_app/dashboard` (_app means it won't be part of
+	// the actual URL and is only separated into a folder for
+	// developer's sake),
+	// I decided to keep it like this because this is less code
+	// and  I had no idea
+	// https://tanstack.com/router/latest/docs/framework/react/guide/navigation#navigate-component
+	// existed when I first wrote this code.
+	// Feel free to experiment though.
+	// - ThatXliner
 	if (!dataModulesLoaded) {
 		return (
 			<React.StrictMode>
@@ -79,7 +90,6 @@ function App() {
 
 // Mounting
 
-// biome-ignore lint/style/noNonNullAssertion: <explanation>
 const rootElement = document.getElementById("app")!;
 if (!rootElement.innerHTML) {
 	const root = ReactDOM.createRoot(rootElement);
