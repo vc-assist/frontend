@@ -296,7 +296,7 @@ function BrowseComponent(props: { courses: Course[] }) {
 
 	const chapterDisplayRef = useScrollIntoViewRef(shownChapter);
 	const dataModule = useAtomValue(DataModulesAtom);
-	if (!dataModule) {
+	if (!dataModule?.moodle) {
 		return;
 	}
 	const client = dataModule.moodle.client;

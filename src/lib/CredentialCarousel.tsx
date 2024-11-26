@@ -7,24 +7,21 @@ import { MdArrowBack, MdArrowForward, MdEdit } from "react-icons/md";
 import { useSetAtom } from "jotai";
 import { UserAtom } from "./stores";
 import { rem } from "@mantine/core";
-type CredentialModule<N extends string = string> = {
-	name: N;
-	login(props: {
-		dispatch: React.Dispatch<{ name: N; provided: boolean }>;
-	}): React.ReactNode;
-	picture: string;
-};
-export function CredentialCarousel<T extends CredentialModule>(props: {
+import type { Module } from "./modules";
+import type { ServiceType } from "@bufbuild/protobuf";
+type CredentialModule<N extends string = string> = Pick<
+	Module<N, unknown, ServiceType>,
+	"name" | "login" | "provided"
+>;
+export function CredentialCarousel(props: {
 	className?: string;
 	profile: UserProfile;
-	items: T[];
+	items: CredentialModule[];
 	onComplete: () => void;
 }) {
 	const setUser = useSetAtom(UserAtom);
-	// This funny T["name"] syntax is a way to extract the "name" property from the generic type T
-	// This helps us restrict whatever can go in the `name` field in the dispatch action
-	type ModuleName = T["name"];
-	type Cred = { name: ModuleName; provided: boolean };
+
+	type Cred = Pick<CredentialModule, "name" | "provided">;
 	const [creds, dispatch] = React.useReducer(
 		(state: Cred[], action: Cred) => {
 			// Move to the next uncompleted credential

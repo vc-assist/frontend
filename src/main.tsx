@@ -59,9 +59,8 @@ function App() {
 	// is in the ModuleComponent and then return when authenticated a <Navigate>
 	// to say `_app/dashboard` (_app means it won't be part of
 	// the actual URL and is only separated into a folder for
-	// developer's sake),
-	// I decided to keep it like this because this is less code
-	// and  I had no idea
+	// developer's sake), I decided to keep it like this
+	// because this is less code and I had no idea
 	// https://tanstack.com/router/latest/docs/framework/react/guide/navigation#navigate-component
 	// existed when I first wrote this code.
 	// Feel free to experiment though.

@@ -4,7 +4,7 @@ import { DataModulesAtom, type User } from "../lib/stores";
 import { ErrorPage } from "@/ui";
 import { CredentialCarousel } from "./CredentialCarousel";
 import { LoadingPage } from "@/src/lib/LoadingPage";
-import { pendingModules } from "./modules";
+import { Modules, pendingModules } from "./modules";
 
 export function ModuleComponent(props: { user: User }) {
 	const setDataModules = useSetAtom(DataModulesAtom);
@@ -16,9 +16,7 @@ export function ModuleComponent(props: { user: User }) {
 					mod(props.user.token!).then((x) => {
 						setDataModules((prev) => ({
 							...(prev ?? {}),
-							// Because apparently TypeScript can't tell that
-							// x.name.toLowerCase() == Lowercase<typeof x.name>
-							[x.name.toLowerCase() as Lowercase<typeof x.name>]: x,
+							[x.name.toLowerCase()]: x,
 						}));
 						return x;
 					}),
