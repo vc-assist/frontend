@@ -1,5 +1,7 @@
-import { useUser } from "@/src/stores"
-import { Title } from "@mantine/core"
+/** @format */
+
+import { useToken, useUser } from "@/src/stores";
+import { Button, TextInput, Title } from "@mantine/core";
 import {
   IconButton,
   LogoutModal,
@@ -7,32 +9,44 @@ import {
   ThemeToggleButton,
   type UserProfile,
   createDefaultMeter,
-} from "@vcassist/ui"
-import { useEffect } from "react"
-import { MdDelete, MdGetApp } from "react-icons/md"
-import { twMerge } from "tailwind-merge"
-import ProfileHeader from "./ProfileHeader"
-import { SettingsPanel } from "./Settings"
+  Modal,
+} from "@vcassist/ui";
+import { useEffect, useState, useRef } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { MdDelete, MdGetApp, MdLink } from "react-icons/md";
+import { twMerge } from "tailwind-merge";
+import ProfileHeader from "./ProfileHeader";
+import { SettingsPanel } from "./Settings";
+import { client } from "../Auth";
 
-const meter = createDefaultMeter("routes.profile")
-const requestData = meter.createCounter("request-data")
-const deleteData = meter.createCounter("delete-data")
-const viewPage = meter.createCounter("view")
+const meter = createDefaultMeter("routes.profile");
+const requestData = meter.createCounter("request-data");
+const deleteData = meter.createCounter("delete-data");
+const viewPage = meter.createCounter("view");
 
-export default function Profile(props: {
-  profile: UserProfile
-}) {
-  const logout = useUser((user) => user.logout)
-
+export default function Profile(props: { profile: UserProfile }) {
+  const token = useToken();
+  const linkEmail = useMutation({
+    mutationFn: (args: { parentEmail: string }) => {
+      const ret = client.linkParentEmail({
+        parentEmail: args.parentEmail,
+        token: token.token,
+      });
+      return ret;
+    },
+  });
+  const parentRef = useRef<HTMLInputElement>(null);
+  const logout = useUser((user) => user.logout);
+  const [parent, setParentState] = useState(false);
   useEffect(() => {
-    viewPage.add(1)
-  }, [])
+    viewPage.add(1);
+  }, []);
 
   return (
     <div
       className={twMerge(
         "h-full grid grid-cols-1 grid-rows-[min-content_min-content_1fr]",
-        "lg:grid-cols-5 xl:grid-cols-3 lg:grid-rows-[1fr_2fr] gap-6",
+        "lg:grid-cols-5 xl:grid-cols-3 lg:grid-rows-[1fr_2fr] gap-6"
       )}
     >
       <ProfileHeader
@@ -55,12 +69,12 @@ export default function Profile(props: {
                 label="Request Account Data"
                 color="blue"
                 onClick={() => {
-                  requestData.add(1)
+                  requestData.add(1);
 
                   window.open(
                     "https://vi.vcassist.org/data-management/requestData",
-                    "_blank",
-                  )
+                    "_blank"
+                  );
                 }}
               />
               <IconButton
@@ -68,14 +82,47 @@ export default function Profile(props: {
                 label="Delete Account Data"
                 color="red"
                 onClick={() => {
-                  deleteData.add(1)
+                  deleteData.add(1);
 
                   window.open(
                     "https://vi.vcassist.org/data-management/deleteData",
-                    "_blank",
-                  )
+                    "_blank"
+                  );
                 }}
               />
+              <IconButton
+                icon={MdLink}
+                label="Link Parent Email"
+                color="red"
+                onClick={() => {
+                  setParentState(true);
+                }}
+              />
+
+              <Modal
+                opened={parent}
+                closeControls={true}
+                onClose={() => setParentState(false)}
+              >
+                <div className="w-full h-full flex">
+                  <Panel className="m-auto flex flex-col gap-3 ">
+                    <TextInput
+                      placeholder="Enter your parent email here"
+                      ref={parentRef}
+                    />
+                    <Button
+                      color="blue"
+                      onClick={() => {
+                        linkEmail.mutate({
+                          parentEmail: parentRef.current?.value!,
+                        });
+                      }}
+                    >
+                      Link Parent Email
+                    </Button>
+                  </Panel>
+                </div>
+              </Modal>
             </div>
 
             <div className="flex gap-3">
@@ -113,5 +160,5 @@ export default function Profile(props: {
       </div>
       <SettingsPanel className="min-h-[300px] h-full lg:col-span-3 xl:col-span-2" />
     </div>
-  )
+  );
 }
