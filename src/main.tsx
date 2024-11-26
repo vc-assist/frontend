@@ -1,66 +1,87 @@
-import "@mantine/core/styles.css"
-import "@mantine/notifications/styles.css"
-import "@mantine/carousel/styles.css"
-import "@vcassist/ui/styles.css"
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { routeTree } from "./routeTree.gen";
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
+import "@mantine/carousel/styles.css";
+import "@vcassist/ui/styles.css";
+import "./main.css";
+import { DataModulesLoaded, UserAtom } from "./lib/stores";
+import { useAtomValue } from "jotai";
+import { AuthFlow, Foundation } from "@vcassist/ui";
+import vcassistConfig from "@/vcassist.config";
+import LoginComponent from "./lib/LoginComponent";
+import { ModuleComponent } from "./lib/ModuleComponent";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { Foundation, useSafeArea } from "@vcassist/ui/foundation"
-import { StrictMode } from "react"
-import ReactDOM from "react-dom/client"
-import { App, type AppModule } from "./app/App"
-import { sisModule } from "./app/sis/app"
-import { vcmoodleModule } from "./app/vcmoodle/app"
-import { config, native } from "./singletons"
+// Set up a Router instance
+const router = createRouter({
+	routeTree,
+	defaultPreload: "intent",
+	context: {},
+});
 
-window.open = (url) => {
-  if (!url) {
-    return window
-  }
-  native.launchUrl(url?.toString())
-  return window
+// Register things for typesafety
+declare module "@tanstack/react-router" {
+	interface Register {
+		router: typeof router;
+	}
 }
 
-await native.onSafeAreaChange((insets) => {
-  useSafeArea.setState({ insets })
-})
-
+const queryClient = new QueryClient();
 const FoundationProvider = Foundation({
-  telemetry: {
-    serviceName: "frontend",
-    otlp: {
-      traces: {
-        httpEndpoint: config.endpoints.traces.http_endpoint,
-        headers: config.endpoints.traces.headers,
-      },
-      metrics: {
-        httpEndpoint: config.endpoints.metrics.http_endpoint,
-        headers: config.endpoints.metrics.headers,
-      },
-    },
-  },
-})
-
-const queryClient = new QueryClient()
-
-const root = document.getElementById("root")
-if (!root) {
-  throw new Error("could not find root element.")
+	telemetry: {
+		serviceName: "frontend",
+		otlp: vcassistConfig.endpoints,
+	},
+});
+function App() {
+	const user = useAtomValue(UserAtom);
+	const dataModulesLoaded = useAtomValue(DataModulesLoaded);
+	// Don't use TanStack router's authenticated routes or whatever
+	// to handle auth, I already tried that.
+	// This code which bypasses the auth code from TanStack Router
+	// is SIGNIFICANTLY simpler and easier to understand.
+	// - ThatXliner
+	if (!user?.token) {
+		return (
+			<React.StrictMode>
+				<FoundationProvider>
+					<QueryClientProvider client={queryClient}>
+						<LoginComponent />
+					</QueryClientProvider>
+				</FoundationProvider>
+			</React.StrictMode>
+		);
+	}
+	if (!dataModulesLoaded) {
+		return (
+			<React.StrictMode>
+				<FoundationProvider>
+					<QueryClientProvider client={queryClient}>
+						<ModuleComponent user={user} />
+					</QueryClientProvider>
+				</FoundationProvider>
+			</React.StrictMode>
+		);
+	}
+	return (
+		<React.StrictMode>
+			<FoundationProvider>
+				<QueryClientProvider client={queryClient}>
+					<RouterProvider router={router} context={{ user }} />
+				</QueryClientProvider>
+			</FoundationProvider>
+		</React.StrictMode>
+	);
 }
 
-const modules: AppModule[] = []
-if (config.enabled_modules.sis) {
-  modules.push(sisModule)
-}
-if (config.enabled_modules.vcmoodle) {
-  modules.push(vcmoodleModule)
-}
+// Mounting
 
-ReactDOM.createRoot(root).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <FoundationProvider>
-        <App modules={modules} />
-      </FoundationProvider>
-    </QueryClientProvider>
-  </StrictMode>,
-)
+// biome-ignore lint/style/noNonNullAssertion: <explanation>
+const rootElement = document.getElementById("app")!;
+if (!rootElement.innerHTML) {
+	const root = ReactDOM.createRoot(rootElement);
+	root.render(<App />);
+}

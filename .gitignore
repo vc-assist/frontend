@@ -1,7 +1,18 @@
-node_modules/
+# Local
+.DS_Store
+*.local
+*.log*
+
+# Dist
+node_modules
 dist/
+.vinxi
+.output
+.vercel
+.netlify
+.wrangler
 
-config.local.json5
-
-*storybook.log
-*.tsbuildinfo
+# IDE
+.vscode/*
+!.vscode/extensions.json
+.idea
