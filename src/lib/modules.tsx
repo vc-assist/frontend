@@ -39,17 +39,18 @@ export const pendingModules = [
 		const res = await client.getAuthStatus({});
 		// Required assignment to output to satisfy TypeScript
 		// (otherwise it gets very confused with `this`)
-		const output = defineModule({
+		const output = {
 			name: "Moodle" as const,
 			provided: res.provided ?? false,
 			client,
-			picture: "https://moodle.org/logo.png",
+			picture:
+				"https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi0.wp.com%2Fcrescercomeducacao.com.br%2Fwp-content%2Fuploads%2F2022%2F06%2Fmoodle.png%3Ffit%3D1900%252C975%26ssl%3D1&f=1&nofb=1&ipt=9e33cd9627dbd37e5fe8453f9b4f51488694b4244d93ba3b2e20e0ff679e4da1&ipo=images",
 			login(props: {
 				dispatch: React.Dispatch<{ name: "Moodle"; provided: boolean }>;
 			}) {
 				return (
 					<CredentialForm
-						name={this.name}
+						name={"Moodle"}
 						provided={res.provided ?? false}
 						loginFlow={{
 							type: "usernamePassword",
@@ -60,7 +61,9 @@ export const pendingModules = [
 								});
 							},
 						}}
-						picture={this.picture}
+						picture={
+							"https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi0.wp.com%2Fcrescercomeducacao.com.br%2Fwp-content%2Fuploads%2F2022%2F06%2Fmoodle.png%3Ffit%3D1900%252C975%26ssl%3D1&f=1&nofb=1&ipt=9e33cd9627dbd37e5fe8453f9b4f51488694b4244d93ba3b2e20e0ff679e4da1&ipo=images"
+						}
 						className="m-auto hover:cursor-auto"
 						onSuccess={() => {
 							// XXX: I hope I can avoid this code dupe and prop drilling
@@ -77,8 +80,8 @@ export const pendingModules = [
 			refetch() {
 				this.get = () => client.refreshCourses({});
 			},
-		});
-		return output;
+		};
+		return defineModule(output);
 	},
 	async (token: string) => {
 		const authHeader = `Bearer ${token}`;
@@ -121,7 +124,8 @@ export const pendingModules = [
 
 			return data;
 		}
-		const output = defineModule({
+		// Must be assigned to output for `this` to work
+		const output = {
 			name: "PowerSchool",
 			client,
 			provided: status.provided ?? false,
@@ -142,7 +146,7 @@ export const pendingModules = [
 						// XXX: I hope I can avoid this code dupe and prop drilling
 						// TODO: Make sure this.name actually works as intended
 						// (originally was "Moodle")
-						props.dispatch({ name: this.name, provided: true });
+						props.dispatch({ name: "PowerSchool", provided: true });
 					},
 				};
 				const fnSpan = createFnSpanner("credentials");
@@ -305,7 +309,12 @@ export const pendingModules = [
 							`unknown credential loginFlow case ${loginFlow.case}`,
 						);
 				}
-				return <>o</>;
+				return (
+					<CredentialForm
+						className="m-auto hover:cursor-auto"
+						{...credsProps}
+					/>
+				);
 			},
 
 			// return {
@@ -340,8 +349,8 @@ export const pendingModules = [
 			//     },
 			//   },
 			// }
-		});
-		return output;
+		};
+		return defineModule(output);
 	},
 ] as const;
 export type Module<Name extends string, Data, Service extends ServiceType> = {
