@@ -14,8 +14,7 @@ import * as React from "react";
 import { MdEdit } from "react-icons/md";
 import { useAtomValue } from "jotai";
 import { UserAtom } from "./stores";
-
-export function CredentialForm(props: {
+export interface CredentialFormProps {
 	className?: string;
 	// Picture of the credential provider
 	picture: string;
@@ -37,7 +36,8 @@ export function CredentialForm(props: {
 				onSubmit(username: string, password: string): Promise<void>;
 		  };
 	onSuccess(): void;
-}) {
+}
+export function CredentialForm(props: CredentialFormProps) {
 	const { profile } = useAtomValue(UserAtom);
 	const pictureColor = useImageToColor(props.picture ?? "");
 	const fallbackColor = useStringToMantineColor(props.name);

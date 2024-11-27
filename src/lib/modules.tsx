@@ -5,7 +5,16 @@ import { MoodleService } from "@backend.vcmoodle/api_connect";
 import type { ServiceType } from "@bufbuild/protobuf";
 import type { Data } from "@backend.sis/api_pb";
 import vcassistConfig from "@/vcassist.config";
-import { CredentialForm } from "./CredentialForm";
+import { CredentialForm, type CredentialFormProps } from "./CredentialForm";
+import { SpanStatusCode } from "@opentelemetry/api";
+
+import { createFnSpanner, narrowError } from "@/ui";
+import {
+	getOAuthLoginUrl,
+	getTokenFormData,
+	openIdTokenResponse,
+} from "./oauth";
+import { native } from "./native";
 // Required for TypeScript
 function defineModule<Name extends string, Data, Service extends ServiceType>(
 	module: Module<Name, Data, Service>,
@@ -54,7 +63,10 @@ export const pendingModules = [
 						picture={this.picture}
 						className="m-auto hover:cursor-auto"
 						onSuccess={() => {
-							props.dispatch({ name: "Moodle", provided: true });
+							// XXX: I hope I can avoid this code dupe and prop drilling
+							// TODO: Make sure this.name actually works as intended
+							// (originally was "Moodle")
+							props.dispatch({ name: this.name, provided: true });
 						}}
 					/>
 				);
@@ -87,160 +99,6 @@ export const pendingModules = [
 		const loginFlow = res.status?.loginFlow;
 		if (!status || !loginFlow) {
 			throw new Error("loginFlow is undefined.");
-		}
-
-		// let credentialState: CredentialState
-		switch (loginFlow.case) {
-			case "usernamePassword":
-				credentialState = {
-					name: status.name,
-					provided: status.provided,
-					picture: status.picture,
-					loginFlow: {
-						type: "usernamePassword",
-						async onSubmit(username: string, password: string) {
-							await client.provideCredential({
-								credential: {
-									case: "usernamePassword",
-									value: { username, password },
-								},
-							});
-						},
-					},
-				};
-				break;
-			case "oauth":
-				credentialState = {
-					name: "PowerSchool",
-					provided: res.status?.provided ?? false,
-					loginFlow: {
-						type: "oauth",
-						onStart() {
-							return fnSpan(
-								undefined,
-								"intercept-token",
-								async (span) => {
-									return new Promise<void>((resolve, reject) => {
-										(async () => {
-											try {
-												span.addEvent(
-													"Opening webview - iOS wants a listener BEFORE loading URLs.",
-												);
-
-												const loginUrl = getOAuthLoginUrl(loginFlow.value);
-												span.setAttribute("loginUrl", loginUrl);
-
-												const userAgent = await native.userAgent();
-												await native.openWebview(loginUrl, userAgent);
-
-												const unsubscribeNav = await native.onWebviewNavigate(
-													async (urlStr) => {
-														span.addEvent("got token request!", {
-															url: urlStr,
-														});
-
-														try {
-															const url = new URL(urlStr);
-															const code = url.searchParams.get("code");
-															if (!code) {
-																span.setStatus({
-																	code: SpanStatusCode.ERROR,
-																	message: "no token in url",
-																});
-																return;
-															}
-
-															span.addEvent("requesting tokenFormData");
-															const tokenForm = getTokenFormData(
-																code,
-																loginFlow.value,
-															);
-															console.log("starting tokenForm Request");
-															const res = await fetch(
-																loginFlow.value.tokenRequestUrl,
-																{
-																	method: "POST",
-																	body: tokenForm,
-																},
-															);
-
-															const resText = await res.text();
-															const token = openIdTokenResponse.parse(
-																JSON.parse(resText),
-															);
-															console.log(token);
-
-															span.addEvent("submitting tokens to server!");
-
-															await client.provideCredential({
-																credential: {
-																	case: "token",
-																	value: {
-																		token: resText,
-																	},
-																},
-															});
-
-															console.log("done.");
-
-															resolve();
-
-															await native.closeWebview(); // This is similar to the handler, in that it will not run if the webview is removed prematurely. No clue why.
-															await unsubscribeNav?.();
-														} catch (e) {
-															span.recordException(narrowError(e));
-															span.setStatus({
-																code: SpanStatusCode.ERROR,
-																message: "Submit token failure.",
-															});
-
-															reject(e);
-
-															await unsubscribeNav?.();
-															await native.closeWebview();
-														}
-
-														span.end();
-													},
-												);
-
-												const unsubscribeClosed = await native.onWebviewClosed(
-													async () => {
-														await unsubscribeClosed?.();
-													},
-												);
-											} catch (e) {
-												span.recordException(narrowError(e));
-												span.setStatus({
-													code: SpanStatusCode.ERROR,
-													message: "Webview error.",
-												});
-												span.end();
-
-												reject(e);
-											}
-										})();
-									});
-								},
-								true,
-							);
-						},
-					},
-				};
-				break;
-			case undefined:
-				credentialState = {
-					name: "PowerSchool",
-					provided: status.provided ?? false,
-					loginFlow: {
-						type: "usernamePassword",
-						async onSubmit(username, password) {},
-					},
-				};
-				break;
-			default:
-				// @ts-ignore
-				throw new Error(`unknown credential loginFlow case ${loginFlow.case}`);
 		}
 		function _handleData(data: Data | undefined): Data | undefined {
 			if (!data) {
@@ -275,7 +133,178 @@ export const pendingModules = [
 			refetch() {
 				this.get = async () => _handleData((await client.refreshData({})).data);
 			},
-			login() {
+			login(props: {
+				dispatch: React.Dispatch<{ name: "PowerSchool"; provided: boolean }>;
+			}) {
+				// @ts-ignore We will fill this up eventually
+				let credsProps: CredentialFormProps = {
+					onSuccess: () => {
+						// XXX: I hope I can avoid this code dupe and prop drilling
+						// TODO: Make sure this.name actually works as intended
+						// (originally was "Moodle")
+						props.dispatch({ name: this.name, provided: true });
+					},
+				};
+				const fnSpan = createFnSpanner("credentials");
+				switch (loginFlow.case) {
+					case "usernamePassword":
+						credsProps = {
+							...credsProps,
+							name: status.name,
+							provided: status.provided,
+							picture: status.picture,
+							loginFlow: {
+								type: "usernamePassword",
+								async onSubmit(username: string, password: string) {
+									await client.provideCredential({
+										credential: {
+											case: "usernamePassword",
+											value: { username, password },
+										},
+									});
+								},
+							},
+						};
+						break;
+					case "oauth":
+						credsProps = {
+							...credsProps,
+							name: "PowerSchool",
+							provided: res.status?.provided ?? false,
+							loginFlow: {
+								type: "oauth",
+								onStart() {
+									return fnSpan(
+										undefined,
+										"intercept-token",
+										async (span) => {
+											return new Promise<void>((resolve, reject) => {
+												(async () => {
+													try {
+														span.addEvent(
+															"Opening webview - iOS wants a listener BEFORE loading URLs.",
+														);
+
+														const loginUrl = getOAuthLoginUrl(loginFlow.value);
+														span.setAttribute("loginUrl", loginUrl);
+
+														const userAgent = await native.userAgent();
+														await native.openWebview(loginUrl, userAgent);
+
+														const unsubscribeNav =
+															await native.onWebviewNavigate(
+																async (urlStr: string) => {
+																	span.addEvent("got token request!", {
+																		url: urlStr,
+																	});
+
+																	try {
+																		const url = new URL(urlStr);
+																		const code = url.searchParams.get("code");
+																		if (!code) {
+																			span.setStatus({
+																				code: SpanStatusCode.ERROR,
+																				message: "no token in url",
+																			});
+																			return;
+																		}
+
+																		span.addEvent("requesting tokenFormData");
+																		const tokenForm = getTokenFormData(
+																			code,
+																			loginFlow.value,
+																		);
+																		console.log("starting tokenForm Request");
+																		const res = await fetch(
+																			loginFlow.value.tokenRequestUrl,
+																			{
+																				method: "POST",
+																				body: tokenForm,
+																			},
+																		);
+
+																		const resText = await res.text();
+																		const token = openIdTokenResponse.parse(
+																			JSON.parse(resText),
+																		);
+																		console.log(token);
+
+																		span.addEvent(
+																			"submitting tokens to server!",
+																		);
+
+																		await client.provideCredential({
+																			credential: {
+																				case: "token",
+																				value: {
+																					token: resText,
+																				},
+																			},
+																		});
+
+																		console.log("done.");
+
+																		resolve();
+
+																		await native.closeWebview(); // This is similar to the handler, in that it will not run if the webview is removed prematurely. No clue why.
+																		await unsubscribeNav?.();
+																	} catch (e) {
+																		span.recordException(narrowError(e));
+																		span.setStatus({
+																			code: SpanStatusCode.ERROR,
+																			message: "Submit token failure.",
+																		});
+
+																		reject(e);
+
+																		await unsubscribeNav?.();
+																		await native.closeWebview();
+																	}
+
+																	span.end();
+																},
+															);
+
+														const unsubscribeClosed =
+															await native.onWebviewClosed(async () => {
+																await unsubscribeClosed?.();
+															});
+													} catch (e) {
+														span.recordException(narrowError(e));
+														span.setStatus({
+															code: SpanStatusCode.ERROR,
+															message: "Webview error.",
+														});
+														span.end();
+
+														reject(e);
+													}
+												})();
+											});
+										},
+										true,
+									);
+								},
+							},
+						};
+						break;
+					// case undefined:
+					// 	credsProps = {
+					// 		...credsProps,
+					// 		name: "PowerSchool",
+					// 		provided: status.provided ?? false,
+					// 		loginFlow: {
+					// 			type: "usernamePassword",
+					// 			async onSubmit(username, password) {},
+					// 		},
+					// 	};
+					// 	break;
+					default:
+						// @ts-ignore
+						throw new Error(
+							`unknown credential loginFlow case ${loginFlow.case}`,
+						);
+				}
 				return <>o</>;
 			},
 
