@@ -1,12 +1,13 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
-import { DataModulesAtom, type User } from "../lib/stores";
+import { DataModulesAtom, type LoggedInUser } from "../lib/stores";
 import { ErrorPage } from "@/ui";
 import { CredentialCarousel } from "./CredentialCarousel";
 import { LoadingPage } from "@/src/lib/LoadingPage";
-import { Modules, pendingModules } from "./modules";
+import { pendingModules } from "./modules";
+import { useCallback } from "react";
 
-export function ModuleComponent(props: { user: User }) {
+export function ModuleComponent(props: { user: LoggedInUser }) {
 	const setDataModules = useSetAtom(DataModulesAtom);
 	const moduleCredentialsQuery = useQuery({
 		queryKey: ["moduleCredentials", props.user.token],
@@ -26,23 +27,24 @@ export function ModuleComponent(props: { user: User }) {
 		enabled: props.user.token !== null,
 	});
 	const queryClient = useQueryClient();
-
-	// The `|| token === null` isn't logically necessary but helps with TypeScript
-	if (!moduleCredentialsQuery.data || props.user.token === null) {
+	// Required to avoid infinite loop
+	const onComplete = useCallback(async () => {
+		await moduleCredentialsQuery.refetch();
+		queryClient.invalidateQueries({ queryKey: ["moduleCredentials"] });
+	}, [moduleCredentialsQuery.refetch, queryClient]);
+	if (!moduleCredentialsQuery.data) {
 		return <LoadingPage />;
 	}
 	const provided = !!moduleCredentialsQuery.data?.every(
 		(value) => value.provided,
 	);
+
 	if (!provided) {
 		return (
 			<CredentialCarousel
 				profile={props.user.profile}
 				items={moduleCredentialsQuery.data}
-				onComplete={async () => {
-					await moduleCredentialsQuery.refetch();
-					queryClient.invalidateQueries({ queryKey: ["moduleCredentials"] });
-				}}
+				onComplete={onComplete}
 			/>
 		);
 	}
