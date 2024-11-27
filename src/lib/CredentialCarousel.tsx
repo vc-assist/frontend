@@ -22,6 +22,7 @@ export function CredentialCarousel(props: {
 	const setUser = useSetAtom(UserAtom);
 
 	type Cred = Pick<CredentialModule, "name" | "provided">;
+	const [embla, setEmbla] = React.useState<Embla | null>(null);
 	const [creds, dispatch] = React.useReducer(
 		(state: Cred[], action: Cred) => {
 			// Move to the next uncompleted credential
@@ -33,7 +34,6 @@ export function CredentialCarousel(props: {
 		},
 		props.items.map((x) => ({ name: x.name, provided: false })),
 	);
-	const [embla, setEmbla] = React.useState<Embla | null>(null);
 
 	React.useEffect(() => {
 		const complete = Object.values(creds).every((x) => x);
