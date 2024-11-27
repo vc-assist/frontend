@@ -1,3 +1,7 @@
+import type { FileRoutesByPath } from "@tanstack/react-router";
+import type { IconType } from "react-icons";
+import { MdHome, MdPerson } from "react-icons/md";
+
 export type Config = {
 	// environment: "dev" | "prod";
 	endpoints: {
@@ -30,3 +34,29 @@ export default {
 		vcmoodle: true,
 	},
 } satisfies Config;
+
+type Route = { title: string; icon: IconType; noNavbar?: boolean };
+export const routes: Partial<Record<keyof FileRoutesByPath, Route>> = {
+	"/": {
+		title: "Lesson Plans",
+		icon: MdHome,
+	},
+	"/profile": {
+		title: "Profile",
+		icon: MdPerson,
+	},
+	// "/browse/"
+	// "/dashboard": {
+	// 	title: "Dashboard",
+	// 	icon: MdDashboard,
+	// },
+	// "/grade-calculator": {
+	// 	title: "Grade Calculator",
+	// 	icon: MdCalculate,
+	// },
+	// "/grade-trends": {
+	// 	title: "Grade Trends",
+	// 	icon: MdTimeline,
+	// 	// rootClassName: "h-full",
+	// },
+};
