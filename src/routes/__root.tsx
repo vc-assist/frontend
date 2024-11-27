@@ -82,7 +82,7 @@ function RootComponent() {
 		mutationFn: async () => {
 			// biome-ignore lint/complexity/noForEach: <explanation>
 			Object.entries(dataModules ?? {}).forEach(([name, module]) =>
-				module.refetch(),
+				module?.refetch(),
 			);
 		},
 		onError(err) {

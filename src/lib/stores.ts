@@ -12,22 +12,11 @@ export const UserAtom = atomWithStorage<User>("user", {
 	profile: null,
 });
 
-// All of this "DataModule" is pretty stupid code...
-// export type DataModule<
-// 	Name extends string = string,
-// 	LoadedData = any,
-// 	ClientType extends ServiceType = ServiceType,
-// > = {
-// 	name: Name;
-//
-// 	client: ClientType;
-// 	get: () => Promise<LoadedData>;
-// 	refetch: () => Promise<LoadedData>;
-// };
-
 export const DataModulesAtom = atom<Modules | null>(null);
 export const DataModulesLoaded = atom((get) => {
 	const dataModules = get(DataModulesAtom);
 	if (!dataModules) return false;
-	return Object.values(dataModules).every((x) => x.provided);
+	// No idea why TypeScript thinks it could be undefined:
+	// If the key doesn't exist, the value won't be iterated on either
+	return Object.values(dataModules).every((x) => x!.provided);
 });
