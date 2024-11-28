@@ -1,5 +1,5 @@
 import { dateFromUnix } from "@/src/lib/date";
-import CourseChip from "@/src/lib/CourseChip";
+import CourseChip from "@/src/lib/components/CourseChip";
 import type { CourseData } from "@backend.sis/data_pb";
 import { ActionIcon, Badge, Text, Timeline } from "@mantine/core";
 import { WidgetPanel, useCurrentTime } from "@vcassist/ui";

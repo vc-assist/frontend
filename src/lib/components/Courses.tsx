@@ -2,9 +2,9 @@ import type { Course } from "@backend.vcmoodle/api_pb";
 import { Kbd } from "@mantine/core";
 import { Panel, useLayout } from "@vcassist/ui";
 import { twMerge } from "tailwind-merge";
-import { ListItemButton } from "@/src/lib/ListItemButton";
-import { PanelTitle } from "@/src/lib/PanelTitle";
-import { useListMaxWidthClass, useScrollIntoViewRef } from "./utils";
+import { ListItemButton } from "@/src/lib/components/ListItemButton";
+import { PanelTitle } from "@/src/lib/components/PanelTitle";
+import { useListMaxWidthClass, useScrollIntoViewRef } from "../utils";
 
 export function Courses(props: {
 	courses: Course[];

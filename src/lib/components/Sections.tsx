@@ -5,9 +5,9 @@ import { Panel } from "@vcassist/ui";
 import { createRef } from "react";
 import { MdOutlineFolder, MdSearch } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
-import { ListItemButton } from "@/src/lib/ListItemButton";
-import { PanelTitle } from "@/src/lib/PanelTitle";
-import { useListMaxWidthClass, useScrollIntoViewRef } from "./utils";
+import { ListItemButton } from "@/src/lib/components/ListItemButton";
+import { PanelTitle } from "@/src/lib/components/PanelTitle";
+import { useListMaxWidthClass, useScrollIntoViewRef } from "../utils";
 
 export function Sections(props: {
 	course: Course;

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { twMerge } from "tailwind-merge";
-import ProfileHeader from "@/src/lib/ProfileHeader";
+import ProfileHeader from "@/src/lib/components/ProfileHeader";
 import { Title } from "@mantine/core";
 // import { useUser } from "@/src/stores";
 import {
@@ -12,9 +12,9 @@ import {
 	createDefaultMeter,
 } from "@vcassist/ui";
 import { MdDelete, MdGetApp } from "react-icons/md";
-import { SettingsPanel } from "@/src/lib/Settings";
+import { SettingsPanel } from "@/src/lib/components/Settings";
 import { useAtom } from "jotai";
-import { UserAtom } from "../lib/stores";
+import { UserAtom } from "@/src/lib/stores";
 import { IconType } from "react-icons";
 export const Route = createFileRoute("/profile")({
 	component: ProfileComponent,

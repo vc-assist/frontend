@@ -5,9 +5,9 @@ import * as React from "react";
 import { BrandTag, LogoutModal, Positioned, type UserProfile } from "@/ui";
 import { MdArrowBack, MdArrowForward, MdEdit } from "react-icons/md";
 import { useSetAtom } from "jotai";
-import { UserAtom } from "./stores";
+import { UserAtom } from "../stores";
 import { rem } from "@mantine/core";
-import type { Module } from "./modules";
+import type { Module } from "../modules";
 import type { ServiceType } from "@bufbuild/protobuf";
 type CredentialModule<N extends string = string> = Pick<
 	Module<N, unknown, ServiceType>,

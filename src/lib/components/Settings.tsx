@@ -1,7 +1,7 @@
 import { BooleanOption, Panel, StaggeredList } from "@vcassist/ui";
 import { useAtom } from "jotai";
 import { twMerge } from "tailwind-merge";
-import { settings } from "./stores";
+import { settings } from "../stores";
 
 export function SettingsPanel(props: {
 	className?: string;

@@ -22,7 +22,7 @@ import { notifications } from "@mantine/notifications";
 
 import { useMutation } from "@tanstack/react-query";
 import { useAtomValue } from "jotai";
-import { DataModulesAtom, UserAtom } from "../lib/stores";
+import { DataModulesAtom, UserAtom } from "@/src/lib/stores";
 import {
 	MdCalculate,
 	MdDashboard,
@@ -32,7 +32,7 @@ import {
 	MdSettings,
 	MdTimeline,
 } from "react-icons/md";
-import { NavButton } from "../lib/NavButton";
+import { NavButton } from "@/src/lib/components/NavButton";
 import { routes } from "@/vcassist.config";
 
 export const Route = createRootRoute({

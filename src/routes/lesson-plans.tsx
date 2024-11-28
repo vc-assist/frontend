@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useAtomValue } from "jotai";
-import { DataModulesAtom } from "../lib/stores";
+import { DataModulesAtom } from "@/src/lib/stores";
 import { ErrorPage } from "@/ui";
-import { LoadingPage } from "@/src/lib/LoadingPage";
+import { LoadingPage } from "@/src/lib/components/LoadingPage";
 import type {
 	Chapter,
 	Course,
@@ -11,7 +11,7 @@ import type {
 	Section,
 } from "@backend.vcmoodle/api_pb";
 import { motion } from "framer-motion";
-import { ChapterDisplay } from "@/src/lib/ChapterDisplay";
+import { ChapterDisplay } from "@/src/lib/components/ChapterDisplay";
 
 export const Route = createFileRoute("/lesson-plans")({
 	component: HomeComponent,

@@ -25,7 +25,7 @@ import {
 	removeEmptySpace,
 	removeNodeWithText,
 	segmentLessonPlan,
-} from "./lesson-plan-processing";
+} from "../lesson-plan-processing";
 import { Link } from "@tanstack/react-router";
 import { PanelTitle } from "./PanelTitle";
 

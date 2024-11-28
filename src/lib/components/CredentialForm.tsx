@@ -13,7 +13,7 @@ import { Avatar, Button, Title } from "@mantine/core";
 import * as React from "react";
 import { MdEdit } from "react-icons/md";
 import { useAtomValue } from "jotai";
-import { UserAtom } from "./stores";
+import { UserAtom } from "../stores";
 export interface CredentialFormProps {
 	className?: string;
 	// Picture of the credential provider

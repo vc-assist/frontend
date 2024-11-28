@@ -5,9 +5,9 @@ import type { IconType } from "react-icons";
 import { MdLink, MdOutlineBook, MdOutlineFileOpen } from "react-icons/md";
 import DOMPurify from "dompurify";
 import { twMerge } from "tailwind-merge";
-import { ListItemButton } from "@/src/lib/ListItemButton";
-import { PanelTitle } from "@/src/lib/PanelTitle";
-import { useListMaxWidthClass, useScrollIntoViewRef } from "./utils";
+import { ListItemButton } from "@/src/lib/components/ListItemButton";
+import { PanelTitle } from "@/src/lib/components/PanelTitle";
+import { useListMaxWidthClass, useScrollIntoViewRef } from "../utils";
 
 export function Resources(props: {
 	section: Section;

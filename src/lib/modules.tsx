@@ -5,7 +5,10 @@ import { MoodleService } from "@backend.vcmoodle/api_connect";
 import type { ServiceType } from "@bufbuild/protobuf";
 import type { Data } from "@backend.sis/api_pb";
 import vcassistConfig from "@/vcassist.config";
-import { CredentialForm, type CredentialFormProps } from "./CredentialForm";
+import {
+	CredentialForm,
+	type CredentialFormProps,
+} from "./components/CredentialForm";
 import { SpanStatusCode } from "@opentelemetry/api";
 
 import { createFnSpanner, narrowError } from "@/ui";

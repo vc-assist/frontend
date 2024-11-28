@@ -1,4 +1,4 @@
-import CourseChip from "@/src/lib/CourseChip";
+import CourseChip from "@/src/lib/components/CourseChip";
 import type { CourseData } from "@backend.sis/data_pb";
 import { Color, InfoTooltip, RingProgress, WidgetPanel } from "@vcassist/ui";
 import { Fragment } from "react";

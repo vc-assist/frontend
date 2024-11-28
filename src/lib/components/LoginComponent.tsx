@@ -10,7 +10,7 @@ import {
 import { AuthFlow, type AuthState, type UserProfile } from "@vcassist/ui";
 import vcassistConfig from "@/vcassist.config";
 import { useAtom } from "jotai";
-import { UserAtom } from "./stores";
+import { UserAtom } from "../stores";
 import { useNavigate } from "@tanstack/react-router";
 const transport = createConnectTransport({
 	baseUrl: vcassistConfig.endpoints.vcassist_backend,

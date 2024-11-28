@@ -1,10 +1,10 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSetAtom } from "jotai";
-import { DataModulesAtom, type LoggedInUser } from "../lib/stores";
+import { DataModulesAtom, type LoggedInUser } from "@/src/lib/stores";
 import { ErrorPage } from "@/ui";
 import { CredentialCarousel } from "./CredentialCarousel";
-import { LoadingPage } from "@/src/lib/LoadingPage";
-import { pendingModules } from "./modules";
+import { LoadingPage } from "@/src/lib/components/LoadingPage";
+import { pendingModules } from "../modules";
 import { useCallback } from "react";
 
 export function ModuleComponent(props: { user: LoggedInUser }) {

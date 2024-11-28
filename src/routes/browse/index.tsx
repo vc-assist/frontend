@@ -16,13 +16,13 @@ import {
 	MdOutlineFileOpen,
 } from "react-icons/md";
 // import { useMoodleContext } from "../../stores";
-import { ChapterDisplay } from "@/src/lib/ChapterDisplay";
-import { HighlightSearch } from "@/src/lib/HighlightSearch";
-import { ListItemButton } from "@/src/lib/ListItemButton";
-import { Chapters } from "@/src/lib/Chapters";
-import { Courses } from "@/src/lib/Courses";
-import { Resources } from "@/src/lib/Resources";
-import { Sections } from "@/src/lib/Sections";
+import { ChapterDisplay } from "@/src/lib/components/ChapterDisplay";
+import { HighlightSearch } from "@/src/lib/components/HighlightSearch";
+import { ListItemButton } from "@/src/lib/components/ListItemButton";
+import { Chapters } from "@/src/lib/components/Chapters";
+import { Courses } from "@/src/lib/components/Courses";
+import { Resources } from "@/src/lib/components/Resources";
+import { Sections } from "@/src/lib/components/Sections";
 import { useScrollIntoViewRef } from "@/src/lib/utils";
 import "@/src/lib/mantine-carousel-fix.css";
 import { createFileRoute } from "@tanstack/react-router";

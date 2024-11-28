@@ -12,8 +12,8 @@ import { DataModulesLoaded, UserAtom } from "./lib/stores";
 import { useAtomValue } from "jotai";
 import { AuthFlow, Foundation } from "@vcassist/ui";
 import vcassistConfig from "@/vcassist.config";
-import LoginComponent from "./lib/LoginComponent";
-import { ModuleComponent } from "./lib/ModuleComponent";
+import LoginComponent from "./lib/components/LoginComponent";
+import { ModuleComponent } from "./lib/components/ModuleComponent";
 
 // Set up a Router instance
 const router = createRouter({
