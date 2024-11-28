@@ -24,7 +24,7 @@ import { Courses } from "@/src/lib/components/Courses";
 import { Resources } from "@/src/lib/components/Resources";
 import { Sections } from "@/src/lib/components/Sections";
 import { useScrollIntoViewRef } from "@/src/lib/utils";
-import "@/src/lib/mantine-carousel-fix.css";
+import "@/src/lib/components/mantine-carousel-fix.css";
 import { createFileRoute } from "@tanstack/react-router";
 import { fallback, zodValidator } from "@tanstack/zod-adapter";
 import { z } from "zod";
