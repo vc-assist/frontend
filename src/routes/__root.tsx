@@ -1,5 +1,6 @@
 import { Button, Title } from "@mantine/core";
 import {
+	ErrorPage,
 	Favicon,
 	type SafeAreaInsets,
 	useLayout,
@@ -37,6 +38,12 @@ import { routes } from "@/vcassist.config";
 
 export const Route = createRootRoute({
 	component: RootComponent,
+	errorComponent: (props) => (
+		<ErrorPage
+			message={props.error.message}
+			description={props.info?.componentStack}
+		/>
+	),
 });
 
 const PROFILE_ROUTE_PATH = "/profile";
@@ -45,7 +52,6 @@ function RootComponent() {
 	const mobile = useLayout() === "mobile";
 	const routePath = useLocation().pathname as keyof FileRoutesByPath;
 	const profile = useAtomValue(UserAtom).profile!;
-	console.log("RP", routePath);
 	// const navigate = useNavigate();
 	// const routeContext = useRouteContext();
 

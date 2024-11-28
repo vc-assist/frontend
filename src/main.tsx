@@ -10,7 +10,7 @@ import "@vcassist/ui/styles.css";
 import "./main.css";
 import { DataModulesLoaded, UserAtom } from "./lib/stores";
 import { useAtomValue } from "jotai";
-import { AuthFlow, Foundation } from "@vcassist/ui";
+import { Foundation } from "@vcassist/ui";
 import vcassistConfig from "@/vcassist.config";
 import LoginComponent from "./lib/components/LoginComponent";
 import { ModuleComponent } from "./lib/components/ModuleComponent";

@@ -27,7 +27,6 @@ function HomeComponent() {
 	if (moodleQuery.isLoading) return <LoadingPage />;
 	if (moodleQuery.isError) return <ErrorPage />;
 	const { courses } = moodleQuery.data!;
-	console.log("moodleQuery", moodleQuery, courses);
 
 	const traces: {
 		course: Course;
@@ -37,6 +36,7 @@ function HomeComponent() {
 	}[] = [];
 
 	for (const course of courses) {
+		if (!course.sections) continue;
 		for (const section of course.sections) {
 			for (const resource of section.resources) {
 				for (const chapter of resource.chapters) {

@@ -37,6 +37,7 @@ export default function Schedule(props: {
 		let minDate = new Date();
 		let maxDate = new Date();
 		for (const c of props.courses) {
+			if (!c.meetings) continue;
 			for (const meeting of c.meetings) {
 				const startDate = dateFromUnix(meeting.start);
 				if (isBefore(startDate, minDate)) {
@@ -57,6 +58,7 @@ export default function Schedule(props: {
 			endTime: Date;
 		}[] = [];
 		for (const c of props.courses) {
+			if (!c.meetings) continue;
 			for (const meeting of c.meetings) {
 				const startDate = dateFromUnix(meeting.start);
 				const endDate = dateFromUnix(meeting.stop);

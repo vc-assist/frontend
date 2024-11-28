@@ -38,10 +38,10 @@ export default {
 
 export const routes: Partial<Record<keyof FileRoutesByPath, Route>> = {
 	"/": { title: "Dashboard", icon: MdDashboard },
-	// "/lesson-plans": {
-	// 	title: "Lesson Plans",
-	// 	icon: MdHome,
-	// },
+	"/lesson-plans": {
+		title: "Lesson Plans",
+		icon: MdHome,
+	},
 	// "/profile": {
 	// 	title: "Profile",
 	// 	icon: MdPerson,

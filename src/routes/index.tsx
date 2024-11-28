@@ -52,7 +52,7 @@ function Dashboard() {
 	const now = new Date();
 	let currentDay = "";
 	courses: for (const course of data.courses) {
-		// console.log("ASD", course);
+		if (!course.meetings) continue;
 		for (const meeting of course.meetings) {
 			const startDate = dateFromUnix(meeting.start);
 			if (
