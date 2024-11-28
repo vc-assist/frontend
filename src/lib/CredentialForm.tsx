@@ -51,7 +51,6 @@ export function CredentialForm(props: CredentialFormProps) {
 			form = (
 				<UsernamePasswordForm
 					color={color}
-					credentialId={props.name}
 					onSubmit={props.loginFlow.onSubmit}
 					onSuccess={props.onSuccess}
 				/>
@@ -61,7 +60,6 @@ export function CredentialForm(props: CredentialFormProps) {
 			form = (
 				<OAuthForm
 					color={color}
-					credentialId={props.name}
 					onStart={props.loginFlow.onStart}
 					onSuccess={props.onSuccess}
 				/>
@@ -108,9 +106,11 @@ export function CredentialForm(props: CredentialFormProps) {
 				<div className="flex gap-3">
 					<Button
 						variant="outline"
-						c="gray"
+						color="gray"
 						leftSection={<MdEdit size={16} />}
-						onClick={() => setEditing(true)}
+						onClick={() => {
+							setEditing(true);
+						}}
 					>
 						Edit
 					</Button>

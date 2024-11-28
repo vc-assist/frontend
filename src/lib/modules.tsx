@@ -126,7 +126,7 @@ export const pendingModules = [
 		}
 		// Must be assigned to output for `this` to work
 		const output = {
-			name: "PowerSchool",
+			name: "PowerSchool" as const,
 			client,
 			provided: status.provided ?? false,
 			picture: status.picture,

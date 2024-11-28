@@ -12,6 +12,7 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as ProfileImport } from './routes/profile'
+import { Route as LessonPlansImport } from './routes/lesson-plans'
 import { Route as IndexImport } from './routes/index'
 import { Route as BrowseIndexImport } from './routes/browse/index'
 
@@ -20,6 +21,12 @@ import { Route as BrowseIndexImport } from './routes/browse/index'
 const ProfileRoute = ProfileImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LessonPlansRoute = LessonPlansImport.update({
+  id: '/lesson-plans',
+  path: '/lesson-plans',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -46,6 +53,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/lesson-plans': {
+      id: '/lesson-plans'
+      path: '/lesson-plans'
+      fullPath: '/lesson-plans'
+      preLoaderRoute: typeof LessonPlansImport
+      parentRoute: typeof rootRoute
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -67,12 +81,14 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/lesson-plans': typeof LessonPlansRoute
   '/profile': typeof ProfileRoute
   '/browse': typeof BrowseIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/lesson-plans': typeof LessonPlansRoute
   '/profile': typeof ProfileRoute
   '/browse': typeof BrowseIndexRoute
 }
@@ -80,27 +96,30 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/lesson-plans': typeof LessonPlansRoute
   '/profile': typeof ProfileRoute
   '/browse/': typeof BrowseIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/profile' | '/browse'
+  fullPaths: '/' | '/lesson-plans' | '/profile' | '/browse'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/profile' | '/browse'
-  id: '__root__' | '/' | '/profile' | '/browse/'
+  to: '/' | '/lesson-plans' | '/profile' | '/browse'
+  id: '__root__' | '/' | '/lesson-plans' | '/profile' | '/browse/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  LessonPlansRoute: typeof LessonPlansRoute
   ProfileRoute: typeof ProfileRoute
   BrowseIndexRoute: typeof BrowseIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  LessonPlansRoute: LessonPlansRoute,
   ProfileRoute: ProfileRoute,
   BrowseIndexRoute: BrowseIndexRoute,
 }
@@ -116,12 +135,16 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/lesson-plans",
         "/profile",
         "/browse/"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/lesson-plans": {
+      "filePath": "lesson-plans.tsx"
     },
     "/profile": {
       "filePath": "profile.tsx"

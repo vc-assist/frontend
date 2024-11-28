@@ -1,77 +1,104 @@
+import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useAtomValue } from "jotai";
-import { DataModulesAtom } from "../lib/stores";
-import { ErrorPage } from "@/ui";
-import { LoadingPage } from "@/src/lib/LoadingPage";
-import type {
-	Chapter,
-	Course,
-	Resource,
-	Section,
-} from "@backend.vcmoodle/api_pb";
-import { motion } from "framer-motion";
-import { ChapterDisplay } from "@/src/lib/ChapterDisplay";
 
 export const Route = createFileRoute("/")({
-	component: HomeComponent,
+	component: Dashboard,
 });
 
-function HomeComponent() {
-	const dataModules = useAtomValue(DataModulesAtom);
-	if (!dataModules?.moodle) return;
-	const moodleQuery = useQuery({
-		queryKey: ["moodle"],
-		queryFn: dataModules.moodle.get,
-	});
-	if (moodleQuery.isLoading) return <LoadingPage />;
-	if (moodleQuery.isError) return <ErrorPage />;
-	const { courses } = moodleQuery.data!;
-	const traces: {
-		course: Course;
-		section: Section;
-		resource: Resource;
-		chapter: Chapter;
-	}[] = [];
+import { dateFromUnix } from "@/src/lib/date";
+import { settings } from "@/src/lib/stores";
+import type { Data } from "@backend.sis/api_pb";
+import { ErrorPage, WidgetHiddenPanel, createDefaultMeter } from "@vcassist/ui";
+import { useEffect } from "react";
+import DayBlock from "@/src/lib/DayBlock";
+import Gpa from "@/src/lib/Gpa";
+import GradeList from "@/src/lib/GradeList";
+import Schedule from "@/src/lib/Schedule";
+import { useAtomValue } from "jotai";
+import { DataModulesAtom } from "../lib/stores";
+import { useQuery } from "@tanstack/react-query";
+import { LoadingPage } from "../lib/LoadingPage";
 
-	for (const course of courses) {
-		for (const section of course.sections) {
-			for (const resource of section.resources) {
-				for (const chapter of resource.chapters) {
-					if (chapter.homepageContent !== "") {
-						traces.push({ course, section, resource, chapter });
-					}
-				}
+const meter = createDefaultMeter("routes.dashboard");
+const viewPage = meter.createCounter("view");
+
+function Dashboard() {
+	const dataModules = useAtomValue(DataModulesAtom);
+	useEffect(() => {
+		viewPage.add(1);
+	}, []);
+	const hideGPA = useAtomValue(settings.dashboard.hideGPA);
+	const hideGrades = useAtomValue(settings.dashboard.hideGrades);
+	const disableGradeVisualizers = useAtomValue(
+		settings.dashboard.disableGradeVisualizers,
+	);
+
+	if (!dataModules?.powerschool) return;
+	const powerschoolQuery = useQuery({
+		queryKey: ["moodle"],
+		queryFn: dataModules.powerschool.get,
+	});
+	if (powerschoolQuery.isLoading) return <LoadingPage />;
+	if (powerschoolQuery.isError) return <ErrorPage />;
+
+	const data = powerschoolQuery.data!;
+
+	const daySet = new Set<string>();
+	for (const course of data.courses) {
+		daySet.add(course.dayName);
+	}
+	const dayNames = Array.from(daySet);
+
+	const now = new Date();
+	let currentDay = "";
+	courses: for (const course of data.courses) {
+		// console.log("ASD", course);
+		for (const meeting of course.meetings) {
+			const startDate = dateFromUnix(meeting.start);
+			if (
+				startDate.getFullYear() === now.getFullYear() &&
+				startDate.getMonth() === now.getMonth() &&
+				startDate.getDate() === now.getDate()
+			) {
+				currentDay = course.dayName;
+				break courses;
 			}
 		}
 	}
 
 	return (
-		<div className="flex flex-wrap gap-5 max-w-full">
-			{traces.map((trace, i) => {
-				return (
-					<motion.div
-						key={trace.course.id}
-						className="max-w-full"
-						transition={{ delay: 0.05 * (i + 1) }}
-						initial={{ y: 20, opacity: 0 }}
-						animate={{ y: 0, opacity: 1 }}
-					>
-						<ChapterDisplay
-							courseId={Number(trace.course.id)}
-							chapter={trace.chapter}
-							breadcrumb={{
-								course: trace.course,
-								section: trace.section,
-								resource: trace.resource,
-							}}
-							breadcrumbLinkToUrl
-						/>
-					</motion.div>
-				);
-			})}
+		<div className="grid gap-6 lg:grid-cols-2">
+			<div className="flex flex-col gap-6">
+				{/* grid is used here so I don't have to deal with
+        flexbox flex shenanigans */}
+				<div className="grid grid-cols-2 gap-6">
+					<DayBlock dayNames={dayNames} currentDay={currentDay} />
+					{!hideGPA ? (
+						<Gpa gpa={data.profile?.currentGpa ?? -1} />
+					) : (
+						<WidgetHiddenPanel message="GPA is hidden" />
+					)}
+				</div>
+				<Schedule
+					className="overflow-visible"
+					dayNames={dayNames}
+					courses={data.courses}
+				/>
+			</div>
 
-			{/* <HighlightSearch /> */}
+			{!hideGrades ? (
+				<GradeList
+					className="w-full"
+					dayNames={dayNames}
+					courses={data.courses}
+					plain={disableGradeVisualizers}
+				/>
+			) : (
+				<WidgetHiddenPanel
+					className="max-h-[500px] min-h-[300px]"
+					message="Grade List is hidden"
+				/>
+			)}
 		</div>
 	);
 }

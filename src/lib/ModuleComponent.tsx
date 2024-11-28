@@ -15,6 +15,10 @@ export function ModuleComponent(props: { user: LoggedInUser }) {
 			return Promise.all(
 				pendingModules.map((mod) =>
 					mod(props.user.token!).then((x) => {
+						// I'm not sure what's the best way
+						// to tell TypeScript about this 1-to-1
+						// non-isomorphic relationship
+						// - ThatXliner
 						setDataModules((prev) => ({
 							...(prev ?? {}),
 							[x.name.toLowerCase()]: x,

@@ -1,5 +1,5 @@
 import type { SafeAreaInsets } from "@vcassist/ui";
-import type { NativeAPI, Unsubscriber } from ".";
+import type { NativeAPI, Unsubscriber } from "./oauth";
 
 export default class NoopAPI implements NativeAPI {
 	launchUrl(): Promise<void> {
