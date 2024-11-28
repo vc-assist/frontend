@@ -18,12 +18,12 @@ import { useAtomValue } from "jotai";
 import { DataModulesAtom } from "@/src/lib/stores";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingPage } from "@/src/lib/components/LoadingPage";
+import { usePowerSchoolQuery } from "../lib/queries";
 
 const meter = createDefaultMeter("routes.dashboard");
 const viewPage = meter.createCounter("view");
 
 function Dashboard() {
-	const dataModules = useAtomValue(DataModulesAtom);
 	useEffect(() => {
 		viewPage.add(1);
 	}, []);
@@ -33,11 +33,7 @@ function Dashboard() {
 		settings.dashboard.disableGradeVisualizers,
 	);
 
-	if (!dataModules?.powerschool) return;
-	const powerschoolQuery = useQuery({
-		queryKey: ["powerschool"],
-		queryFn: dataModules.powerschool.get,
-	});
+	const powerschoolQuery = usePowerSchoolQuery()!;
 	if (powerschoolQuery.isLoading) return <LoadingPage />;
 	if (powerschoolQuery.isError) return <ErrorPage />;
 

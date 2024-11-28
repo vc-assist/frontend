@@ -12,18 +12,14 @@ import type {
 } from "@backend.vcmoodle/api_pb";
 import { motion } from "framer-motion";
 import { ChapterDisplay } from "@/src/lib/components/ChapterDisplay";
+import { useMoodleQuery } from "../lib/queries";
 
 export const Route = createFileRoute("/lesson-plans")({
 	component: HomeComponent,
 });
 
 function HomeComponent() {
-	const dataModules = useAtomValue(DataModulesAtom);
-	if (!dataModules?.moodle) return;
-	const moodleQuery = useQuery({
-		queryKey: ["moodle"],
-		queryFn: dataModules.moodle.get,
-	});
+	const moodleQuery = useMoodleQuery()!;
 	if (moodleQuery.isLoading) return <LoadingPage />;
 	if (moodleQuery.isError) return <ErrorPage />;
 	const { courses } = moodleQuery.data!;

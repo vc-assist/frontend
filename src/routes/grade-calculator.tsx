@@ -25,6 +25,7 @@ import { useAtomValue } from "jotai";
 import { DataModulesAtom } from "../lib/stores";
 import { LoadingPage } from "../lib/components/LoadingPage";
 import { useQuery } from "@tanstack/react-query";
+import { usePowerSchoolQuery } from "../lib/queries";
 
 enum CalcTab {
 	WHAT_IF = "what-if",
@@ -47,12 +48,8 @@ function GradeCalculator() {
 			course: (c) => (c !== undefined ? null : "You must select a course."),
 		},
 	});
-	const dataModules = useAtomValue(DataModulesAtom);
-	if (!dataModules?.powerschool) return;
-	const powerschoolQuery = useQuery({
-		queryKey: ["powerschool"],
-		queryFn: dataModules.powerschool.get,
-	});
+
+	const powerschoolQuery = usePowerSchoolQuery()!;
 
 	const courses = useMemo(() => {
 		if (!powerschoolQuery.data) return [];
