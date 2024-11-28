@@ -9,7 +9,7 @@ import { fnSpan } from "@/src/lib/internal"
 import { Code, Select, Text, Title } from "@mantine/core"
 import { Tabs } from "@mantine/core"
 import { useForm } from "@mantine/form"
-import { ErrorPage, LinkButton, Panel, useLayout, useSpan } from "@vcassist/ui"
+import { ErrorPage, Panel, useLayout, useSpan } from "@vcassist/ui"
 import { useState } from "react"
 import { useMemo } from "react"
 import { MdInfo, MdSportsScore, MdTimeline } from "react-icons/md"
@@ -180,13 +180,15 @@ function GradeCalculator() {
                   calulations depend on how accurate these weights are. If you
                   have any questions, or would like to report an incorrect
                   result or weight, please contact us at{" "}
-                  <LinkButton
+                  <button
+                    type="button"
+                    className="no-underline hover:underline text-blue-400 dark:text-blue-600"
                     onClick={() => {
                       window.open("mailto:hello@vcassist.org")
                     }}
                   >
                     hello@vcassist.org
-                  </LinkButton>
+                  </button>
                   .
                 </Text>
               </div>

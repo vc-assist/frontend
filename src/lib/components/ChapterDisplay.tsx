@@ -309,7 +309,7 @@ export function ChapterDisplay(props: {
             <div className="flex gap-1 flex-wrap items-center">
               {props.breadcrumbLinkToUrl ? (
                 <button
-                  className="p-0"
+                  className="no-underline hover:underline text-blue-400 dark:text-blue-600 p-0"
                   type="button"
                   onClick={() => {
                     window.open(props.breadcrumb?.section.url)
@@ -319,7 +319,9 @@ export function ChapterDisplay(props: {
                 </button>
               ) : (
                 <Link
-                  className="p-0"
+                  className={
+                    "no-underline hover:underline text-blue-400 dark:text-blue-600 p-0"
+                  }
                   to="/browse"
                   search={{
                     path: [
@@ -337,7 +339,7 @@ export function ChapterDisplay(props: {
               {props.breadcrumbLinkToUrl ? (
                 <button
                   type="button"
-                  className="p-0"
+                  className="no-underline hover:underline text-blue-400 dark:text-blue-600 p-0"
                   onClick={() => {
                     window.open(props.chapter.url)
                   }}
@@ -355,7 +357,7 @@ export function ChapterDisplay(props: {
                       props.chapter.id,
                     ],
                   }}
-                  className="p-0"
+                  className="no-underline hover:underline text-blue-400 dark:text-blue-600 p-0"
                 >
                   {props.chapter.name}
                 </Link>

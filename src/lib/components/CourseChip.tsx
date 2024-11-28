@@ -1,7 +1,7 @@
 import type { CourseData } from "@backend.sis/data_pb"
 import { Text } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
-import { LinkButton, PopoutChip } from "@vcassist/ui"
+import { PopoutChip } from "@vcassist/ui"
 import { Color } from "@vcassist/ui/lib/color"
 import { type CSSProperties, useState } from "react"
 import { MdClass, MdInfo, MdInfoOutline } from "react-icons/md"
@@ -57,7 +57,9 @@ export default function CourseChip(props: {
             <div className="flex flex-col gap-1">
               <Text>Instructor</Text>
               {props.course.teacherEmail ? (
-                <LinkButton
+                <button
+                  type="button"
+                  className="no-underline hover:underline text-blue-400 dark:text-blue-600"
                   onClick={() => {
                     navigator.clipboard.writeText(props.course.teacherEmail)
                     notifications.show({
@@ -68,7 +70,7 @@ export default function CourseChip(props: {
                   }}
                 >
                   {props.course.teacher}
-                </LinkButton>
+                </button>
               ) : (
                 <Text c="dimmed">{props.course.teacher}</Text>
               )}
