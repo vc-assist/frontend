@@ -26,35 +26,37 @@ export default function LoginComponent(props: {
 }) {
 	const [user, setUser] = useAtom(UserAtom);
 	return (
-		<AuthFlow
-			token={user.token!}
-			state={props.state}
-			startLogin={async (email) => {
-				await client.startLogin(new StartLoginRequest({ email }));
-			}}
-			consumeVerificationCode={async (email, code) => {
-				return client.consumeVerificationCode(
-					new ConsumeVerificationCodeRequest({
-						email,
-						providedCode: code,
-					}),
-				);
-			}}
-			verifyToken={(token) => {
-				return client.verifyToken(new VerifyTokenRequest({ token }));
-			}}
-			onInvalidToken={
-				props.onInvalidToken ??
-				(() => {
-					setUser({ token: null, profile: null });
-				})
-			}
-			onLogin={
-				props.onLogin ??
-				(async (token, profile) => {
-					setUser({ token, profile });
-				})
-			}
-		/>
+		<main className="h-screen">
+			<AuthFlow
+				token={user.token!}
+				state={props.state}
+				startLogin={async (email) => {
+					await client.startLogin(new StartLoginRequest({ email }));
+				}}
+				consumeVerificationCode={async (email, code) => {
+					return client.consumeVerificationCode(
+						new ConsumeVerificationCodeRequest({
+							email,
+							providedCode: code,
+						}),
+					);
+				}}
+				verifyToken={(token) => {
+					return client.verifyToken(new VerifyTokenRequest({ token }));
+				}}
+				onInvalidToken={
+					props.onInvalidToken ??
+					(() => {
+						setUser({ token: null, profile: null });
+					})
+				}
+				onLogin={
+					props.onLogin ??
+					(async (token, profile) => {
+						setUser({ token, profile });
+					})
+				}
+			/>
+		</main>
 	);
 }

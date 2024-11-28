@@ -1,14 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createDefaultMeter, ErrorPage } from "@vcassist/ui";
 
-import type { CourseData } from "@backend.sis/data_pb";
-import GradeTrendsComponent from "./-GradeTrends";
+import GradeTrendsComponent from "../lib/GradeTrends";
 import { useEffect } from "react";
 import { usePowerSchoolQuery } from "@/src/lib/queries";
 import { LoadingPage } from "@/src/lib/components/LoadingPage";
 
-export const Route = createFileRoute("/grade-trends/")({
+export const Route = createFileRoute("/grade-trends")({
 	component: GradeTrends,
+	// context: { rootClassName: "arsta" },
 });
 const meter = createDefaultMeter("routes.grades");
 const viewPage = meter.createCounter("view");

@@ -8,7 +8,7 @@ import Chart from "react-apexcharts";
 import type { IconType } from "react-icons";
 import { MdExpandLess, MdTrendingFlat, MdTrendingUp } from "react-icons/md";
 import { twMerge } from "tailwind-merge";
-import { analyzeGradeChange, generateSeries } from "./-utils";
+import { analyzeGradeChange, generateSeries } from "./grade-trend-utils";
 
 const SmallButton = forwardRef(
 	(

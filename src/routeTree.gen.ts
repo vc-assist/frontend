@@ -13,9 +13,9 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as ProfileImport } from './routes/profile'
 import { Route as LessonPlansImport } from './routes/lesson-plans'
+import { Route as GradeTrendsImport } from './routes/grade-trends'
 import { Route as GradeCalculatorImport } from './routes/grade-calculator'
 import { Route as IndexImport } from './routes/index'
-import { Route as GradeTrendsIndexImport } from './routes/grade-trends/index'
 import { Route as BrowseIndexImport } from './routes/browse/index'
 
 // Create/Update Routes
@@ -32,6 +32,12 @@ const LessonPlansRoute = LessonPlansImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const GradeTrendsRoute = GradeTrendsImport.update({
+  id: '/grade-trends',
+  path: '/grade-trends',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const GradeCalculatorRoute = GradeCalculatorImport.update({
   id: '/grade-calculator',
   path: '/grade-calculator',
@@ -41,12 +47,6 @@ const GradeCalculatorRoute = GradeCalculatorImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const GradeTrendsIndexRoute = GradeTrendsIndexImport.update({
-  id: '/grade-trends/',
-  path: '/grade-trends/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -74,6 +74,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GradeCalculatorImport
       parentRoute: typeof rootRoute
     }
+    '/grade-trends': {
+      id: '/grade-trends'
+      path: '/grade-trends'
+      fullPath: '/grade-trends'
+      preLoaderRoute: typeof GradeTrendsImport
+      parentRoute: typeof rootRoute
+    }
     '/lesson-plans': {
       id: '/lesson-plans'
       path: '/lesson-plans'
@@ -95,13 +102,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrowseIndexImport
       parentRoute: typeof rootRoute
     }
-    '/grade-trends/': {
-      id: '/grade-trends/'
-      path: '/grade-trends'
-      fullPath: '/grade-trends'
-      preLoaderRoute: typeof GradeTrendsIndexImport
-      parentRoute: typeof rootRoute
-    }
   }
 }
 
@@ -110,29 +110,29 @@ declare module '@tanstack/react-router' {
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/grade-calculator': typeof GradeCalculatorRoute
+  '/grade-trends': typeof GradeTrendsRoute
   '/lesson-plans': typeof LessonPlansRoute
   '/profile': typeof ProfileRoute
   '/browse': typeof BrowseIndexRoute
-  '/grade-trends': typeof GradeTrendsIndexRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/grade-calculator': typeof GradeCalculatorRoute
+  '/grade-trends': typeof GradeTrendsRoute
   '/lesson-plans': typeof LessonPlansRoute
   '/profile': typeof ProfileRoute
   '/browse': typeof BrowseIndexRoute
-  '/grade-trends': typeof GradeTrendsIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/grade-calculator': typeof GradeCalculatorRoute
+  '/grade-trends': typeof GradeTrendsRoute
   '/lesson-plans': typeof LessonPlansRoute
   '/profile': typeof ProfileRoute
   '/browse/': typeof BrowseIndexRoute
-  '/grade-trends/': typeof GradeTrendsIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -140,45 +140,45 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/grade-calculator'
+    | '/grade-trends'
     | '/lesson-plans'
     | '/profile'
     | '/browse'
-    | '/grade-trends'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/grade-calculator'
+    | '/grade-trends'
     | '/lesson-plans'
     | '/profile'
     | '/browse'
-    | '/grade-trends'
   id:
     | '__root__'
     | '/'
     | '/grade-calculator'
+    | '/grade-trends'
     | '/lesson-plans'
     | '/profile'
     | '/browse/'
-    | '/grade-trends/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GradeCalculatorRoute: typeof GradeCalculatorRoute
+  GradeTrendsRoute: typeof GradeTrendsRoute
   LessonPlansRoute: typeof LessonPlansRoute
   ProfileRoute: typeof ProfileRoute
   BrowseIndexRoute: typeof BrowseIndexRoute
-  GradeTrendsIndexRoute: typeof GradeTrendsIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GradeCalculatorRoute: GradeCalculatorRoute,
+  GradeTrendsRoute: GradeTrendsRoute,
   LessonPlansRoute: LessonPlansRoute,
   ProfileRoute: ProfileRoute,
   BrowseIndexRoute: BrowseIndexRoute,
-  GradeTrendsIndexRoute: GradeTrendsIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -193,10 +193,10 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/grade-calculator",
+        "/grade-trends",
         "/lesson-plans",
         "/profile",
-        "/browse/",
-        "/grade-trends/"
+        "/browse/"
       ]
     },
     "/": {
@@ -204,6 +204,9 @@ export const routeTree = rootRoute
     },
     "/grade-calculator": {
       "filePath": "grade-calculator.tsx"
+    },
+    "/grade-trends": {
+      "filePath": "grade-trends.tsx"
     },
     "/lesson-plans": {
       "filePath": "lesson-plans.tsx"
@@ -213,9 +216,6 @@ export const routeTree = rootRoute
     },
     "/browse/": {
       "filePath": "browse/index.tsx"
-    },
-    "/grade-trends/": {
-      "filePath": "grade-trends/index.tsx"
     }
   }
 }

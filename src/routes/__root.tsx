@@ -16,7 +16,10 @@ import {
 	Link,
 	Outlet,
 	createRootRoute,
+	createRootRouteWithContext,
 	useLocation,
+	useRouteContext,
+	useRouterState,
 } from "@tanstack/react-router";
 import type { IconType } from "react-icons";
 import { notifications } from "@mantine/notifications";
@@ -35,7 +38,9 @@ import {
 } from "react-icons/md";
 import { NavButton } from "@/src/lib/components/NavButton";
 import { routes } from "@/vcassist.config";
-
+// interface RootContext {
+// 	rootClassName?: string;
+// }
 export const Route = createRootRoute({
 	component: RootComponent,
 	errorComponent: (props) => (
@@ -52,20 +57,7 @@ function RootComponent() {
 	const mobile = useLayout() === "mobile";
 	const routePath = useLocation().pathname as keyof FileRoutesByPath;
 	const profile = useAtomValue(UserAtom).profile!;
-	// const navigate = useNavigate();
-	// const routeContext = useRouteContext();
-
-	// const routePath = useRouteContext((ctx) => {
-	// 	if (
-	// 		!props.routes[ctx.currentRoute] &&
-	// 		ctx.currentRoute !== PROFILE_ROUTE_PATH
-	// 	) {
-	// 		return props.defaultRoute;
-	// 	}
-	// 	return ctx.currentRoute;
-	// });
-	// const push = useRouteContext((ctx) => ctx.push);
-
+	// const { rootClassName } = useRouteContext({ from: routePath });
 	const navbarItems: {
 		title: string;
 		icon: IconType;
@@ -140,22 +132,20 @@ function RootComponent() {
 			type="button"
 			className={twMerge(
 				"p-1 text-dimmed hover:text-primary transition-all rounded-lg",
-				// routePath === PROFILE_ROUTE_PATH ?
-				// 		"hover:text-dimmed hover:cursor-default bg-bg-dimmed"
-				// 	: "",
+				routePath === PROFILE_ROUTE_PATH
+					? "hover:text-dimmed hover:cursor-default bg-bg-dimmed"
+					: "",
 			)}
-			disabled={false}
-			// disabled={routePath === PROFILE_ROUTE_PATH}
+			disabled={routePath === PROFILE_ROUTE_PATH}
 			color="gray"
-			// onClick={() => push(PROFILE_ROUTE_PATH)}
 		>
 			<MdSettings className="size-6" />
 		</Link>
 	);
 	const component = (
 		<motion.div
-			className={twMerge("w-full h-fit mb-auto")}
-			// className={twMerge("w-full h-fit mb-auto", route.rootClassName)}
+			// className={twMerge("w-full h-fit mb-auto")}
+			className={twMerge("w-full mb-auto h-full")}
 			initial={{ y: 20, opacity: 0.5 }}
 			animate={{ y: 0, opacity: 1 }}
 		>
@@ -164,7 +154,7 @@ function RootComponent() {
 	);
 
 	return (
-		<>
+		<main className="h-screen">
 			{mobile ? (
 				<MobileLayout
 					safeArea={safeArea}
@@ -214,7 +204,7 @@ function RootComponent() {
 			<React.Suspense>
 				<TanStackRouterDevtools position="bottom-right" />
 			</React.Suspense>
-		</>
+		</main>
 	);
 }
 export type NavbarRoute = {

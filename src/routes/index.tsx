@@ -7,7 +7,6 @@ export const Route = createFileRoute("/")({
 
 import { dateFromUnix } from "@/src/lib/date";
 import { settings } from "@/src/lib/stores";
-import type { Data } from "@backend.sis/api_pb";
 import { ErrorPage, WidgetHiddenPanel, createDefaultMeter } from "@vcassist/ui";
 import { useEffect } from "react";
 import DayBlock from "@/src/lib/components/DayBlock";
@@ -15,8 +14,6 @@ import Gpa from "@/src/lib/components/Gpa";
 import GradeList from "@/src/lib/components/GradeList";
 import Schedule from "@/src/lib/components/Schedule";
 import { useAtomValue } from "jotai";
-import { DataModulesAtom } from "@/src/lib/stores";
-import { useQuery } from "@tanstack/react-query";
 import { LoadingPage } from "@/src/lib/components/LoadingPage";
 import { usePowerSchoolQuery } from "../lib/queries";
 
