@@ -24,7 +24,7 @@ import type { IconType } from "react-icons"
 import { NavButton } from "@/src/lib/components/NavButton"
 import { DataModulesAtom, UserAtom } from "@/src/lib/stores"
 import { routes } from "@/vcassist.config"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAtomValue } from "jotai"
 import { MdPerson, MdRefresh, MdSettings } from "react-icons/md"
 // interface RootContext {
@@ -65,12 +65,13 @@ function RootComponent() {
   }
 
   const dataModules = useAtomValue(DataModulesAtom)
+  const queryClient = useQueryClient()
   const refreshMutation = useMutation({
     mutationFn: async () => {
-      // biome-ignore lint/complexity/noForEach: <explanation>
-      Object.entries(dataModules ?? {}).forEach(([name, module]) =>
-        module?.refetch(),
-      )
+      return Object.entries(dataModules ?? {}).map(([name, module]) => {
+        module.refetch()
+        return name
+      })
     },
     onError(err) {
       notifications.show({
@@ -80,7 +81,10 @@ function RootComponent() {
         autoClose: 10000,
       })
     },
-    onSuccess() {
+    async onSuccess(data) {
+      await Promise.all(
+        data.map((name) => queryClient.refetchQueries({ queryKey: [name] })),
+      )
       notifications.show({
         message: "Successfully refreshed data.",
         color: "green",
@@ -201,7 +205,7 @@ export type NavbarRoute = {
   icon: IconType
   route: keyof FileRoutesByPath
 }
-export function NavbarList(props: {
+function NavbarList(props: {
   route: keyof FileRoutesByPath
   routes: NavbarRoute[]
   layout: "mobile" | "desktop"

@@ -45,6 +45,7 @@ export const pendingModules = [
     const output = {
       name: "Moodle" as const,
       provided: res.provided ?? false,
+      _refresh: false,
       client,
       picture:
         "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi0.wp.com%2Fcrescercomeducacao.com.br%2Fwp-content%2Fuploads%2F2022%2F06%2Fmoodle.png%3Ffit%3D1900%252C975%26ssl%3D1&f=1&nofb=1&ipt=9e33cd9627dbd37e5fe8453f9b4f51488694b4244d93ba3b2e20e0ff679e4da1&ipo=images",
@@ -78,10 +79,14 @@ export const pendingModules = [
         )
       },
       get() {
+        if (this._refresh) {
+          this._refresh = false
+          return client.refreshCourses({})
+        }
         return client.getCourses({})
       },
       refetch() {
-        this.get = () => client.refreshCourses({})
+        this._refresh = true
       },
     }
     return defineModule(output)
@@ -133,12 +138,16 @@ export const pendingModules = [
       client,
       provided: status.provided ?? false,
       picture: status.picture,
-      //   credentialStates: [credentialState],
+      _refresh: false,
       async get() {
+        if (this._refresh) {
+          this._refresh = false
+          return _handleData((await client.refreshData({})).data)
+        }
         return _handleData((await client.getData({})).data)
       },
       refetch() {
-        this.get = async () => _handleData((await client.refreshData({})).data)
+        this._refresh = true
       },
       login(props: {
         dispatch: React.Dispatch<{ name: "PowerSchool"; provided: boolean }>
@@ -364,7 +373,16 @@ export type Module<Name extends string, Data, Service extends ServiceType> = {
     dispatch: React.Dispatch<{ name: Name; provided: boolean }>
   }) => JSX.Element
   client: Client<Service>
+  /**
+   * @returns the `Data` from the service (cached)
+   */
   get: () => Promise<Data>
+  /**
+   * Changes the `get` function to a new function that fetches the data
+   * from the service (runs scrapers again instead of using cache)
+   * (and then it changes back to the original `get` function)
+   * TODO: Remove code dupe in implementation
+   */
   refetch: () => void
 }
 
