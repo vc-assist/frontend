@@ -36,7 +36,7 @@ function HomeComponent() {
 	}[] = [];
 
 	for (const course of courses) {
-		if (!course.sections) continue;
+		// if (!course.sections) continue;
 		for (const section of course.sections) {
 			for (const resource of section.resources) {
 				for (const chapter of resource.chapters) {
