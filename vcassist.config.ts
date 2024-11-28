@@ -1,6 +1,12 @@
 import type { FileRoutesByPath } from "@tanstack/react-router";
 import type { IconType } from "react-icons";
-import { MdCalculate, MdDashboard, MdHome, MdPerson } from "react-icons/md";
+import {
+	MdCalculate,
+	MdDashboard,
+	MdHome,
+	MdPerson,
+	MdTimeline,
+} from "react-icons/md";
 
 export type Config = {
 	// environment: "dev" | "prod";
@@ -42,6 +48,11 @@ export const routes: Partial<Record<keyof FileRoutesByPath, Route>> = {
 		title: "Grade Calculator",
 		icon: MdCalculate,
 	},
+	"/grade-trends/": {
+		title: "Grade Trends",
+		icon: MdTimeline,
+		// rootClassName: "h-full",
+	},
 	"/lesson-plans": {
 		title: "Lesson Plans",
 		icon: MdHome,
@@ -54,11 +65,5 @@ export const routes: Partial<Record<keyof FileRoutesByPath, Route>> = {
 	// "/dashboard": {
 	// 	title: "Dashboard",
 	// 	icon: MdDashboard,
-	// },
-
-	// "/grade-trends": {
-	// 	title: "Grade Trends",
-	// 	icon: MdTimeline,
-	// 	// rootClassName: "h-full",
 	// },
 };
