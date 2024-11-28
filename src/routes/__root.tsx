@@ -83,7 +83,7 @@ function RootComponent() {
     },
     async onSuccess(data) {
       await Promise.all(
-        data.map((name) => queryClient.refetchQueries({ queryKey: [name] })),
+        data.map((name) => queryClient.invalidateQueries({ queryKey: [name] })),
       )
       notifications.show({
         message: "Successfully refreshed data.",
