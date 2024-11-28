@@ -1,18 +1,18 @@
-import { LoadingAnimation } from "@/ui";
-import * as React from "react";
+import { LoadingAnimation } from "@/ui"
+import * as React from "react"
 
 export function LoadingPage() {
-	const [showAnimation, setShowAnimation] = React.useState(false);
+  const [showAnimation, setShowAnimation] = React.useState(false)
 
-	React.useEffect(() => {
-		const id = setTimeout(() => {
-			setShowAnimation(true);
-		}, 1000);
-		return () => clearTimeout(id);
-	}, []);
+  React.useEffect(() => {
+    const id = setTimeout(() => {
+      setShowAnimation(true)
+    }, 1000)
+    return () => clearTimeout(id)
+  }, [])
 
-	if (showAnimation) {
-		return <LoadingAnimation />;
-	}
-	return <></>;
+  if (showAnimation) {
+    return <LoadingAnimation />
+  }
+  return <></>
 }

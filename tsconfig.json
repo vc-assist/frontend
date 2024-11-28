@@ -1,19 +1,19 @@
 {
-	"compilerOptions": {
-		"strict": true,
-		"esModuleInterop": true,
-		"jsx": "react-jsx",
-		"target": "ESNext",
-		"module": "ESNext",
-		"moduleResolution": "Bundler",
-		"paths": {
-			"@/*": ["./*"],
-			"@backend.auth/*": ["./backend/proto/vcassist/services/auth/v1/*"],
-			"@backend.sis/*": ["./backend/proto/vcassist/services/sis/v1/*"],
-			"@backend.keychain/*": [
-				"./backend/proto/vcassist/services/keychain/v1/*"
-			],
-			"@backend.vcmoodle/*": ["./backend/proto/vcassist/services/vcmoodle/v1/*"]
-		}
-	}
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "@/*": ["./*"],
+      "@backend.auth/*": ["./backend/proto/vcassist/services/auth/v1/*"],
+      "@backend.sis/*": ["./backend/proto/vcassist/services/sis/v1/*"],
+      "@backend.keychain/*": [
+        "./backend/proto/vcassist/services/keychain/v1/*"
+      ],
+      "@backend.vcmoodle/*": ["./backend/proto/vcassist/services/vcmoodle/v1/*"]
+    }
+  }
 }

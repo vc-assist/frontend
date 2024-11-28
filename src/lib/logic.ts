@@ -135,7 +135,7 @@ export function calculatePointsForGrade(
   const final =
     ((information[input.category].totalPoints + input.pointValue) *
       (input.targetGrade - otherWeightedSum)) /
-    information[input.category].weight -
+      information[input.category].weight -
     information[input.category].earnedPoints
 
   // return final > 0 && final < input.pointValue ? final : -1;
