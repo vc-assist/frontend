@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as ProfileImport } from './routes/profile'
 import { Route as LessonPlansImport } from './routes/lesson-plans'
+import { Route as GradeCalculatorImport } from './routes/grade-calculator'
 import { Route as IndexImport } from './routes/index'
 import { Route as BrowseIndexImport } from './routes/browse/index'
 
@@ -27,6 +28,12 @@ const ProfileRoute = ProfileImport.update({
 const LessonPlansRoute = LessonPlansImport.update({
   id: '/lesson-plans',
   path: '/lesson-plans',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const GradeCalculatorRoute = GradeCalculatorImport.update({
+  id: '/grade-calculator',
+  path: '/grade-calculator',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -51,6 +58,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/grade-calculator': {
+      id: '/grade-calculator'
+      path: '/grade-calculator'
+      fullPath: '/grade-calculator'
+      preLoaderRoute: typeof GradeCalculatorImport
       parentRoute: typeof rootRoute
     }
     '/lesson-plans': {
@@ -81,6 +95,7 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/grade-calculator': typeof GradeCalculatorRoute
   '/lesson-plans': typeof LessonPlansRoute
   '/profile': typeof ProfileRoute
   '/browse': typeof BrowseIndexRoute
@@ -88,6 +103,7 @@ export interface FileRoutesByFullPath {
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/grade-calculator': typeof GradeCalculatorRoute
   '/lesson-plans': typeof LessonPlansRoute
   '/profile': typeof ProfileRoute
   '/browse': typeof BrowseIndexRoute
@@ -96,6 +112,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/grade-calculator': typeof GradeCalculatorRoute
   '/lesson-plans': typeof LessonPlansRoute
   '/profile': typeof ProfileRoute
   '/browse/': typeof BrowseIndexRoute
@@ -103,15 +120,27 @@ export interface FileRoutesById {
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lesson-plans' | '/profile' | '/browse'
+  fullPaths:
+    | '/'
+    | '/grade-calculator'
+    | '/lesson-plans'
+    | '/profile'
+    | '/browse'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/lesson-plans' | '/profile' | '/browse'
-  id: '__root__' | '/' | '/lesson-plans' | '/profile' | '/browse/'
+  to: '/' | '/grade-calculator' | '/lesson-plans' | '/profile' | '/browse'
+  id:
+    | '__root__'
+    | '/'
+    | '/grade-calculator'
+    | '/lesson-plans'
+    | '/profile'
+    | '/browse/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  GradeCalculatorRoute: typeof GradeCalculatorRoute
   LessonPlansRoute: typeof LessonPlansRoute
   ProfileRoute: typeof ProfileRoute
   BrowseIndexRoute: typeof BrowseIndexRoute
@@ -119,6 +148,7 @@ export interface RootRouteChildren {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  GradeCalculatorRoute: GradeCalculatorRoute,
   LessonPlansRoute: LessonPlansRoute,
   ProfileRoute: ProfileRoute,
   BrowseIndexRoute: BrowseIndexRoute,
@@ -135,6 +165,7 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/grade-calculator",
         "/lesson-plans",
         "/profile",
         "/browse/"
@@ -142,6 +173,9 @@ export const routeTree = rootRoute
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/grade-calculator": {
+      "filePath": "grade-calculator.tsx"
     },
     "/lesson-plans": {
       "filePath": "lesson-plans.tsx"

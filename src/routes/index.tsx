@@ -35,7 +35,7 @@ function Dashboard() {
 
 	if (!dataModules?.powerschool) return;
 	const powerschoolQuery = useQuery({
-		queryKey: ["moodle"],
+		queryKey: ["powerschool"],
 		queryFn: dataModules.powerschool.get,
 	});
 	if (powerschoolQuery.isLoading) return <LoadingPage />;
