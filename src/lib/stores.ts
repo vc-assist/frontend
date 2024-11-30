@@ -23,10 +23,3 @@ export const settings = {
     ),
   },
 }
-export const DataModulesLoaded = atom((get) => {
-  const dataModules = get(DataModulesAtom)
-  if (!dataModules) return false
-  // No idea why TypeScript thinks it could be undefined:
-  // If the key doesn't exist, the value won't be iterated on either
-  return Object.values(dataModules).every((x) => x?.provided)
-})

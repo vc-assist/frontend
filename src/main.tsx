@@ -13,7 +13,8 @@ import { Foundation } from "@vcassist/ui"
 import { useAtomValue } from "jotai"
 import LoginComponent from "./lib/components/LoginComponent"
 import { ModuleComponent } from "./lib/components/ModuleComponent"
-import { DataModulesLoaded, UserAtom } from "./lib/stores"
+import { DataModulesAtom, UserAtom } from "./lib/stores"
+import WithLoadedModules from "./lib/components/WithLoadedModules"
 
 // Set up a Router instance
 const router = createRouter({
@@ -38,7 +39,9 @@ const FoundationProvider = Foundation({
 })
 function App() {
   const user = useAtomValue(UserAtom)
-  const dataModulesLoaded = useAtomValue(DataModulesLoaded)
+  const dataModules = useAtomValue(DataModulesAtom)
+  const dataModulesHaveCredentials =
+    dataModules !== null && Object.values(dataModules).every((v) => v.provided)
   // Don't use TanStack router's authenticated routes or whatever
   // to handle auth, I already tried that.
   // This code which bypasses the auth/router context code from TanStack Router
@@ -70,7 +73,7 @@ function App() {
 
   // Feel free to experiment though.
   // - ThatXliner
-  if (!dataModulesLoaded) {
+  if (!dataModulesHaveCredentials) {
     return (
       <React.StrictMode>
         <FoundationProvider>
@@ -85,7 +88,9 @@ function App() {
     <React.StrictMode>
       <FoundationProvider>
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={router} context={{ user }} />
+          <WithLoadedModules>
+            <RouterProvider router={router} context={{ user }} />
+          </WithLoadedModules>
         </QueryClientProvider>
       </FoundationProvider>
     </React.StrictMode>
