@@ -73,20 +73,20 @@ export const pendingModules = [
               // XXX: I hope I can avoid this code dupe and prop drilling
               // TODO: Make sure this.name actually works as intended
               // (originally was "Moodle")
-              props.dispatch({ name: this.name, provided: true })
+              props.dispatch({ name: output.name, provided: true })
             }}
           />
         )
       },
       get() {
-        if (this._refresh) {
-          this._refresh = false
+        if (output._refresh) {
+          output._refresh = false
           return client.refreshCourses({})
         }
         return client.getCourses({})
       },
       refetch() {
-        this._refresh = true
+        output._refresh = true
       },
     }
     return defineModule(output)
@@ -140,14 +140,14 @@ export const pendingModules = [
       picture: status.picture,
       _refresh: false,
       async get() {
-        if (this._refresh) {
-          this._refresh = false
+        if (output._refresh) {
+          output._refresh = false
           return _handleData((await client.refreshData({})).data)
         }
         return _handleData((await client.getData({})).data)
       },
       refetch() {
-        this._refresh = true
+        output._refresh = true
       },
       login(props: {
         dispatch: React.Dispatch<{ name: "PowerSchool"; provided: boolean }>
@@ -328,39 +328,6 @@ export const pendingModules = [
           />
         )
       },
-
-      // return {
-      //   refetch: async () => {
-
-      //   },
-      //   routes: {
-      //     "/dashboard": {
-      //       title: "Dashboard",
-      //       icon: MdDashboard,
-      //       render() {
-      //         const data = useSISContext((c) => c.data)
-      //         return <Dashboard data={data} />
-      //       },
-      //     },
-      //     "/grade-calculator": {
-      //       title: "Grade Calculator",
-      //       icon: MdCalculate,
-      //       render() {
-      //         const courses = useSISContext((c) => c.data.courses)
-      //         return <GradeCalculator courses={courses} />
-      //       },
-      //     },
-      //     "/grade-trends": {
-      //       title: "Grade Trends",
-      //       icon: MdTimeline,
-      //       rootClassName: "h-full",
-      //       render() {
-      //         const courses = useSISContext((c) => c.data.courses)
-      //         return <GradeTrends courses={courses} />
-      //       },
-      //     },
-      //   },
-      // }
     }
     return defineModule(output)
   },
