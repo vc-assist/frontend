@@ -10,7 +10,11 @@ export default function WithLoadedModules({
   const dataModules = useAllModulesQuery()!
   const allLoaded = dataModules.every((query) => query.isSuccess)
   if (!allLoaded) {
-    return <LoadingPage />
+    return (
+      <main className="h-screen">
+        <LoadingPage />
+      </main>
+    )
   }
   return children
 }
