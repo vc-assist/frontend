@@ -392,8 +392,8 @@ type InferModule<T> = T extends (
   ? Module<Name, Data, Service>
   : never
 
-type ModulesFromPending<T extends readonly unknown[]> = Partial<{
+type ModulesFromPending<T extends readonly unknown[]> = {
   [K in T[number] as Lowercase<InferModule<K>["name"]>]: InferModule<K>
-}>
+}
 
 export type Modules = ModulesFromPending<typeof pendingModules>
