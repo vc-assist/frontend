@@ -8,6 +8,11 @@ export default function WithLoadedModules({
   // because of the way this hook depends on the dataModules atom
   // not being null
   const dataModules = useAllModulesQuery()!
+  const hasError = dataModules.some((query) => query.isError)
+  if (hasError) {
+    const error = dataModules.filter((query) => query.isError)[0].error
+    throw error
+  }
   const allLoaded = dataModules.every((query) => query.isSuccess)
   if (!allLoaded) {
     return (

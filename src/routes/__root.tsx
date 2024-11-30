@@ -1,6 +1,6 @@
 import { Button, Title } from "@mantine/core"
 import {
-  ErrorPage,
+  // ErrorPage,
   Favicon,
   type SafeAreaInsets,
   useLayout,
@@ -32,12 +32,12 @@ import { MdPerson, MdRefresh, MdSettings } from "react-icons/md"
 // }
 export const Route = createRootRoute({
   component: RootComponent,
-  errorComponent: (props) => (
-    <ErrorPage
-      message={props.error.message}
-      description={props.info?.componentStack}
-    />
-  ),
+  // errorComponent: (props) => (
+  //   <ErrorPage
+  //     message={props.error.message}
+  //     description={props.info?.componentStack}
+  //   />
+  // ),
 })
 
 const PROFILE_ROUTE_PATH = "/profile"

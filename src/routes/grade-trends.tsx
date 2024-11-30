@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { ErrorPage, createDefaultMeter } from "@vcassist/ui"
+import { createDefaultMeter } from "@vcassist/ui"
 
 import { LoadingPage } from "@/src/lib/components/LoadingPage"
 import { usePowerSchoolQuery } from "@/src/lib/queries"
@@ -13,12 +13,12 @@ export const Route = createFileRoute("/grade-trends")({
 const meter = createDefaultMeter("routes.grades")
 const viewPage = meter.createCounter("view")
 function GradeTrends() {
-  const powerschoolQuery = usePowerSchoolQuery()!
+  const powerschoolQuery = usePowerSchoolQuery()
   useEffect(() => {
     viewPage.add(1)
   }, [])
   if (powerschoolQuery.isLoading) return <LoadingPage />
-  if (powerschoolQuery.isError) return <ErrorPage />
+  if (powerschoolQuery.isError) throw powerschoolQuery.error
 
   const { courses } = powerschoolQuery.data!
 

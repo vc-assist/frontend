@@ -7,8 +7,9 @@ export function useAllModulesQuery() {
   const { token } = useAtomValue(UserAtom)
   const dataModules = useAtomValue(DataModulesAtom)
   // Should never happen
-  if (!dataModules?.powerschool) return null
-  if (!dataModules?.moodle) return null
+  if (!dataModules?.powerschool)
+    throw new Error("PowerSchool module not loaded")
+  if (!dataModules?.moodle) throw new Error("Moodle module not loaded")
   return useQueries({
     queries: [
       {
@@ -23,8 +24,8 @@ export function useAllModulesQuery() {
   })
 }
 export function usePowerSchoolQuery() {
-  return useAllModulesQuery()![0]
+  return useAllModulesQuery()[0]
 }
 export function useMoodleQuery() {
-  return useAllModulesQuery()![1]
+  return useAllModulesQuery()[1]
 }

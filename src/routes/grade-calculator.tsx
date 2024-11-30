@@ -9,7 +9,7 @@ import { fnSpan } from "@/src/lib/internal"
 import { Code, Select, Text, Title } from "@mantine/core"
 import { Tabs } from "@mantine/core"
 import { useForm } from "@mantine/form"
-import { ErrorPage, Panel, useLayout, useSpan } from "@vcassist/ui"
+import { Panel, useLayout, useSpan } from "@vcassist/ui"
 import { useState } from "react"
 import { useMemo } from "react"
 import { MdInfo, MdSportsScore, MdTimeline } from "react-icons/md"
@@ -39,7 +39,7 @@ function GradeCalculator() {
     },
   })
 
-  const powerschoolQuery = usePowerSchoolQuery()!
+  const powerschoolQuery = usePowerSchoolQuery()
 
   const courses = useMemo(() => {
     if (!powerschoolQuery.data) return []
@@ -62,7 +62,7 @@ function GradeCalculator() {
   }, [course])
 
   if (powerschoolQuery.isLoading) return <LoadingPage />
-  if (powerschoolQuery.isError) return <ErrorPage />
+  if (powerschoolQuery.isError) throw powerschoolQuery.error
 
   return (
     <div

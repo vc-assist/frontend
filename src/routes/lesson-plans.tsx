@@ -1,6 +1,5 @@
 import { ChapterDisplay } from "@/src/lib/components/ChapterDisplay"
 import { LoadingPage } from "@/src/lib/components/LoadingPage"
-import { ErrorPage } from "@/ui"
 import type {
   Chapter,
   Course,
@@ -16,9 +15,9 @@ export const Route = createFileRoute("/lesson-plans")({
 })
 
 function HomeComponent() {
-  const moodleQuery = useMoodleQuery()!
+  const moodleQuery = useMoodleQuery()
   if (moodleQuery.isLoading) return <LoadingPage />
-  if (moodleQuery.isError) return <ErrorPage />
+  if (moodleQuery.isError) throw moodleQuery.error
   const { courses } = moodleQuery.data!
 
   const traces: {

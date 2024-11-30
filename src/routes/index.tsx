@@ -11,7 +11,7 @@ import { LoadingPage } from "@/src/lib/components/LoadingPage"
 import Schedule from "@/src/lib/components/Schedule"
 import { dateFromUnix } from "@/src/lib/date"
 import { settings } from "@/src/lib/stores"
-import { ErrorPage, WidgetHiddenPanel, createDefaultMeter } from "@vcassist/ui"
+import { WidgetHiddenPanel, createDefaultMeter } from "@vcassist/ui"
 import { useAtomValue } from "jotai"
 import { useEffect } from "react"
 import { usePowerSchoolQuery } from "../lib/queries"
@@ -29,9 +29,9 @@ function Dashboard() {
     settings.dashboard.disableGradeVisualizers,
   )
 
-  const powerschoolQuery = usePowerSchoolQuery()!
+  const powerschoolQuery = usePowerSchoolQuery()
   if (powerschoolQuery.isLoading) return <LoadingPage />
-  if (powerschoolQuery.isError) return <ErrorPage />
+  if (powerschoolQuery.isError) throw powerschoolQuery.error
 
   const data = powerschoolQuery.data!
 

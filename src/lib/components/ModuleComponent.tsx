@@ -48,6 +48,7 @@ export function ModuleComponent(props: { user: LoggedInUser }) {
     )
   }
   if (moduleCredentialsQuery.isError) {
+    // TODO: Log error
     return (
       <ErrorPage
         message="Failed to get credential status."
