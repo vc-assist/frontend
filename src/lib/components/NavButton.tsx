@@ -10,7 +10,7 @@ type NavButtonProps = {
 export function NavButton(props: NavButtonProps) {
   const className = twMerge(
     "flex gap-2 rounded-xl transition-all p-3 min-[400px]:p-4",
-    "focus:outline focus:outline-2 focus:outline-dimmed bg-bg",
+    "focus:outline focus:outline-2 focus:outline-dimmed bg-bg no-underline",
     props.routeSelected
       ? "bg-bg-dimmed text-dimmed hover:text-dimmed fill-primary"
       : "text-dimmed fill-dimmed hover:cursor-pointer hover:text-primary",
