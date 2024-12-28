@@ -17,6 +17,8 @@ import {
   Outlet,
   createRootRoute,
   useLocation,
+  rootRouteId, // <<<< use this token!
+  useMatch,
 } from "@tanstack/react-router"
 import * as React from "react"
 import type { IconType } from "react-icons"
@@ -46,6 +48,7 @@ function RootComponent() {
   const mobile = useLayout() === "mobile"
   const routePath = useLocation().pathname as keyof FileRoutesByPath
   const profile = useAtomValue(UserAtom).profile!
+  const match = useMatch({ from: rootRouteId })
   // const { rootClassName } = useRouteContext({ from: routePath });
   const navbarItems: {
     title: string
@@ -135,9 +138,10 @@ function RootComponent() {
       <MdSettings className="size-6" />
     </Link>
   )
+  console.log(match?.staticData?.className)
   const component = (
     <motion.div
-      className={twMerge("w-full h-fit mb-auto")}
+      className={twMerge("w-full h-fit mb-auto", match?.staticData?.className)}
       initial={{ y: 20, opacity: 0.5 }}
       animate={{ y: 0, opacity: 1 }}
     >

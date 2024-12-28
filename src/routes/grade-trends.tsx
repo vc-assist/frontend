@@ -8,8 +8,16 @@ import GradeTrendsComponent from "../lib/GradeTrends"
 
 export const Route = createFileRoute("/grade-trends")({
   component: GradeTrends,
+  staticData: {
+    className: "h-full",
+  },
   // context: { rootClassName: "arsta" },
 })
+declare module "@tanstack/react-router" {
+  interface StaticDataRouteOption {
+    className?: string
+  }
+}
 const meter = createDefaultMeter("routes.grades")
 const viewPage = meter.createCounter("view")
 function GradeTrends() {
