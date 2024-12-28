@@ -137,8 +137,7 @@ function RootComponent() {
   )
   const component = (
     <motion.div
-      // className={twMerge("w-full h-fit mb-auto")}
-      className={twMerge("w-full mb-auto h-full")}
+      className={twMerge("w-full h-fit mb-auto")}
       initial={{ y: 20, opacity: 0.5 }}
       animate={{ y: 0, opacity: 1 }}
     >
@@ -269,7 +268,7 @@ function MobileLayout(props: {
       >
         <AnimatePresence>{component}</AnimatePresence>
         {/* Routes */}
-        <div className="flex flex-col gap-2 sticky bottom-0 z-50">
+        <div className="flex flex-col gap-2 z-50 sticky bottom-0">
           {props.aboveNavbar}
           <div className="flex gap-4">{navbar}</div>
         </div>
