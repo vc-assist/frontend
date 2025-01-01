@@ -18,7 +18,6 @@ import {
   createRootRoute,
   useLocation,
   useMatch,
-  useMatches,
 } from "@tanstack/react-router"
 import * as React from "react"
 import type { IconType } from "react-icons"
