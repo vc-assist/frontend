@@ -47,7 +47,7 @@ function RootComponent() {
   const mobile = useLayout() === "mobile"
   const routePath = useLocation().pathname as keyof FileRoutesByPath
   const profile = useAtomValue(UserAtom).profile!
-  const match = useMatch({ from: routePath })
+  const match = useMatch({ from: routePath, shouldThrow: false })
 
   const navbarItems: {
     title: string
