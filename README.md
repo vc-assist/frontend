@@ -1,28 +1,27 @@
 # Frontend
 
 > The frontend for VC Assist.
-
+>
 ## Project structure
 
-- `ui/` - a submodule containing the ui component library
+- `ui/` - a Git submodule containing the ui component library
 - `backend/` - a submodule containing the backend repository (because the services' gRPC types are stored there)
-- `lib/` - general shared internal libraries
 - `src/` - main code
-   - `app/` - WIP
-   - `components/` - shared internal components
-   - `singletons.ts` - singletons in general
-   - `providers.ts` - zustand stores
-   - `main.tsx` - the ui entrypoint, sets up providers, `@vcassist/ui` and other foundational things
+  - `lib/` - general shared internal logic libraries
+    - `lib/components` - shouldn't really exist as all UI code should be in the ui component library repo
+  - `routes/` - TanStack Router routes
+  - `main.tsx` - the main app entrance called by `index.html`
+  - `routeTree.gen.ts` - generated routes file by TanStack router. If something gliches out and this file isn't being regenerated, you can regenerate it using `pnpm generate-routes`
 
 ## Commands
 
 - `git submodule update --remote` - updates all submodules
-- `pnpm dev` - starts a hot-reload dev server using vite.
-- `pnpm storybook` - runs storybook.
+- `pnpm dev` - starts a hot-reload dev server using Vite.
+<!-- - `pnpm storybook` - runs storybook. -->
 - `pnpm lint` - lints the entire frontend using biome and tsc.
 - `pnpm build` - transpiles & bundles the frontend into the `dist/` directory.
-- `pnpm preview` - starts a dev server using the result of a `pnpm run build` (useful if there are differences between build and dev because of vite).
-- `pnpm syncpack fix-mismatches` - makes all dependencies an exact version, you should run `pnpm install` afterwards
+
+To develop on the code (and get into a productive REPL or edit->preview cycle), you run `mprocs -c ./mprocs/dev_vcs.yaml` in the [quick-start](https://github.com/vc-assist/quick-start) repo (after you had set up the [backend](https://github.com/vc-assist/backend) as well).
 
 ## Implementing the Native API
 

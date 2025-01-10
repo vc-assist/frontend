@@ -1,0 +1,34 @@
+import { createFileRoute } from "@tanstack/react-router"
+import { createDefaultMeter } from "@vcassist/ui"
+
+import { LoadingPage } from "@/src/lib/components/LoadingPage"
+import { usePowerSchoolQuery } from "@/src/lib/queries"
+import { useEffect } from "react"
+import GradeTrendsComponent from "../lib/GradeTrends"
+
+export const Route = createFileRoute("/grade-trends")({
+  component: GradeTrends,
+  staticData: {
+    className: "h-full",
+  },
+  // context: { rootClassName: "arsta" },
+})
+declare module "@tanstack/react-router" {
+  interface StaticDataRouteOption {
+    className?: string
+  }
+}
+const meter = createDefaultMeter("routes.grades")
+const viewPage = meter.createCounter("view")
+function GradeTrends() {
+  const powerschoolQuery = usePowerSchoolQuery()
+  useEffect(() => {
+    viewPage.add(1)
+  }, [])
+  if (powerschoolQuery.isLoading) return <LoadingPage />
+  if (powerschoolQuery.isError) throw powerschoolQuery.error
+
+  const { courses } = powerschoolQuery.data!
+
+  return <GradeTrendsComponent courses={courses} />
+}
