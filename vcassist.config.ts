@@ -42,7 +42,7 @@ export const routes: Partial<Record<keyof FileRoutesByPath, Route>> = {
     title: "Grade Calculator",
     icon: MdCalculate,
   },
-  "/grade-trends/": {
+  "/grade-trends": {
     title: "Grade Trends",
     icon: MdTimeline,
     // rootClassName: "h-full",
