@@ -1,3 +1,5 @@
+//this file puts everything together in the frotend 
+//authored by Shengzhi Hu and Justin Shi CO 2025
 import { Button, Title } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import { useMutation } from "@tanstack/react-query"
@@ -12,71 +14,39 @@ import {
 } from "@vcassist/ui"
 import { AnimatePresence, motion } from "framer-motion"
 import type { IconType } from "react-icons"
+
+import { NavButton } from "@/src/lib/components/NavButton"
+import { routes } from "@/vcassist.config"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useAtomValue } from "jotai"
 import { MdPerson, MdRefresh, MdSettings } from "react-icons/md"
-import { twMerge } from "tailwind-merge"
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { Moodle, Powerschool } from "../lib/modules"
+import { useState } from "react"
+// interface RootContext {
+// 	rootClassName?: string;
+// }
+export const Route = createRootRoute({
+  component: RootComponent,
+  // errorComponent: (props) => (
+  //   <ErrorPage
+  //     message={props.error.message}
+  //     description={props.info?.componentStack}
+  //   />
+  // ),
+})
 
-export type Route =
-  | {
-    title: string
-    icon: IconType
-    rootClassName?: string
-    render(): JSX.Element
-  }
-  | {
-    title: string
-    noNavbar: true
-    rootClassName?: string
-    render(): JSX.Element
-  }
 
-export type RouteContext = {
-  currentRoute: string
-  params?: unknown
-  push(path: string, params?: unknown): void
-}
 
-export const useRouteContext = create(
-  persist<RouteContext>(
-    (set): RouteContext => ({
-      currentRoute: "",
-      params: undefined,
-      push: (path, params) => {
-        set({ currentRoute: path, params })
-      },
-    }),
-    {
-      name: "route",
-      partialize(state) {
-        return { currentRoute: state.currentRoute } as RouteContext
-      },
-    },
-  ),
-)
+const allPowerschoolPaths = ["/grades-calculator", "/grades-trends", "/"]
+const allMoodlePaths = ["/lesson-plans"]
 
-const PROFILE_ROUTE_PATH = "/__profile__"
+const PROFILE_ROUTE_PATH = "/profile"
 
-export function Router(props: {
-  routes: Record<string, Route>
-  profileRoute: {
-    rootClassName?: string
-    render(): JSX.Element
-  }
-  defaultRoute: string
-  profile: UserProfile
-  onRefresh(route: string): Promise<void>
-}) {
-  const safeArea = useSafeArea((area) => area.insets)
+function BoilerplateComponents(props: {routePath : string}){
+
+  const match = useMatch({ from: props.routePath }) //son of a bitch
   const mobile = useLayout() === "mobile"
-
-  const routePath = useRouteContext((ctx) => {
-    if (!props.routes[ctx.currentRoute] && ctx.currentRoute !== PROFILE_ROUTE_PATH) {
-      return props.defaultRoute
-    }
-    return ctx.currentRoute
-  })
-  const push = useRouteContext((ctx) => ctx.push)
+  const safeArea = useSafeArea((area) => area.insets)
 
   const navbarItems: {
     title: string
@@ -94,127 +64,179 @@ export function Router(props: {
     })
   }
 
-  const route =
-    routePath === PROFILE_ROUTE_PATH
-      ? props.profileRoute
-      : props.routes[routePath]
+  const queryClient = useQueryClient()
 
-  const component = (
-    <RouteWrapper
-      key={routePath}
-      className={route.rootClassName}
-      render={route.render}
-    />
-  )
-
-  const refreshMutation = useMutation({
-    mutationFn: props.onRefresh,
-    onError(err) {
-      notifications.show({
-        title: "Failed to refresh data.",
-        message: err.message,
-        color: "red",
-        autoClose: 10000,
-      })
-    },
-    onSuccess() {
-      notifications.show({
-        message: "Successfully refreshed data.",
-        color: "green",
-        autoClose: 3000,
-      })
-    },
-  })
-
+  //worry about this later, case into SIS and Moodle
   const RefreshButton = (props: { className?: string }) => (
     <Button
       className={props.className}
       variant="subtle"
       leftSection={<MdRefresh className="size-5" />}
-      loading={refreshMutation.isPending}
+      loading={false}
       onClick={() => {
-        refreshMutation.mutate(routePath)
+        // TODO: only refresh the current module
+     
       }}
     >
       Refresh Data
     </Button>
   )
 
-  if (mobile) {
-    return (
-      <MobileLayout
-        safeArea={safeArea}
-        component={component}
-        navbar={
-          <NavbarList
-            route={routePath}
-            routes={[
-              ...navbarItems,
-              {
-                title: "Profile",
-                icon: MdPerson,
-                route: PROFILE_ROUTE_PATH,
-              },
-            ]}
-            layout="mobile"
-            onNavigate={push}
-          />
-        }
-        aboveNavbar={
-          routePath !== PROFILE_ROUTE_PATH ? (
-            <div className="flex">
-              <RefreshButton className="m-auto rounded-xl bg-bg shadow-xl border border-solid border-dimmed-subtle" />
-            </div>
-          ) : undefined
-        }
-      />
-    )
-  }
+  //why bryan why 
+  const TanStackRouterDevtools = import.meta.env.PROD
+    ? () => null // Render nothing in production
+    : React.lazy(() =>
+        // Lazy load in development
+        import("@tanstack/router-devtools").then((res) => ({
+          default: res.TanStackRouterDevtools,
+          // For Embedded Mode
+          // default: res.TanStackRouterDevtoolsPanel
+        })),
+      )
 
   const settingsButton = (
-    <button
+    <Link
+      to={PROFILE_ROUTE_PATH}
       type="button"
       className={twMerge(
         "p-1 text-dimmed hover:text-primary transition-all rounded-lg",
-        routePath === PROFILE_ROUTE_PATH
+        props.routePath === PROFILE_ROUTE_PATH
           ? "hover:text-dimmed hover:cursor-default bg-bg-dimmed"
           : "",
       )}
-      disabled={routePath === PROFILE_ROUTE_PATH}
+      disabled={props.routePath === PROFILE_ROUTE_PATH}
       color="gray"
-      onClick={() => push(PROFILE_ROUTE_PATH)}
     >
       <MdSettings className="size-6" />
-    </button>
+    </Link>
+  )
+  const component = (
+    <motion.div
+      className={twMerge("w-full h-fit mb-auto", match?.staticData?.className)}
+      initial={{ y: 20, opacity: 0.5 }}
+      animate={{ y: 0, opacity: 1 }}
+    >
+      <Outlet />
+    </motion.div>
   )
 
   return (
-    <DesktopLayout
-      profile={props.profile}
-      safeArea={safeArea}
-      component={component}
-      navbar={
-        <NavbarList
-          route={routePath}
-          layout="desktop"
-          routes={navbarItems}
-          onNavigate={push}
+    <main className="h-screen">
+      {mobile ? (
+        <MobileLayout
+          safeArea={safeArea}
+          component={component}
+          navbar={
+            <NavbarList
+              route={props.routePath}
+              routes={[
+                ...navbarItems,
+                {
+                  title: "Profile",
+                  icon: MdPerson,
+                  route: PROFILE_ROUTE_PATH,
+                },
+              ]}
+              layout="mobile"
+            />
+          }
+          aboveNavbar={
+            props.routePath !== PROFILE_ROUTE_PATH ? (
+              <div className="flex">
+                <RefreshButton className="m-auto rounded-xl bg-bg shadow-xl border border-solid border-dimmed-subtle" />
+              </div>
+            ) : undefined
+          }
         />
-      }
-      belowProfile={
-        <div className="flex gap-3 justify-between">
-          {routePath !== PROFILE_ROUTE_PATH ? <RefreshButton /> : <div />}
-          {settingsButton}
-        </div>
-      }
-    />
-  )
+      ) : (
+        <DesktopLayout
+          profile={{email: "bobjones1234@gmail.com", name: "mynamejeff", picture: undefined}}
+          safeArea={safeArea}
+          component={component}
+          navbar={
+            <NavbarList
+              route={props.routePath}
+              layout="desktop"
+              routes={navbarItems}
+            />
+          }
+          belowProfile={
+            <div className="flex gap-3 justify-between">
+              {props.routePath !== PROFILE_ROUTE_PATH ? <RefreshButton /> : <div />}
+              {settingsButton}
+            </div>
+          }
+        />
+      )}
+      <React.Suspense>
+        <TanStackRouterDevtools position="bottom-right" />
+      </React.Suspense>
+    </main>
+  ) 
 }
+function RootComponent() {
+  const routePath = useLocation().pathname as string
+  //const profile = useAtomValue(UserAtom).profile!
+  const [powerschoolState, setPowerschoolState] = useState(false)
+  const [moodleState, setMoodleState] = useState(false);
 
-function RouteWrapper(props: {
-  className?: string
-  render: () => JSX.Element
+
+
+  if(allPowerschoolPaths.includes(routePath) ){ //powerschool route
+    if(Powerschool.isLoggedIn()){
+      return (
+        
+      )
+    } else{
+      return <Powerschool.render onDone = {() => {
+        setPowerschoolState(true)
+      }}>
+      </Powerschool.render>
+    }
+  }
+
+  if(allMoodlePaths.includes(routePath)){
+    if(Moodle.isLoggedIn()){
+      return(
+
+      )
+    } else {
+      return <Moodle.render onDone = {() => {
+        setMoodleState(true)
+      }}></Moodle.render>
+    }
+  }
+  
+}
+export type NavbarRoute = {
+  title: string
+  icon: IconType
+  route: string
+}
+function NavbarList(props: {
+  route: string
+  routes: NavbarRoute[]
+  layout: "mobile" | "desktop"
 }) {
+  if (props.layout === "mobile") {
+    return (
+      <Panel className="m-auto overflow-x-auto" noPadding>
+        <div className="max-w-min flex flex-1 p-2">
+          {props.routes.map(({ route, icon }) => {
+            return (
+              <NavButton
+                key={route}
+                routeSelected={props.route === route}
+                icon={icon}
+                route={route}
+              />
+            )
+          })}
+        </div>
+      </Panel>
+    )
+  }
+
   return (
     <motion.div
       className={twMerge("w-full h-fit mb-auto", props.className)}

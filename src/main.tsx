@@ -2,62 +2,86 @@ import "@mantine/core/styles.css"
 import "@mantine/notifications/styles.css"
 import "@mantine/carousel/styles.css"
 import "@vcassist/ui/styles.css"
+import "./main.css"
+import vcassistConfig from "@/vcassist.config"
+import { Foundation } from "@vcassist/ui"
+import { useAtomValue } from "jotai"
+import LoginComponent from "./lib/components/LoginComponent"
+import { ModuleComponent } from "./lib/components/ModuleComponent"
+import WithLoadedModules from "./lib/components/WithLoadedModules"
+import {Moodle, Powerschool } from "./lib/modules"
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { Foundation, useSafeArea } from "@vcassist/ui/foundation"
-import { StrictMode } from "react"
-import ReactDOM from "react-dom/client"
-import { App, type AppModule } from "./app/App"
-import { sisModule } from "./app/sis/app"
-import { vcmoodleModule } from "./app/vcmoodle/app"
-import { config, native } from "./singletons"
-
-window.open = (url) => {
-  if (!url) {
-    return window
-  }
-  native.launchUrl(url?.toString())
-  return window
-}
-
-await native.onSafeAreaChange((insets) => {
-  useSafeArea.setState({ insets })
+// Set up a Router instance
+const router = createRouter({
+  routeTree,
+  defaultPreload: "intent",
+  context: {},
 })
 
+// Register things for typesafety
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router
+  }
+}
+
+const queryClient = new QueryClient()
 const FoundationProvider = Foundation({
   telemetry: {
     serviceName: "frontend",
-    otlp: {
-      traces: {
-        httpEndpoint: config.endpoints.traces.http_endpoint,
-        headers: config.endpoints.traces.headers,
-      },
-      metrics: {
-        httpEndpoint: config.endpoints.metrics.http_endpoint,
-        headers: config.endpoints.metrics.headers,
-      },
-    },
+    otlp: vcassistConfig.endpoints,
   },
 })
 
-const queryClient = new QueryClient()
+const
+function App() {
+  // const user = useAtomValue(UserAtom)
+  if(!profi)
+  // Don't use TanStack router's authenticated routes or whatever
+  // to handle auth, I already tried that.
+  // This code which bypasses the auth/router context code from TanStack Router
+  // is SIGNIFICANTLY simpler and easier to understand.
+  // - ThatXliner
+  // if (!user?.token) {
+  //   return (
+  //     <React.StrictMode>
+  //       <FoundationProvider>
+  //         <QueryClientProvider client={queryClient}>
+  //           <LoginComponent />
+  //         </QueryClientProvider>
+  //       </FoundationProvider>
+  //     </React.StrictMode>
+  //   )
+  // }
+  // While yes I could've made the `index.tsx` just have whatever
+  // is in the ModuleComponent and then return when authenticated a <Navigate>
+  // to say `_app/dashboard` (_app means it won't be part of
+  // the actual URL and is only separated into a folder for
+  // developer's sake), I decided to keep it like this because
+  // 1. this is less code
+  // 2. I had no idea
+  // https://tanstack.com/router/latest/docs/framework/react/guide/navigation#navigate-component
+  // existed when I first wrote this code.
+  // 3. There is currently a useQuery call in the ModuleComponent and
+  // I don't know how to combine it in the same file where the
+  // QueryClientProvider is. I'm not even sure if it's possible.
 
-const root = document.getElementById("root")
-if (!root) {
-  throw new Error("could not find root element.")
-}
+  // Feel free to experiment though.
+  // - ThatXliner
+  // if (!dataModulesHaveCredentials) {
+  //   return (
+  //     <React.StrictMode>
+  //       <FoundationProvider>
+  //         <QueryClientProvider client={queryClient}>
+  //           <ModuleComponent user={user} />
+  //         </QueryClientProvider>
+  //       </FoundationProvider>
+  //     </React.StrictMode>
+  //   )
+  // }
 
-const modules: AppModule[] = []
-if (config.enabled_modules.sis) {
-  modules.push(sisModule)
-}
-if (config.enabled_modules.vcmoodle) {
-  modules.push(vcmoodleModule)
-}
-
-ReactDOM.createRoot(root).render(
-  <StrictMode>
-    <QueryClientProvider client={queryClient}>
+  return (
+    <React.StrictMode>
       <FoundationProvider>
         <App modules={modules} />
       </FoundationProvider>

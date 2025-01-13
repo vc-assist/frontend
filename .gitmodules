@@ -1,5 +1,6 @@
 [submodule "backend"]
 	path = backend
+	branch = 2025-refactor
 	url = https://github.com/vc-assist/backend.git
 [submodule "ui"]
 	path = ui
