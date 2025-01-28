@@ -3,14 +3,19 @@ import "@mantine/notifications/styles.css"
 import "@mantine/carousel/styles.css"
 import "@vcassist/ui/styles.css"
 import "./main.css"
-import vcassistConfig from "@/vcassist.config"
-import { Foundation } from "@vcassist/ui"
-import { useAtomValue } from "jotai"
-import LoginComponent from "./lib/components/LoginComponent"
-import { ModuleComponent } from "./lib/components/ModuleComponent"
-import WithLoadedModules from "./lib/components/WithLoadedModules"
+import { RouterProvider, createRouter } from "@tanstack/react-router"
+import { routeTree } from "./routeTree.gen"
+import { Foundation} from "@vcassist/ui"
 import {Moodle, Powerschool } from "./lib/modules"
+import React, { useState } from "react"
+import {config} from "./singletons"
 
+const FoundationProvider = Foundation({
+  telemetry: {
+    serviceName: "frontend",
+    otlp: config.endpoints,
+  },
+})
 // Set up a Router instance
 const router = createRouter({
   routeTree,
@@ -25,19 +30,25 @@ declare module "@tanstack/react-router" {
   }
 }
 
-const queryClient = new QueryClient()
-const FoundationProvider = Foundation({
-  telemetry: {
-    serviceName: "frontend",
-    otlp: vcassistConfig.endpoints,
-  },
-})
 
-const
 function App() {
-  // const user = useAtomValue(UserAtom)
-  if(!profi)
-  // Don't use TanStack router's authenticated routes or whatever
+    const [fullMoodle, setFullMoodle] = useState<boolean>(Moodle.isLoggedIn());
+    const [fullPowerschool, setFullPowerschool] = useState<boolean>(Powerschool.isLoggedIn());
+
+    return (
+      <React.StrictMode>
+        <FoundationProvider>
+          <div>
+            <Moodle.render onDone = {() => setFullMoodle(true)}/>
+            <Powerschool.render onDone = {() => setFullPowerschool(true)}/>
+          </div>
+        </FoundationProvider>
+      </React.StrictMode>
+    )
+
+    
+  
+  // Don't use TanStack router's authenticated routes or whatever what the fuck 
   // to handle auth, I already tried that.
   // This code which bypasses the auth/router context code from TanStack Router
   // is SIGNIFICANTLY simpler and easier to understand.
@@ -80,11 +91,12 @@ function App() {
   //   )
   // }
 
-  return (
-    <React.StrictMode>
-      <FoundationProvider>
-        <App modules={modules} />
-      </FoundationProvider>
-    </QueryClientProvider>
-  </StrictMode>,
-)
+//   return (
+//     <React.StrictMode>
+//       <FoundationProvider>
+//         <App modules={modules} />
+//       </FoundationProvider>
+//     </QueryClientProvider>
+//   </StrictMode>,
+// )
+}

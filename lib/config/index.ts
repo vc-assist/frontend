@@ -8,11 +8,11 @@ export const configSchema = z.object({
   environment: z.enum(["dev", "prod"] as const),
   endpoints: z.object({
     traces: z.object({
-      http_endpoint: z.string(),
+      httpEndpoint: z.string(),
       headers: z.record(z.string(), z.string()).optional(),
     }),
     metrics: z.object({
-      http_endpoint: z.string(),
+      httpEndpoint: z.string(),
       headers: z.record(z.string(), z.string()).optional(),
     }),
     vcassist_backend: z.string(),
