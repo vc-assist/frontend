@@ -23,11 +23,12 @@ import * as React from "react"
 import type { IconType } from "react-icons"
 
 import { NavButton } from "@/src/lib/components/NavButton"
-import { DataModulesAtom, UserAtom } from "@/src/lib/stores"
 import { routes } from "@/vcassist.config"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAtomValue } from "jotai"
 import { MdPerson, MdRefresh, MdSettings } from "react-icons/md"
+import { useState } from "react"
+import { Moodle, Powerschool } from "../lib/modules"
 // interface RootContext {
 // 	rootClassName?: string;
 // }
@@ -41,12 +42,16 @@ export const Route = createRootRoute({
   // ),
 })
 
+
+//the file where layouts are determined
+//make indepedent layouts for powerschool and moodle, integrate with the side navbar
 const PROFILE_ROUTE_PATH = "/profile"
 function RootComponent() {
+  const [fullMoodle, setFullMoodle] = useState<boolean>(Moodle.isLoggedIn());
+  const [fullPowerschool, setFullPowerschool] = useState<boolean>(Powerschool.isLoggedIn());
   const safeArea = useSafeArea((area) => area.insets)
   const mobile = useLayout() === "mobile"
   const routePath = useLocation().pathname as keyof FileRoutesByPath
-  const profile = useAtomValue(UserAtom).profile!
   const match = useMatch({ from: routePath, shouldThrow: false })
 
   const navbarItems: {
@@ -66,48 +71,8 @@ function RootComponent() {
     })
   }
 
-  const dataModules = useAtomValue(DataModulesAtom)
-  const queryClient = useQueryClient()
-  const refreshMutation = useMutation({
-    mutationFn: async () => {
-      return Object.entries(dataModules ?? {}).map(([name, module]) => {
-        module.refetch()
-        return name
-      })
-    },
-    onError(err) {
-      notifications.show({
-        title: "Failed to refresh data.",
-        message: err.message,
-        color: "red",
-        autoClose: 10000,
-      })
-    },
-    async onSuccess(data) {
-      await Promise.all(
-        data.map((name) => queryClient.invalidateQueries({ queryKey: [name] })),
-      )
-      notifications.show({
-        message: "Successfully refreshed data.",
-        color: "green",
-        autoClose: 3000,
-      })
-    },
-  })
+  const RenderMooder = (
 
-  const RefreshButton = (props: { className?: string }) => (
-    <Button
-      className={props.className}
-      variant="subtle"
-      leftSection={<MdRefresh className="size-5" />}
-      loading={refreshMutation.isPending}
-      onClick={() => {
-        // TODO: only refresh the current module
-        refreshMutation.mutate()
-      }}
-    >
-      Refresh Data
-    </Button>
   )
 
   const TanStackRouterDevtools = import.meta.env.PROD
@@ -137,6 +102,7 @@ function RootComponent() {
       <MdSettings className="size-6" />
     </Link>
   )
+
   const component = (
     <motion.div
       className={twMerge("w-full h-fit mb-auto", match?.staticData?.className)}
@@ -294,7 +260,9 @@ function DesktopLayout(props: {
   belowProfile: React.ReactNode
 }) {
   const { safeArea, component, navbar, profile, belowProfile } = props
-
+  const [fullMoodle, setFullMoodle] = useState<boolean>(Moodle.isLoggedIn());
+  const [fullPowerschool, setFullPowerschool] = useState<boolean>(Powerschool.isLoggedIn());
+  //add conditional render isLoggedIn - bool statement, render - whatever if logged in ({component})
   return (
     <div
       className="flex h-full"
@@ -340,9 +308,4 @@ function DesktopLayout(props: {
               {belowProfile}
             </Panel>
           </div>
-        </div>
-        <AnimatePresence>{component}</AnimatePresence>
-      </div>
-    </div>
-  )
-}
+        </div>component
