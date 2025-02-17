@@ -23,12 +23,12 @@ import * as React from "react"
 import type { IconType } from "react-icons"
 
 import { NavButton } from "@/src/lib/components/NavButton"
+import { DataModulesAtom, UserAtom } from "@/src/lib/stores"
 import { routes } from "@/vcassist.config"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAtomValue } from "jotai"
 import { MdPerson, MdRefresh, MdSettings } from "react-icons/md"
-import { useState } from "react"
-import { Moodle, Powerschool } from "../lib/modules"
+import { Moodle, Powerschool } from "@/src/lib/modules"
 // interface RootContext {
 // 	rootClassName?: string;
 // }
@@ -41,17 +41,13 @@ export const Route = createRootRoute({
   //   />
   // ),
 })
-
-
-//the file where layouts are determined
-//make indepedent layouts for powerschool and moodle, integrate with the side navbar
+//import both modules, add functions to implement each individual component, check if logged in, redner respectivly, add full rending when logged in is true
 const PROFILE_ROUTE_PATH = "/profile"
 function RootComponent() {
-  const [fullMoodle, setFullMoodle] = useState<boolean>(Moodle.isLoggedIn());
-  const [fullPowerschool, setFullPowerschool] = useState<boolean>(Powerschool.isLoggedIn());
   const safeArea = useSafeArea((area) => area.insets)
   const mobile = useLayout() === "mobile"
   const routePath = useLocation().pathname as keyof FileRoutesByPath
+  const profile = useAtomValue(UserAtom).profile!
   const match = useMatch({ from: routePath, shouldThrow: false })
 
   const navbarItems: {
@@ -71,9 +67,8 @@ function RootComponent() {
     })
   }
 
-  const RenderMooder = (
+  
 
-  )
 
   const TanStackRouterDevtools = import.meta.env.PROD
     ? () => null // Render nothing in production
@@ -102,7 +97,6 @@ function RootComponent() {
       <MdSettings className="size-6" />
     </Link>
   )
-
   const component = (
     <motion.div
       className={twMerge("w-full h-fit mb-auto", match?.staticData?.className)}
@@ -136,7 +130,7 @@ function RootComponent() {
           aboveNavbar={
             routePath !== PROFILE_ROUTE_PATH ? (
               <div className="flex">
-                <RefreshButton className="m-auto rounded-xl bg-bg shadow-xl border border-solid border-dimmed-subtle" />
+                
               </div>
             ) : undefined
           }
@@ -171,6 +165,10 @@ export type NavbarRoute = {
   title: string
   icon: IconType
   route: keyof FileRoutesByPath
+}
+
+function PowerschoolModule(){
+  
 }
 function NavbarList(props: {
   route: keyof FileRoutesByPath
@@ -260,9 +258,7 @@ function DesktopLayout(props: {
   belowProfile: React.ReactNode
 }) {
   const { safeArea, component, navbar, profile, belowProfile } = props
-  const [fullMoodle, setFullMoodle] = useState<boolean>(Moodle.isLoggedIn());
-  const [fullPowerschool, setFullPowerschool] = useState<boolean>(Powerschool.isLoggedIn());
-  //add conditional render isLoggedIn - bool statement, render - whatever if logged in ({component})
+
   return (
     <div
       className="flex h-full"
@@ -308,4 +304,9 @@ function DesktopLayout(props: {
               {belowProfile}
             </Panel>
           </div>
-        </div>component
+        </div>
+        <AnimatePresence>{component}</AnimatePresence>
+      </div>
+    </div>
+  )
+}

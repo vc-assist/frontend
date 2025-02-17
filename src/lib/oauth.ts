@@ -1,3 +1,4 @@
+import { SafeAreaInsets } from "@/ui"
 import type { OAuthFlow } from "@backend.keychain/auth_flow_pb"
 import { z } from "zod"
 
@@ -63,3 +64,14 @@ export const openIdTokenResponse = z.object({
   scope: z.string(),
   token_type: z.string(),
 })
+
+
+export interface NativeAPI {
+    launchUrl(): Promise<void> 
+    userAgent(): Promise<string> 
+    openWebview(loginUrl : string, userAgent : string): Promise<void> 
+    closeWebview(): Promise<void> 
+    onWebviewNavigate: (handleFunc : (url : string) => Promise<void>) => Promise<() => Promise<void>>
+    onWebviewClosed(closedView : () => Promise<void>): Promise<() => Promise<void>> 
+    onSafeAreaChange(fn: (safeArea: SafeAreaInsets) => void) : Promise<() => Promise<void>> 
+}

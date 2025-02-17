@@ -1,366 +1,165 @@
-import vcassistConfig from "@/vcassist.config"
-import { SIService } from "@backend.sis/api_connect"
-import type { Data } from "@backend.sis/api_pb"
-import { MoodleService } from "@backend.vcmoodle/api_connect"
-import type { ServiceType } from "@bufbuild/protobuf"
-import { type Client, createClient } from "@connectrpc/connect"
+import { PublicService } from "@/backend/api/vcassist/public/v1/api_connect"
+import { createPromiseClient } from "@connectrpc/connect"
 import { createConnectTransport } from "@connectrpc/connect-web"
-import { SpanStatusCode } from "@opentelemetry/api"
-import {
-  CredentialForm,
-  type CredentialFormProps,
-} from "./components/CredentialForm"
-
-import { createFnSpanner, narrowError } from "@/ui"
+import { UsernamePasswordForm, OAuthForm} from "@/ui/foundation/credential-forms"
+import { LoginMoodleRequest, LoginPowerschoolRequest } from "@/backend/api/vcassist/public/v1/api_pb"
+import { getOAuthLoginUrl, getTokenFormData, openIdTokenResponse } from "./oauth"
+import { OAuthFlow } from "@/backend/proto/vcassist/services/keychain/v1/auth_flow_pb"
 import { native } from "./native"
-import {
-  getOAuthLoginUrl,
-  getTokenFormData,
-  openIdTokenResponse,
-} from "./oauth"
-// Required for TypeScript
-function defineModule<Name extends string, Data, Service extends ServiceType>(
-  module: Module<Name, Data, Service>,
-): Module<Name, Data, Service> {
-  return module
+import Config from "@/vcassist.config" 
+import { PowerschoolService } from "@/backend/api/vcassist/powerschool/v1/api_connect"
+import { MoodleService } from "@/backend/api/vcassist/moodle/v1/api_connect"
+import { LessonPlansResponse, RefreshResponse } from "@/backend/api/vcassist/moodle/v1/api_pb"
+import { GetDataResponse } from "@/backend/proto/vcassist/services/sis/v1/api_pb"
+import { DataResponse } from "@/backend/api/vcassist/powerschool/v1/api_pb"
+import { CourseData } from "@/backend/proto/vcassist/services/sis/v1/data_pb"
+//Authored by Justin Shi + Shengzhi Hu CO 2025
+//This file sets up the boilerplate for powerschool and moodle login respectivly NOTE: SIS is used interchagbly for powerschool, if found
+const mainClient = createPromiseClient(PublicService, createConnectTransport({baseUrl: Config.endpoints.vcassist_backend})) //this client sends oauth tokens, usename passwords to the backend to be proccessed
+const powerschoolHelper = createPromiseClient(PowerschoolService, createConnectTransport({baseUrl: Config.endpoints.vcassist_backend}))
+const moodleHelper = createPromiseClient(MoodleService, createConnectTransport({baseUrl: Config.endpoints.vcassist_backend}))
+
+export type Module<T> = {
+  name: string 
+  picture: string 
+  refresh() :  Promise<RefreshResponse> 
+  getData() : Promise<T>,//unknown in replacement for two possible types LessonPlanReponse and GetDataReponse
+  isLoggedIn(): boolean
+  renderLogin(props: {onDone() : void}): React.ReactNode
 }
-export const pendingModules = [
-  async (token: string) => {
-    const authHeader = `Bearer ${token}`
-    const transport = createConnectTransport({
-      baseUrl: vcassistConfig.endpoints.vcassist_backend,
-      interceptors: [
-        (next) => (req) => {
-          req.header.append("Authorization", authHeader)
-          return next(req)
-        },
-      ],
-    })
-    const client = createClient(MoodleService, transport)
-    // useMoodleContext.setState({ client });
 
-    const res = await client.getAuthStatus({})
-    // Required assignment to output to satisfy TypeScript
-    // (otherwise it gets very confused with `this`)
-    const output = {
-      name: "Moodle" as const,
-      provided: res.provided ?? false,
-      _refresh: false,
-      client,
-      picture:
-        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi0.wp.com%2Fcrescercomeducacao.com.br%2Fwp-content%2Fuploads%2F2022%2F06%2Fmoodle.png%3Ffit%3D1900%252C975%26ssl%3D1&f=1&nofb=1&ipt=9e33cd9627dbd37e5fe8453f9b4f51488694b4244d93ba3b2e20e0ff679e4da1&ipo=images",
-      login(props: {
-        dispatch: React.Dispatch<{ name: "Moodle"; provided: boolean }>
-      }) {
-        return (
-          <CredentialForm
-            name={"Moodle"}
-            provided={res.provided ?? false}
-            loginFlow={{
-              type: "usernamePassword",
-              async onSubmit(username: string, password: string) {
-                await client.provideUsernamePassword({
-                  username,
-                  password,
-                })
-              },
-            }}
-            picture={
-              "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi0.wp.com%2Fcrescercomeducacao.com.br%2Fwp-content%2Fuploads%2F2022%2F06%2Fmoodle.png%3Ffit%3D1900%252C975%26ssl%3D1&f=1&nofb=1&ipt=9e33cd9627dbd37e5fe8453f9b4f51488694b4244d93ba3b2e20e0ff679e4da1&ipo=images"
-            }
-            className="m-auto hover:cursor-auto"
-            onSuccess={() => {
-              // XXX: I hope I can avoid this code dupe and prop drilling
-              // TODO: Make sure this.name actually works as intended
-              // (originally was "Moodle")
-              props.dispatch({ name: output.name, provided: true })
-            }}
-          />
-        )
-      },
-      get() {
-        if (output._refresh) {
-          output._refresh = false
-          return client.refreshCourses({})
-        }
-        return client.getCourses({})
-      },
-      refetch() {
-        output._refresh = true
-      },
-    }
-    return defineModule(output)
+//nessicary parameters to start powerschool login
+const powerschoolParams = new OAuthFlow({
+  baseLoginUrl: "https://accounts.google.com/o/oauth2/v2/auth",
+  accessType: "offline",
+  scope: "openid email profile",
+  redirectUri: "com.powerschool.portal://"
+}
+) 
+//add get data function, render renders the login for each respective module, refresh rescrapes upon user request, add ret data to render properly in __root.tsx
+export const Moodle : Module<LessonPlansResponse> = {
+  name: "moodle", 
+  picture: "", 
+  async refresh() {
+    return await moodleHelper.refresh({});
   },
-  async (token: string) => {
-    const authHeader = `Bearer ${token}`
-    const transport = createConnectTransport({
-      baseUrl: vcassistConfig.endpoints.vcassist_backend,
-      interceptors: [
-        (next) => (req) => {
-          req.header.append("Authorization", authHeader)
-          return next(req)
-        },
-      ],
-    })
-    const client = createClient(SIService, transport)
-    // useSISContext.setState({ client })
+  async getData() {
+    return await moodleHelper.lessonPlans({})
+  },
+  isLoggedIn() {
+    const moodleToken = localStorage.getItem("moodleSessionToken"); //dear bryan: as much as your javascript brain wants to change this, as a avid c++ user can we please keep this for normalcy
+    return moodleToken !== null;
+  },
+  renderLogin(props) {
+    return (
+      <UsernamePasswordForm color="white" credentialId="moodle" onSubmit={(username: string, password: string) => {
+       const promise =  mainClient.loginMoodle(new LoginMoodleRequest ({username: username, password: password}))
+       return promise.then( () => {
+       }) //expects a promise due to async function .then wraps a promise 
+      } }
+      onSuccess= {() => {
+        props.onDone()
+      }}></UsernamePasswordForm>
+    )
+  }
+  
+}
 
-    const res = await client.getCredentialStatus({})
-    const status = res.status
-    const loginFlow = res.status?.loginFlow
-    if (!status || !loginFlow) {
-      throw new Error("loginFlow is undefined.")
-    }
-    function _handleData(data: Data | undefined): Data | undefined {
-      if (!data) {
-        return data
-      }
+export const Powerschool : Module<DataResponse> = {
+  name: "powerschool",
+  picture: "",
+  async refresh(){
+    return await powerschoolHelper.refresh({})
+  }, 
+  async getData(){
+    return await powerschoolHelper.data({})
+  },
+  isLoggedIn() {
+    const powerschoolToken = localStorage.getItem("powerschoolSessionToken");
+    return powerschoolToken != null;
+  },
+  renderLogin(props) {
+    return (
+      <OAuthForm color="white" credentialId="powerschool" 
+        onStart = {() => {   
+            return new Promise<void>((resolve, reject) => {
+              ;(async () => {
+                try {
+                  const loginUrl = getOAuthLoginUrl(powerschoolParams)
 
-      // hard-coded workaround
-      // We have to do this funny assignment thing
-      // instead of the spread operator because
-      // the spread operator apparently doesn't include
-      // the fromJSON methods, etc
-      data.courses = data.courses.filter((c) => {
-        const lowered = c.name.toLowerCase()
-        return !(
-          lowered.includes("chapel") ||
-          lowered.includes("unscheduled") ||
-          lowered.includes("open period")
-        )
-      })
+                  const userAgent = await native.userAgent()
+                  await native.openWebview(loginUrl, userAgent)
 
-      return data
-    }
-    // Must be assigned to output for `this` to work
-    const output = {
-      name: "PowerSchool" as const,
-      client,
-      provided: status.provided ?? false,
-      picture: status.picture,
-      _refresh: false,
-      async get() {
-        if (output._refresh) {
-          output._refresh = false
-          return _handleData((await client.refreshData({})).data)
-        }
-        return _handleData((await client.getData({})).data)
-      },
-      refetch() {
-        output._refresh = true
-      },
-      login(props: {
-        dispatch: React.Dispatch<{ name: "PowerSchool"; provided: boolean }>
-      }) {
-        // @ts-ignore We will fill this up eventually
-        let credsProps: CredentialFormProps = {
-          onSuccess: () => {
-            // XXX: I hope I can avoid this code dupe and prop drilling
-            // TODO: Make sure this.name actually works as intended
-            // (originally was "Moodle")
-            props.dispatch({ name: "PowerSchool", provided: true })
-          },
-        }
-        const fnSpan = createFnSpanner("credentials")
-        switch (loginFlow.case) {
-          case "usernamePassword":
-            credsProps = {
-              ...credsProps,
-              name: status.name,
-              provided: status.provided,
-              picture: status.picture,
-              loginFlow: {
-                type: "usernamePassword",
-                async onSubmit(username: string, password: string) {
-                  await client.provideCredential({
-                    credential: {
-                      case: "usernamePassword",
-                      value: { username, password },
-                    },
-                  })
-                },
-              },
-            }
-            break
-          case "oauth":
-            credsProps = {
-              ...credsProps,
-              name: "PowerSchool",
-              provided: res.status?.provided ?? false,
-              loginFlow: {
-                type: "oauth",
-                onStart() {
-                  return fnSpan(
-                    undefined,
-                    "intercept-token",
-                    async (span) => {
-                      return new Promise<void>((resolve, reject) => {
-                        ;(async () => {
-                          try {
-                            span.addEvent(
-                              "Opening webview - iOS wants a listener BEFORE loading URLs.",
-                            )
-
-                            const loginUrl = getOAuthLoginUrl(loginFlow.value)
-                            span.setAttribute("loginUrl", loginUrl)
-
-                            const userAgent = await native.userAgent()
-                            await native.openWebview(loginUrl, userAgent)
-
-                            const unsubscribeNav =
-                              await native.onWebviewNavigate(
-                                async (urlStr: string) => {
-                                  span.addEvent("got token request!", {
-                                    url: urlStr,
-                                  })
-
-                                  try {
-                                    const url = new URL(urlStr)
-                                    const code = url.searchParams.get("code")
-                                    if (!code) {
-                                      span.setStatus({
-                                        code: SpanStatusCode.ERROR,
-                                        message: "no token in url",
-                                      })
-                                      return
-                                    }
-
-                                    span.addEvent("requesting tokenFormData")
-                                    const tokenForm = getTokenFormData(
-                                      code,
-                                      loginFlow.value,
-                                    )
-                                    console.log("starting tokenForm Request")
-                                    const res = await fetch(
-                                      loginFlow.value.tokenRequestUrl,
-                                      {
-                                        method: "POST",
-                                        body: tokenForm,
-                                      },
-                                    )
-
-                                    const resText = await res.text()
-                                    const token = openIdTokenResponse.parse(
-                                      JSON.parse(resText),
-                                    )
-                                    console.log(token)
-
-                                    span.addEvent(
-                                      "submitting tokens to server!",
-                                    )
-
-                                    await client.provideCredential({
-                                      credential: {
-                                        case: "token",
-                                        value: {
-                                          token: resText,
-                                        },
-                                      },
-                                    })
-
-                                    console.log("done.")
-
-                                    resolve()
-
-                                    await native.closeWebview() // This is similar to the handler, in that it will not run if the webview is removed prematurely. No clue why.
-                                    await unsubscribeNav?.()
-                                  } catch (e) {
-                                    span.recordException(narrowError(e))
-                                    span.setStatus({
-                                      code: SpanStatusCode.ERROR,
-                                      message: "Submit token failure.",
-                                    })
-
-                                    reject(e)
-
-                                    await unsubscribeNav?.()
-                                    await native.closeWebview()
-                                  }
-
-                                  span.end()
-                                },
-                              )
-
-                            const unsubscribeClosed =
-                              await native.onWebviewClosed(async () => {
-                                await unsubscribeClosed?.()
-                              })
-                          } catch (e) {
-                            span.recordException(narrowError(e))
-                            span.setStatus({
-                              code: SpanStatusCode.ERROR,
-                              message: "Webview error.",
-                            })
-                            span.end()
-
-                            reject(e)
+                  const unsubscribeNav =
+                    await native.onWebviewNavigate(
+                      async (urlStr: string) => {
+                       
+                        try {
+                          const url = new URL(urlStr)
+                          const code = url.searchParams.get("code")
+                          if (!code) {
+                            //error
+                            return
                           }
-                        })()
-                      })
-                    },
-                    true,
-                  )
-                },
-              },
-            }
-            break
-          // case undefined:
-          // 	credsProps = {
-          // 		...credsProps,
-          // 		name: "PowerSchool",
-          // 		provided: status.provided ?? false,
-          // 		loginFlow: {
-          // 			type: "usernamePassword",
-          // 			async onSubmit(username, password) {},
-          // 		},
-          // 	};
-          // 	break;
-          default:
-            // @ts-ignore
-            throw new Error(
-              `unknown credential loginFlow case ${loginFlow.case}`,
-            )
-        }
-        return (
-          <CredentialForm
-            className="m-auto hover:cursor-auto"
-            {...credsProps}
-          />
-        )
-      },
-    }
-    return defineModule(output)
-  },
-] as const
-export type Module<Name extends string, Data, Service extends ServiceType> = {
-  name: Name
-  provided: boolean
-  picture: string
-  login: (props: {
-    dispatch: React.Dispatch<{ name: Name; provided: boolean }>
-  }) => JSX.Element
-  client: Client<Service>
-  /**
-   * @returns the `Data` from the service (cached)
-   */
-  get: () => Promise<Data>
-  /**
-   * Changes the `get` function to a new function that fetches the data
-   * from the service (runs scrapers again instead of using cache)
-   * (and then it changes back to the original `get` function)
-   * TODO: Remove code dupe in implementation
-   */
-  refetch: () => void
+
+                          const tokenForm = getTokenFormData(
+                            code,
+                            powerschoolParams,
+                          )
+                          console.log("starting token Form Request")
+                          const res = await fetch(
+                            powerschoolParams.tokenRequestUrl,
+                            {
+                              method: "POST",
+                              body: tokenForm,
+                            },
+                          )
+
+                          const resText = await res.text()
+                          const token = openIdTokenResponse.parse(
+                            JSON.parse(resText),
+                          )
+                          localStorage.setItem("powerschoolSessionToken", resText);
+                          console.log(token)
+
+                          await mainClient.loginPowerschool(
+                            new LoginPowerschoolRequest(
+                              {
+                                token: token,
+                              }                              
+                            )
+                          )
+                          ,
+
+                          await native.closeWebview() // This is similar to the handler, in that it will not run if the webview is removed prematurely. No clue why.
+                          await unsubscribeNav?.()
+                        } catch (e) {
+                          console.log("submit token failure")
+
+                          reject(e)
+
+                          await unsubscribeNav?.()
+                          await native.closeWebview()
+                        }
+
+                      },
+                    )
+
+                  const unsubscribeClosed =
+                    await native.onWebviewClosed(async () => {
+                      await unsubscribeClosed?.()
+                    })
+                } catch (e) {
+                  console.log("webview error")
+                  reject(e)
+                }
+              })()
+            })
+      }}  onSuccess= {() => {
+        props.onDone()
+      }}></OAuthForm>
+    )
+  }
 }
 
-type InferModule<T> = T extends (
-  token: string,
-) => Promise<Module<infer Name, infer Data, infer Service>>
-  ? Module<Name, Data, Service>
-  : never
 
-type ModulesFromPending<T extends readonly unknown[]> = {
-  [K in T[number] as Lowercase<InferModule<K>["name"]>]: InferModule<K>
-}
-
-export type Modules = ModulesFromPending<typeof pendingModules>

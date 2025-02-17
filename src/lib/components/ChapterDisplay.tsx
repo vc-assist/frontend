@@ -28,6 +28,7 @@ import {
   segmentLessonPlan,
 } from "../lesson-plan-processing"
 import { PanelTitle } from "./PanelTitle"
+import { LessonPlansResponse_Chapter } from "@/backend/api/vcassist/moodle/v1/api_pb"
 
 // import * as PDFJS from "pdfjs-dist"
 // import Worker from "pdfjs-dist/build/pdf.worker.mjs?worker"
@@ -198,7 +199,7 @@ function ChapterContent(props: {
 
 export function ChapterDisplay(props: {
   courseId: number
-  chapter: Chapter
+  chapter: LessonPlansResponse_Chapter
   content?: {
     key: string | number | boolean
     fetch: () => Promise<string>
@@ -240,8 +241,8 @@ export function ChapterDisplay(props: {
   // })
 
   const sanitizedHomepageContent = useMemo(
-    () => DOMPurify.sanitize(props.chapter.homepageContent),
-    [props.chapter.homepageContent],
+    () => {return(props.chapter.content !== undefined ? DOMPurify.sanitize(props.chapter.content) : null)},
+    [props.chapter.content],
   )
 
   const contentQuery = useQuery({
@@ -276,7 +277,7 @@ export function ChapterDisplay(props: {
               label={
                 props.breadcrumb
                   ? props.breadcrumb.course.name
-                  : props.chapter.name
+                  : props.chapter.dates[0].toJsonString()
               }
             />
 
@@ -344,7 +345,7 @@ export function ChapterDisplay(props: {
                     window.open(props.chapter.url)
                   }}
                 >
-                  {props.chapter.name}
+                  {props.chapter.dates[0].toJsonString()}
                 </button>
               ) : (
                 <Link
@@ -359,7 +360,7 @@ export function ChapterDisplay(props: {
                   }}
                   className="no-underline hover:underline text-blue-400 dark:text-blue-600 p-0"
                 >
-                  {props.chapter.name}
+                  {props.chapter.dates[0].toJsonString()}
                 </Link>
               )}
             </div>
@@ -373,14 +374,14 @@ export function ChapterDisplay(props: {
             className="content select-text"
             // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
             dangerouslySetInnerHTML={{
-              __html: content,
+              __html: content!,
             }}
           />
         ) : (
           <ChapterContent
             courseId={props.courseId}
-            chapterName={props.chapter.name}
-            sanitizedContent={content}
+            chapterName={props.chapter.dates[0].toJsonString()}
+            sanitizedContent={content!}
             openFile={(href) => {
               window.open(href)
               // setOpenedFile(href)

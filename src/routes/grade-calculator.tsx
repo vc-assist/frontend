@@ -16,7 +16,7 @@ import { MdInfo, MdSportsScore, MdTimeline } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
 import { LoadingPage } from "../lib/components/LoadingPage"
 import { usePowerSchoolQuery } from "../lib/queries"
-
+import { Powerschool, Moodle } from "@/src/lib/modules"
 enum CalcTab {
   WHAT_IF = "what-if",
   CALC_SCORE = "calc-score",
@@ -28,7 +28,7 @@ function GradeCalculator() {
 
   const layout = useLayout()
   const [activeTab, setActiveTab] = useState<CalcTab | null>(CalcTab.WHAT_IF)
-
+  
   const courseForm = useForm<
     Partial<{
       course: string
