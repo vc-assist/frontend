@@ -15,8 +15,14 @@ import { useMemo } from "react"
 import { MdInfo, MdSportsScore, MdTimeline } from "react-icons/md"
 import { twMerge } from "tailwind-merge"
 import { LoadingPage } from "../lib/components/LoadingPage"
-import { usePowerSchoolQuery } from "../lib/queries"
-import { Powerschool, Moodle } from "@/src/lib/modules"
+import { createPromiseClient } from "@connectrpc/connect"
+import { createConnectTransport } from "@connectrpc/connect-web"
+import { PowerschoolService } from "@/backend/api/vcassist/powerschool/v1/api_connect"
+import Config from "@/vcassist.config" 
+
+
+const powerschoolHelper = createPromiseClient(PowerschoolService, createConnectTransport({baseUrl: Config.endpoints.vcassist_backend}))
+
 enum CalcTab {
   WHAT_IF = "what-if",
   CALC_SCORE = "calc-score",
@@ -39,15 +45,16 @@ function GradeCalculator() {
     },
   })
 
-  const powerschoolQuery = usePowerSchoolQuery()
+  const data = powerschoolHelper.data
+
 
   const courses = useMemo(() => {
-    if (!powerschoolQuery.data) return []
-    return powerschoolQuery.data.courses
+    if (!powerschoolHelper.data) return []
+    return powerschoolHelper.data
   }, [powerschoolQuery.data])
 
   const course = courseForm.values.course
-    ? courses.find((v) => v.name === courseForm.values.course)
+    ? courses.find((v: { name: string | undefined }) => v.name === courseForm.values.course)
     : undefined
 
   const courseAssignmentTypes = useMemo(() => {
@@ -76,7 +83,7 @@ function GradeCalculator() {
           <Title order={4}>Course</Title>
           <Select
             placeholder="Select a course"
-            data={courses.map((c) => {
+            data={courses.map((c: { name: any }) => {
               return {
                 value: c.name,
                 label: c.name,

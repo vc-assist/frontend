@@ -1,10 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { createDefaultMeter } from "@vcassist/ui"
-
+import { createDefaultMeter, Panel } from "@vcassist/ui"
 import { LoadingPage } from "@/src/lib/components/LoadingPage"
-import { usePowerSchoolQuery } from "@/src/lib/queries"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import GradeTrendsComponent from "../lib/GradeTrends"
+import { Powerschool } from "../lib/modules"
+import { createPromiseClient } from "@connectrpc/connect"
+import { PowerschoolService } from "@/backend/api/vcassist/powerschool/v1/api_connect"
+import { createConnectTransport } from "@connectrpc/connect-web"
+import Config from "@/vcassist.config" 
+import { DataRequest, DataResponse } from "@/backend/api/vcassist/powerschool/v1/api_pb"
+import { RiBlazeFill } from "react-icons/ri"
+
+
 
 export const Route = createFileRoute("/grade-trends")({
   component: GradeTrends,
@@ -18,17 +25,59 @@ declare module "@tanstack/react-router" {
     className?: string
   }
 }
+
+const baz = new Promise<number>((res, rej) =>{
+  setTimeout(() => {
+    res(Math.random()) 
+  }, 1000)
+})
+
+baz.then((hi : number) =>{
+  
+})
+
 const meter = createDefaultMeter("routes.grades")
 const viewPage = meter.createCounter("view")
+const powerschoolHelper = createPromiseClient(PowerschoolService, createConnectTransport({baseUrl: Config.endpoints.vcassist_backend}))
+
 function GradeTrends() {
-  const powerschoolQuery = usePowerSchoolQuery()
+  const [loginState, setLoginState] = useState<boolean>(Powerschool.isLoggedIn())
+  const [courses, setCourses] = useState<DataResponse>(); 
+  const [error, setError] = useState<Error>();
+  
   useEffect(() => {
-    viewPage.add(1)
-  }, [])
-  if (powerschoolQuery.isLoading) return <LoadingPage />
-  if (powerschoolQuery.isError) throw powerschoolQuery.error
+    const data : Promise<DataResponse> = powerschoolHelper.data({})
+    const courses = data.then((response : DataResponse) => {
+     setCourses(response);
+    }, (error : Error) => {
+      setError(error)
+    })
+  }, [])   
 
-  const { courses } = powerschoolQuery.data!
+  if(error) {
+    return (
+      <>
+        <Panel>
+          <div className = "text-red-700 font-serif"> 
+            {error.message}
+          </div>
+        </Panel>
+      </>
+    )
+  }
+  
+  if(!loginState){
+    return (
+      <>
+        <Powerschool.renderLogin onDone = {() => {
+          setLoginState(true)
+        }}>
 
-  return <GradeTrendsComponent courses={courses} />
+        </Powerschool.renderLogin>
+      </>
+    )
+  } else {
+    return <GradeTrendsComponent courses={courses}></GradeTrendsComponent>
+  }
+
 }

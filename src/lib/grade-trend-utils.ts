@@ -1,5 +1,5 @@
 import { dateFromUnix } from "@/src/lib/date"
-import type { CourseData, GradeSnapshot } from "@backend.sis/data_pb"
+import { CourseData, GradeSnapshot } from "@/backend/api/vcassist/powerschool/v1/types_pb"
 import { hsla, toRgba } from "color2k"
 import { type Duration, format, parse } from "date-fns"
 import { compareDesc, sub } from "date-fns/fp"
@@ -47,10 +47,12 @@ export function analyzeGradeChange(
 ): GradeChangeAnalysis {
   const analysis: GradeChangeAnalysis = {}
   const withinInterval = compareDesc(sub(options.change.from)(new Date()))
-
   for (const course of courses) {
     const grades = course.snapshots
     const dataPoints = grades.sort((a, b) => {
+      if(a?.time === undefined || b?.time === undefined) {
+        throw new Error
+      }
       if (a.time > b.time) {
         return 1
       }

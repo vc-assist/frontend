@@ -29,6 +29,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAtomValue } from "jotai"
 import { MdPerson, MdRefresh, MdSettings } from "react-icons/md"
 import { Moodle, Powerschool } from "@/src/lib/modules"
+import ProtectedHwPage from "./moodle"
 // interface RootContext {
 // 	rootClassName?: string;
 // }

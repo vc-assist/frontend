@@ -8,37 +8,10 @@ import { Panel } from "@/ui"
 import { Moodle } from "@/src/lib/modules"
 import { useEffect, useState } from "react"
 import { LessonPlansResponse_Course } from "@/backend/api/vcassist/moodle/v1/api_pb"
-import { CourseData } from "@/backend/api/vcassist/powerschool/v1/types_pb"
 import { AnimatePresence, motion } from "framer-motion"
-import { Container } from "@mantine/core"
 import { ChapterDisplay } from "../lib/components/ChapterDisplay"
-import { protoInt64 } from "@bufbuild/protobuf"
-import z from "zod"
-import { isThisSecond } from "date-fns"
- //this should have ur hw for the day and something on the side no clue
- //
- 
 
- //type validation i dont even know if this is needed
-// const LessonPlansResponse_Chapter = z.object({
-//   courseId: z.string(), 
-//   date: z.array(z.string()), 
-//   content: z.string().optional(), 
-//   url: z.string()
-// })
-
-// const LessonPlansResponseCourseSchema = z.object({
-//   courseId: z.string(), 
-//   courseName: z.string(),
-//   courseTeacher: z.string(), 
-//   courseUrl: z.string()
-// })
-
-// const CourseDataSchema = z.object({
-
-// })
-
-function ProtectedHwPage(){
+export default function ProtectedHwPage(){
   const [postLoginState, setPostLoginState] = useState(Moodle.isLoggedIn());
   if(!postLoginState){
     return (
@@ -55,21 +28,6 @@ function ProtectedHwPage(){
     )
   }
 }
-
-// function isLessonPlansReponse_Course(course : any ): course is LessonPlansResponse_Course {
-//   return (
-//     course && 
-//     typeof course.id === "string" &&
-//     typeof course.name === "string" && 
-//     typeof course
-
-
-//   )
-// }
-
-// function isCourseData(course : any): course is CourseData {
-
-// }
 
 function HwPage() {
     const [courseData, setCourseData] = useState<LessonPlansResponse_Course[] | null>(null);
@@ -93,7 +51,6 @@ function HwPage() {
                        initial={{ opacity: 0, scale: 0 }}
                        animate={{ opacity: 1, scale: 1 }}
                        exit={{ opacity: 0, scale: 0 }}
-                       style={} //add styling later 
                        key="box"
                    />
                 {courseState.chapters.map((chapter) => {
