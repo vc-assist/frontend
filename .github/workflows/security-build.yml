@@ -1,8 +1,8 @@
 name: Security build
-on:
-  pull_request:
-  push:
-    branches: [main]
+on: [push]
+concurrency:
+  group: security-build
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
